@@ -1,0 +1,13 @@
+{
+  "name": "xinyoulingpai",
+  "version": "2.0.0",
+  "private": true,
+  "description": "心有靈排：排名派對遊戲與連線伺服器",
+  "main": "server.js",
+  "scripts": {
+    "build": "python3 build.py",
+    "start": "node server.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": { "ws": "8.18.0" }
+}
