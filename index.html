@@ -10,266 +10,299 @@
 <meta name="description" content="心有靈排：排出你的真心，猜中朋友的腦袋。2–10 人的排名派對遊戲。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Huninn&family=Monoton&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=LXGW+WenKai+TC&family=Noto+Sans+TC:wght@300;400;500&family=Noto+Serif+TC:wght@500;700&display=swap">
 <style>
-/* Layout: one centered phone column (max 560px). Concept: a night-market neon signboard — quiet dark enamel panels, and the only thing that glows is what matters: the logo sign, the topic lightbox, and tier rows that light up as they fill or get revealed. Single committed dark look. */
+/* Layout: one left-aligned phone column (max 540px) laid out like a page of a 手帳: paper ground, hairline rules, generous white space. The only loud things are the red seal stamps and the sticky-note grades. Single committed light look. */
 :root{
-  --night:#110b22; --panel:#1b1434; --panel2:#241b44; --well:#140e29; --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.16);
-  --text:#f4f0ff; --muted:#a99cc9; --soft:#7f73a3; --ink:#1a1230; --box:#fbf8ff; --boxmuted:#6e6290;
-  --S:#ff3d7f; --A:#ff8a2b; --B:#ffd02e; --C:#2ee6a0; --D:#3fbcff;
-  --hit:#2ee6a0; --near:#ffd02e; --miss:#ff5470; --gold:#ffd02e;
-  --f-ui:"Huninn","PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
-  --f-tier:"Monoton","Bungee","Arial Black",Impact,sans-serif;
-  --f-num:"Bungee","Arial Black",Impact,sans-serif;
-  --r-lg:22px; --r-md:16px; --r-sm:12px;
-  --lift:0 1px 0 rgba(255,255,255,.06) inset,0 18px 40px -22px rgba(0,0,0,.8);
-  color-scheme:dark;
+  --paper:#f3eee2; --paper2:#e9e2d2; --card:#fbf8f0; --ink:#2a2723; --ink2:#6a6358; --ink3:#a59d8e; --line:#d8cfbd;
+  --matcha:#7c8f68; --matcha-d:#5c6e4b; --matcha-l:#dbe3cd; --caramel:#b9834f; --caramel-l:#efdcc0; --seal:#b3412d;
+  --nS:#ecc0b0; --nA:#efd09a; --nB:#ebe0a2; --nC:#c6d6b0; --nD:#bccbd2;
+  --f-serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --f-sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-hand:"LXGW WenKai TC","Klee One","BiauKai","DFKai-SB",cursive;
+  --f-grade:"Caveat","Bradley Hand","Segoe Print",cursive;
+  --r:5px; --shadow:0 1px 0 rgba(255,255,255,.7) inset,0 10px 22px -16px rgba(70,55,30,.55);
+  color-scheme:light;
 }
 *{box-sizing:border-box}
 html,body{min-height:100%}
-body{margin:0;background:var(--night);color:var(--text);font-family:var(--f-ui);font-size:16px;line-height:1.55;-webkit-tap-highlight-color:transparent;
-  background-image:radial-gradient(120% 60% at 50% -10%,rgba(255,61,127,.20),transparent 60%),radial-gradient(80% 50% at 110% 40%,rgba(63,188,255,.10),transparent 60%),radial-gradient(70% 40% at -10% 90%,rgba(255,208,46,.08),transparent 60%);background-attachment:fixed}
-body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.2px);background-size:24px 24px;mask-image:linear-gradient(#000,transparent 70%)}
+body{margin:0;background-color:var(--paper);color:var(--ink);font-family:var(--f-sans);font-weight:300;font-size:16px;line-height:1.7;-webkit-tap-highlight-color:transparent;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E")}
 button,input,textarea{font:inherit;color:inherit}
-#app{position:relative;z-index:1;max-width:560px;margin:0 auto;padding-block:8px 128px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+#app{max-width:540px;margin:0 auto;padding-block:6px 132px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--f-serif);font-weight:700;text-wrap:balance;line-height:1.35;margin:0;letter-spacing:.04em}
+b,strong{font-weight:500}
+.hand{font-family:var(--f-hand)}
 
 /* top bar */
-.top{display:flex;align-items:center;gap:8px;min-height:48px}
-.top .brand{font-size:18px;background:none;border:0;padding:4px 0;cursor:pointer;letter-spacing:.06em;color:var(--text);text-shadow:0 0 12px rgba(255,61,127,.55)}
-.top .brand b{color:var(--S);font-weight:400}
+.top{display:flex;align-items:center;gap:8px;min-height:48px;border-bottom:1px solid var(--line)}
+.top .brand{font-family:var(--f-serif);font-weight:700;font-size:17px;background:none;border:0;padding:8px 0;cursor:pointer;letter-spacing:.2em;color:var(--ink)}
 .top .sp{flex:1}
-.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:var(--panel);border:1px solid var(--line2);font-size:14px;white-space:nowrap;color:var(--muted)}
-.pill.code{font-family:var(--f-num);letter-spacing:.14em;color:var(--B);border-color:rgba(255,208,46,.35)}
-.pill.x2{color:var(--night);background:var(--gold);border-color:var(--gold);font-weight:700}
-.iconbtn{width:42px;height:42px;border-radius:var(--r-sm);background:var(--panel);border:1px solid var(--line2);cursor:pointer;font-size:18px;display:grid;place-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border:1px solid var(--line);border-radius:3px;font-size:13px;white-space:nowrap;color:var(--ink2);background:var(--card)}
+.pill.code{font-family:var(--f-serif);font-weight:700;letter-spacing:.2em;color:var(--ink)}
+.pill.ev{color:var(--seal);border-color:var(--seal);background:transparent;font-weight:500}
+.iconbtn{width:44px;height:44px;border-radius:50%;background:transparent;border:1px solid var(--line);cursor:pointer;font-size:16px;display:grid;place-items:center}
 
-/* surfaces */
-.card{background:linear-gradient(180deg,var(--panel2),var(--panel));color:var(--text);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--lift);padding:18px}
-.card h2,.card h3{margin:0}
-.card h2{font-size:24px}
-.card h3{font-size:18px}
-.muted{color:var(--muted)}
-.dim{color:var(--soft)}
-h1,h2,h3{text-wrap:balance;line-height:1.25;font-weight:400}
-b,strong{font-weight:400;color:var(--text)}
+/* paper surfaces */
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 20px}
+.card h2{font-size:22px}
+.card h3{font-size:17px}
+.tape::before{content:"";position:absolute;top:-11px;left:50%;width:92px;height:22px;margin-left:-46px;transform:rotate(-2.5deg);background:repeating-linear-gradient(135deg,rgba(124,143,104,.55) 0 6px,rgba(124,143,104,.34) 6px 12px);box-shadow:0 1px 2px rgba(60,50,30,.15)}
+.tape.c::before{background:repeating-linear-gradient(135deg,rgba(185,131,79,.5) 0 6px,rgba(185,131,79,.3) 6px 12px);transform:rotate(2deg)}
+.muted{color:var(--ink2)}
+.dim{color:var(--ink3)}
+.center{text-align:center}
 
-/* buttons */
-.btn{appearance:none;border:1px solid var(--line2);border-radius:var(--r-md);padding:12px 18px;font-size:17px;cursor:pointer;background:var(--panel2);color:var(--text);transition:transform .08s,box-shadow .2s,filter .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;letter-spacing:.02em}
-.btn:active:not(:disabled){transform:translateY(2px) scale(.99)}
-.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none!important}
-.btn.big{font-size:20px;padding:15px 20px;width:100%;min-height:58px;border-radius:18px}
-.btn.pink{background:linear-gradient(180deg,#ff5a92,#ff2f74);border-color:#ff8ab2;color:#fff;box-shadow:0 0 0 1px rgba(255,61,127,.3),0 10px 30px -8px rgba(255,61,127,.7),inset 0 1px 0 rgba(255,255,255,.35);text-shadow:0 1px 0 rgba(120,0,40,.35)}
-.btn.yellow{background:linear-gradient(180deg,#ffe066,#ffc81f);border-color:#fff0a8;color:var(--ink);box-shadow:0 10px 30px -10px rgba(255,208,46,.6),inset 0 1px 0 rgba(255,255,255,.5)}
-.btn.mint{background:linear-gradient(180deg,#5ff0b8,#22d892);border-color:#a8ffd9;color:var(--ink);box-shadow:0 10px 30px -10px rgba(46,230,160,.55),inset 0 1px 0 rgba(255,255,255,.45)}
-.btn.blue{background:linear-gradient(180deg,#6fd0ff,#2aaef5);border-color:#b5e7ff;color:var(--ink);box-shadow:0 10px 30px -10px rgba(63,188,255,.55),inset 0 1px 0 rgba(255,255,255,.45)}
-.btn.ghost{background:transparent;color:var(--muted);border-color:var(--line2)}
-.btn.small{font-size:15px;padding:8px 14px;min-height:42px}
-:focus-visible{outline:2px solid var(--B);outline-offset:3px}
+/* buttons: big, flat, easy to press */
+.btn{appearance:none;border:1px solid var(--ink);border-radius:var(--r);padding:12px 18px;font-size:16px;font-weight:400;cursor:pointer;background:transparent;color:var(--ink);transition:transform .12s ease,background .2s ease;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;letter-spacing:.08em}
+.btn:active:not(:disabled){transform:translateY(1px) scale(.985)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.big{font-size:18px;width:100%;min-height:60px;font-weight:500}
+.btn.pink{background:var(--ink);color:var(--card)}
+.btn.yellow{background:var(--caramel-l);border-color:var(--caramel)}
+.btn.mint,.btn.blue{background:var(--matcha);border-color:var(--matcha-d);color:#fff}
+.btn.ghost{border-color:var(--line);color:var(--ink2)}
+.btn.small{font-size:14px;padding:8px 14px;min-height:46px}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .row{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
 .row>*{flex:1 1 auto}
-.stack{display:flex;flex-direction:column;gap:12px}
-.err{color:var(--miss);margin:0;overflow-wrap:anywhere}
-label.lb,span.lb{font-size:14px;color:var(--muted);display:block;margin-bottom:8px}
-.in{width:100%;border:1px solid var(--line2);border-radius:var(--r-md);padding:10px 14px;background:var(--well);color:var(--text);font-size:18px;min-height:50px;transition:border-color .2s,box-shadow .2s}
-.in::placeholder{color:var(--soft)}
-.in:focus{outline:none;border-color:var(--S);box-shadow:0 0 0 3px rgba(255,61,127,.25)}
-textarea.in{min-height:120px;resize:vertical;line-height:1.55}
-.in.code{font-family:var(--f-num);letter-spacing:.3em;text-transform:uppercase;text-align:center;font-size:22px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.err{color:var(--seal);margin:0;overflow-wrap:anywhere;font-weight:400}
+label.lb,span.lb{font-size:13px;color:var(--ink2);display:block;margin-bottom:8px;letter-spacing:.1em}
+.in{width:100%;border:0;border-bottom:1px solid var(--ink);border-radius:0;padding:10px 2px;background:transparent;color:var(--ink);font-size:18px;min-height:50px;font-weight:400}
+.in::placeholder{color:var(--ink3);font-weight:300}
+.in:focus{outline:none;border-bottom-width:2px}
+textarea.in{min-height:130px;resize:vertical;line-height:2;border:1px solid var(--line);padding:10px 12px;background:repeating-linear-gradient(transparent 0 35px,var(--line) 35px 36px);background-position:0 10px}
+.in.code{font-family:var(--f-serif);font-weight:700;letter-spacing:.35em;text-transform:uppercase;text-align:center;font-size:22px}
 
-/* hero: the neon sign */
-.hero{text-align:center;padding:22px 0 2px}
-.logo{font-size:clamp(52px,16vw,82px);margin:0;letter-spacing:.06em;line-height:1.1;font-weight:400;color:#fff4fa;
-  text-shadow:0 0 4px #fff,0 0 14px var(--S),0 0 34px var(--S),0 0 70px rgba(255,61,127,.6);animation:flicker 2.8s linear 1 both}
-.logo .k{display:inline-block}
-.logo .k:nth-child(2){transform:translateY(-3px)}
-.logo .k:nth-child(4){color:#fffbe6;text-shadow:0 0 4px #fff,0 0 14px var(--gold),0 0 34px var(--gold),0 0 70px rgba(255,208,46,.55);animation:hum 3.2s ease-in-out 2.8s infinite}
-@keyframes flicker{0%,8%{opacity:.15}9%{opacity:1}11%{opacity:.3}13%,30%{opacity:1}31%{opacity:.55}33%,100%{opacity:1}}
-@keyframes hum{50%{transform:rotate(-4deg) scale(1.06)}}
-.tag{margin:10px 0 0;color:var(--muted);font-size:17px;letter-spacing:.08em}
-.demo{display:grid;gap:8px;margin:20px auto 0;max-width:330px;text-align:left}
-.demo div{display:grid;grid-template-columns:46px 1fr;align-items:center;gap:10px}
-.demo b{font-family:var(--f-tier);font-size:22px;text-align:center;line-height:40px;border-radius:var(--r-sm);background:var(--well);border:1px solid currentColor}
-.demo b.t0{color:var(--S);text-shadow:0 0 10px var(--S);box-shadow:0 0 14px -4px var(--S)}
-.demo b.t1{color:var(--A);text-shadow:0 0 10px var(--A);box-shadow:0 0 14px -4px var(--A)}
-.demo b.t4{color:var(--D);text-shadow:0 0 10px var(--D);box-shadow:0 0 14px -4px var(--D)}
-.demo span{background:var(--box);color:var(--ink);border-radius:var(--r-sm);padding:6px 14px}
-.avs{display:flex;flex-wrap:wrap;gap:6px}
-.av{font-size:24px;width:46px;height:46px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--well);cursor:pointer;display:grid;place-items:center;padding:0;transition:transform .15s,box-shadow .2s}
-.av.on{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,208,46,.35),0 0 18px -4px var(--gold);transform:scale(1.06)}
-.note{font-size:14px;color:var(--muted);margin:0;text-align:center}
-.note.l{text-align:left}
+/* hero: magazine cover with vertical title */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;padding:26px 0 6px}
+.logo{writing-mode:vertical-rl;font-size:clamp(46px,14vw,64px);letter-spacing:.14em;line-height:1.1;margin:0;position:relative}
+.logo .hanko{position:absolute;left:-6px;bottom:-34px;writing-mode:horizontal-tb}
+.hanko{display:inline-grid;place-items:center;width:34px;height:34px;border:2px solid var(--seal);color:var(--seal);font-family:var(--f-serif);font-weight:700;font-size:18px;border-radius:4px;transform:rotate(-6deg);letter-spacing:0;line-height:1}
+.heroR{display:flex;flex-direction:column;gap:14px;padding-top:6px}
+.tag{margin:0;color:var(--ink2);font-size:15px;letter-spacing:.14em;line-height:2}
+.issue{font-size:12px;color:var(--ink3);letter-spacing:.2em;margin:0}
+.demo{display:grid;gap:8px;margin:4px 0 0}
+.demo div{display:grid;grid-template-columns:40px 1fr;align-items:center;gap:10px}
+.demo span{font-family:var(--f-hand);font-size:17px;border-bottom:1px dashed var(--line);padding-bottom:2px}
+.avs{display:flex;flex-wrap:wrap;gap:8px}
+.av{font-size:22px;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--card);cursor:pointer;display:grid;place-items:center;padding:0;transition:transform .2s ease}
+.av.on{border:2px solid var(--ink);transform:scale(1.08)}
+.note{font-size:13px;color:var(--ink2);margin:0;letter-spacing:.04em}
+.note.c{text-align:center}
 
 /* lobby */
-.bigcode{font-family:var(--f-num);font-size:52px;letter-spacing:.2em;color:#fffbe6;text-align:center;margin:6px 0;text-shadow:0 0 6px #fff,0 0 20px var(--gold),0 0 44px rgba(255,208,46,.6)}
-.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
-.pp{display:flex;align-items:center;gap:6px;background:var(--well);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 10px;min-width:0;animation:popin .35s cubic-bezier(.3,1.6,.5,1)}
+.bigcode{font-family:var(--f-serif);font-weight:700;font-size:46px;letter-spacing:.3em;text-align:center;margin:6px 0 4px;padding-left:.3em}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:8px}
+.pp{display:flex;align-items:center;gap:8px;border-bottom:1px dashed var(--line);padding:8px 2px;min-width:0;animation:fadeup .4s ease both}
 .pp .e{font-size:22px}
-.pp .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-.pp.host{border-color:rgba(255,208,46,.4)}
-.pp.host::after{content:"房主";font-size:11px;color:var(--night);background:var(--gold);border-radius:6px;padding:0 6px;margin-left:auto}
+.pp .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;font-weight:400}
+.pp.host::after{content:"房主";font-size:11px;color:var(--seal);border:1px solid var(--seal);border-radius:2px;padding:0 4px;margin-left:auto}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.opt{border:1px solid var(--line2);border-radius:var(--r-md);padding:12px 14px;background:var(--well);cursor:pointer;text-align:left;color:var(--text);transition:box-shadow .2s,border-color .2s}
-.opt b{display:block;font-size:17px;margin-bottom:2px}
-.opt small{color:var(--muted);font-size:13px;line-height:1.4;display:block}
-.opt.on{border-color:var(--S);box-shadow:0 0 0 1px var(--S),0 0 26px -8px var(--S);background:linear-gradient(180deg,rgba(255,61,127,.14),var(--well))}
+.opt{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:transparent;cursor:pointer;text-align:left;color:var(--ink);min-height:96px}
+.opt b{display:block;font-family:var(--f-serif);font-weight:700;font-size:17px;margin-bottom:4px;letter-spacing:.06em}
+.opt small{color:var(--ink2);font-size:13px;line-height:1.6;display:block}
+.opt.on{border:2px solid var(--ink);background:var(--paper)}
 .opt:disabled{cursor:default}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.tg{border:1px solid var(--line2);border-radius:999px;padding:6px 14px;background:var(--well);cursor:pointer;font-size:15px;color:var(--muted);transition:all .15s}
-.tg.on{color:var(--night);background:var(--C);border-color:var(--C);box-shadow:0 0 16px -6px var(--C)}
+.tg{border:1px solid var(--line);border-radius:3px;padding:6px 12px;background:transparent;cursor:pointer;font-size:14px;color:var(--ink2);min-height:40px}
+.tg.on{color:var(--ink);background:var(--matcha-l);border-color:var(--matcha)}
 .tg:disabled{cursor:default}
-.ppl{display:grid;grid-template-columns:48px 1fr 40px;gap:8px;align-items:center}
-.x{border:0;background:transparent;font-size:24px;cursor:pointer;color:var(--soft);height:44px}
+.ppl{display:grid;grid-template-columns:48px 1fr 44px;gap:10px;align-items:center}
+.x{border:0;background:transparent;font-size:22px;cursor:pointer;color:var(--ink3);height:44px}
 .x:disabled{opacity:.3}
 
-/* round chrome */
-.roundbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px}
-.roundbar .sp{flex:1}
-.timer{position:relative;height:30px;border-radius:999px;background:var(--well);border:1px solid var(--line);overflow:hidden}
-.timer i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--C),var(--D));transition:width .25s linear;box-shadow:0 0 18px var(--C)}
-.timer span{position:relative;display:block;text-align:center;font-family:var(--f-num);line-height:28px;color:var(--night);mix-blend-mode:normal;text-shadow:0 0 6px rgba(255,255,255,.6)}
-.timer.hurry i{background:linear-gradient(90deg,var(--miss),var(--A));box-shadow:0 0 18px var(--miss)}
-.timer.hurry{animation:pulse .5s ease-in-out infinite}
-@keyframes pulse{50%{transform:scale(1.02)}}
-/* topic lightbox */
-.topic{text-align:center;position:relative;padding:20px 18px;background:var(--box);color:var(--ink);border:0;box-shadow:0 0 0 1px rgba(255,255,255,.6),0 0 40px -6px rgba(255,61,127,.55),0 0 90px -20px rgba(255,61,127,.5)}
-.topic small{font-size:13px;color:var(--boxmuted);letter-spacing:.12em}
-.topic h2{font-size:clamp(25px,7.4vw,34px);margin:4px 0 0;color:var(--ink)}
-.topic .by{display:block;margin-top:6px;font-size:13px;color:var(--boxmuted)}
-.role{text-align:center;margin:0;font-size:17px;color:var(--muted)}
-.role b{color:var(--gold)}
+/* round header */
+.roundbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px}
+.timer{position:relative;height:22px}
+.timer::before{content:"";position:absolute;left:0;right:0;top:10px;border-top:1px dashed var(--line)}
+.timer i{position:absolute;left:0;top:9px;height:3px;background:var(--ink);transition:width .25s linear}
+.timer span{position:absolute;right:0;top:-2px;font-family:var(--f-grade);font-size:22px;line-height:1;background:var(--paper);padding-left:8px;color:var(--ink)}
+.timer.hurry i{background:var(--seal)}
+.timer.hurry span{color:var(--seal)}
+.topic{text-align:center;padding:30px 20px 24px}
+.topic small{font-size:12px;color:var(--ink3);letter-spacing:.3em}
+.topic h2{font-size:clamp(24px,7vw,31px);margin:6px 0 0;line-height:1.5}
+.topic .by{display:block;margin-top:8px;font-family:var(--f-hand);font-size:14px;color:var(--ink2)}
+.role{margin:0;font-size:15px;color:var(--ink2);text-align:center;letter-spacing:.06em}
+.role b{color:var(--ink);font-weight:500;border-bottom:2px solid var(--caramel)}
+.evnote{margin:0;font-family:var(--f-hand);font-size:16px;color:var(--seal);text-align:center}
 
-/* tier rows — unlit tubes that light up */
-.tiers{display:flex;flex-direction:column;gap:10px}
-.tier{--c:var(--S);position:relative;display:grid;grid-template-columns:64px 1fr auto;min-height:66px;border-radius:var(--r-md);background:var(--well);border:1px solid var(--line);transition:border-color .3s,box-shadow .3s,background .3s}
-.tier.t0{--c:var(--S)}.tier.t1{--c:var(--A)}.tier.t2{--c:var(--B)}.tier.t3{--c:var(--C)}.tier.t4{--c:var(--D)}
-.tl{font-family:var(--f-tier);font-size:32px;display:grid;place-items:center;color:var(--c);opacity:.28;border-right:1px solid var(--line);font-weight:400;transition:opacity .3s,text-shadow .3s}
-.tl.t0{--c:var(--S)}.tl.t1{--c:var(--A)}.tl.t2{--c:var(--B)}.tl.t3{--c:var(--C)}.tl.t4{--c:var(--D)}
-.tier.lit{border-color:color-mix(in srgb,var(--c) 55%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 25%,transparent),0 0 26px -10px var(--c);background:linear-gradient(90deg,color-mix(in srgb,var(--c) 14%,var(--well)),var(--well) 60%)}
-.tier.lit .tl{opacity:1;text-shadow:0 0 6px var(--c),0 0 18px var(--c)}
-.slot{display:flex;align-items:center;gap:8px;padding:9px 10px;min-width:0;flex-wrap:wrap}
-.slot .ph{color:var(--soft);font-size:14px}
+/* grades: sticky notes with handwritten letters */
+.tiers{display:flex;flex-direction:column;gap:6px}
+.tier{position:relative;display:grid;grid-template-columns:62px 1fr auto;min-height:68px;border-bottom:1px solid var(--line);padding:6px 0;align-items:center}
+.tl{--n:var(--nS);position:relative;width:52px;height:52px;display:grid;place-items:center;background:var(--n);font-family:var(--f-grade);font-size:34px;line-height:1;color:var(--ink);font-weight:600;box-shadow:1px 2px 3px rgba(70,55,30,.22);transform:rotate(-3deg)}
+.tl small{position:absolute;bottom:1px;left:0;right:0;text-align:center;font-family:var(--f-hand);font-size:10px;font-weight:400;color:var(--ink2);letter-spacing:.1em}
+.tl i{font-style:normal;transform:translateY(-5px)}
+.tl.t0{--n:var(--nS)}.tl.t1{--n:var(--nA);transform:rotate(2deg)}.tl.t2{--n:var(--nB);transform:rotate(-1.5deg)}.tl.t3{--n:var(--nC);transform:rotate(3deg)}.tl.t4{--n:var(--nD);transform:rotate(-2deg)}
+.slot{display:flex;align-items:center;gap:8px;padding:4px 6px;min-width:0;flex-wrap:wrap}
+.slot .ph{color:var(--ink3);font-size:13px;font-family:var(--f-hand)}
 .tier.tap{cursor:pointer}
-.tier.tgt{border-style:dashed;border-color:var(--gold)}
-.betbtn{align-self:center;margin-right:8px;width:40px;height:40px;border-radius:12px;border:1px solid var(--line2);background:transparent;font-size:18px;cursor:pointer;filter:grayscale(1);opacity:.5;transition:all .2s}
-.betbtn.on{filter:none;opacity:1;border-color:var(--A);box-shadow:0 0 18px -4px var(--A);background:rgba(255,138,43,.15);animation:jig .6s ease-in-out 2}
-.tier.betrow{box-shadow:0 0 0 2px rgba(255,138,43,.6),0 0 30px -8px var(--A)}
-.chip{border:0;border-radius:var(--r-sm);background:var(--box);color:var(--ink);padding:9px 15px;font-size:18px;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.35),0 8px 20px -10px rgba(0,0,0,.7);line-height:1.3;max-width:100%;overflow-wrap:anywhere;text-align:left;transition:transform .12s}
-.chip:active{transform:scale(.96)}
-.chip.placed{animation:popin .3s cubic-bezier(.3,1.7,.5,1)}
-.chip.sel{background:var(--gold);animation:jig .5s ease-in-out infinite;box-shadow:0 0 22px -4px var(--gold)}
-@keyframes jig{25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
-.pool{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;min-height:58px;padding:6px 0}
-.pool .chip{font-size:19px;padding:11px 18px}
-.hint{font-size:13px;color:var(--soft);text-align:center;margin:0}
-.hint.bet{color:var(--A)}
-.status{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
-.st{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:999px;background:var(--panel);border:1px solid var(--line);font-size:14px;color:var(--muted)}
-.st.ok{border-color:rgba(46,230,160,.5);color:var(--C);box-shadow:0 0 14px -6px var(--C)}
-.st.think{animation:breathe 1.4s ease-in-out infinite}
-@keyframes breathe{50%{opacity:.45}}
+.tier.tgt{background:rgba(185,131,79,.1)}
+.betbtn{margin-right:2px;width:44px;height:44px;border-radius:50%;border:1px dashed var(--ink3);background:transparent;font-family:var(--f-serif);font-weight:700;font-size:15px;color:var(--ink3);cursor:pointer;transition:all .2s ease}
+.betbtn.on{border:2px solid var(--seal);color:var(--seal);transform:rotate(-8deg);animation:stampin .35s ease-out}
+.chip{border:1px solid var(--ink);border-radius:3px;background:var(--card);color:var(--ink);padding:9px 14px;font-family:var(--f-serif);font-weight:500;font-size:17px;cursor:pointer;line-height:1.4;max-width:100%;overflow-wrap:anywhere;text-align:left;box-shadow:1px 2px 0 rgba(70,55,30,.12);transition:transform .15s ease}
+.chip:active{transform:scale(.97)}
+.chip.placed{animation:settle .35s ease both}
+.chip.sel{background:var(--caramel-l);border-style:dashed}
+.pool{display:flex;flex-wrap:wrap;gap:10px;min-height:60px;padding:8px 0}
+.pool .chip{font-size:18px;padding:12px 16px;min-height:50px}
+.hint{font-size:12px;color:var(--ink3);margin:0;letter-spacing:.04em;line-height:1.8}
+.hint.bet{color:var(--seal)}
+.status{display:flex;flex-wrap:wrap;gap:6px}
+.st{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border:1px solid var(--line);border-radius:3px;font-size:13px;color:var(--ink2)}
+.st.ok{border-color:var(--matcha);color:var(--matcha-d);background:var(--matcha-l)}
+.st.think{animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.5}}
 
-/* handoff */
-.hand{text-align:center;padding:30px 18px}
-.hand .face{font-size:88px;line-height:1;display:inline-block;margin-bottom:14px;animation:bob 1.6s ease-in-out infinite;filter:drop-shadow(0 10px 20px rgba(0,0,0,.5))}
-@keyframes bob{50%{transform:translateY(-8px) rotate(-4deg)}}
-.hand h2{font-size:34px;margin:6px 0 8px}
+/* excuse memo */
+.exbox{display:flex;flex-direction:column;gap:10px;border:1px dashed var(--caramel);border-radius:var(--r);padding:14px;background:rgba(239,220,192,.35)}
+.exbox .in{font-family:var(--f-hand);font-size:18px}
+.memo{position:relative;margin:4px 8px 0;padding:18px 18px 14px;background:#fffdf6;border:1px solid var(--line);box-shadow:2px 4px 10px -6px rgba(70,55,30,.5);transform:rotate(-1.2deg);animation:fadeup .6s ease both}
+.memo small{display:block;font-size:11px;color:var(--ink3);letter-spacing:.3em;margin-bottom:4px}
+.memo p{margin:0;font-family:var(--f-hand);font-size:21px;line-height:1.6;color:var(--ink)}
+.memo cite{display:block;text-align:right;font-style:normal;font-family:var(--f-hand);font-size:14px;color:var(--ink2);margin-top:4px}
+
+/* handoff: a film photo */
+.handoff{text-align:center;padding:32px 20px 26px}
+.photo{display:inline-block;background:#fff;padding:10px 10px 30px;box-shadow:0 8px 18px -10px rgba(70,55,30,.6);transform:rotate(-3deg);margin-bottom:18px;border:1px solid var(--line)}
+.photo .face{display:grid;place-items:center;width:132px;height:132px;font-size:76px;line-height:1;background:linear-gradient(160deg,#e9e3d3,#d9d2bf)}
+.photo small{display:block;margin-top:6px;font-family:var(--f-hand);font-size:14px;color:var(--ink2);margin-bottom:-22px}
+.handoff h2{font-size:30px;margin:4px 0 10px}
 
 /* reveal */
-.rvhead{text-align:center}
-.rvhead .who{font-size:20px;margin:0}
-.rvhead .who b{color:var(--gold)}
-.tier.rv{min-height:72px}
-.tier.hide .slot{justify-content:center}
-.tier .q{font-family:var(--f-tier);font-size:26px;color:var(--soft);animation:shake 1.4s ease-in-out infinite}
-@keyframes shake{20%{transform:rotate(-8deg)}40%{transform:rotate(8deg)}60%{transform:none}}
-.tier.fresh{animation:ignite .9s ease-out}
-.tier.fresh .tl{animation:flicker 1s linear 1}
-.tier.fresh.climax{animation:ignite 1.4s ease-out}
-@keyframes ignite{0%{transform:scale(1.06);filter:brightness(2.2)}25%{filter:brightness(.7)}40%{filter:brightness(1.8)}100%{transform:none;filter:none}}
-.tier.allhit{background:linear-gradient(90deg,rgba(46,230,160,.22),var(--well) 70%)}
-.tier.nohit{background:linear-gradient(90deg,rgba(255,84,112,.18),var(--well) 70%)}
-.chip.big{font-size:20px;cursor:default}
-.fresh .chip.big{animation:dropin .55s cubic-bezier(.2,1.6,.4,1)}
-@keyframes dropin{0%{transform:translateY(-40px) scale(.4);opacity:0}100%{transform:none;opacity:1}}
+.rvhead .who{font-family:var(--f-serif);font-weight:700;font-size:20px;margin:0;letter-spacing:.06em;text-align:center}
+.tier .q{font-family:var(--f-grade);font-size:28px;color:var(--ink3);padding-left:10px}
+.tier.fresh{animation:flip .8s cubic-bezier(.3,.7,.2,1) both;transform-origin:50% 0;backface-visibility:hidden}
+.tier.fresh.climax{animation-duration:1.1s}
+@keyframes flip{0%{transform:perspective(700px) rotateX(-88deg);opacity:.2}60%{opacity:1}100%{transform:perspective(700px) rotateX(0);opacity:1}}
+.tier.allhit{background:linear-gradient(90deg,rgba(124,143,104,.16),transparent 80%)}
+.chip.big{font-size:19px;cursor:default}
 .bubs{display:flex;flex-wrap:wrap;gap:5px;width:100%}
-.bub{position:relative;display:inline-flex;align-items:center;gap:3px;border-radius:999px;padding:2px 10px 2px 4px;font-size:13px;color:var(--ink);max-width:100%}
+.bub{position:relative;display:inline-flex;align-items:center;gap:4px;border-radius:2px;padding:1px 8px 1px 4px;font-size:12.5px;color:var(--ink);max-width:100%;border:1px solid var(--line);background:var(--card)}
 .bub i{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:7.5em}
-.bub .e{font-size:17px}
-.bub.hit{background:var(--hit);box-shadow:0 0 14px -4px var(--hit)}
-.bub.near{background:var(--near)}
-.bub.miss{background:#3a2f5c;color:var(--muted)}
-.bub.bet{outline:2px solid var(--A);outline-offset:1px}
-.bub .fire{font-size:14px;margin-left:2px}
-.fresh .bub{animation:popin .4s cubic-bezier(.3,1.7,.5,1) both;animation-delay:calc(var(--d) + .4s)}
-.stamp{position:absolute;right:10px;top:-13px;font-size:15px;padding:2px 12px;border-radius:10px;transform:rotate(5deg);background:var(--box);color:var(--ink);white-space:nowrap;box-shadow:0 6px 16px -6px rgba(0,0,0,.7)}
-.stamp.good{background:var(--C);box-shadow:0 0 20px -4px var(--C)}
-.stamp.bad{background:var(--miss);color:#fff;box-shadow:0 0 20px -4px var(--miss)}
-.fresh .stamp{animation:stampin .45s cubic-bezier(.2,1.6,.4,1) both;animation-delay:.75s}
-@keyframes stampin{0%{transform:rotate(-20deg) scale(2.6);opacity:0}100%{transform:rotate(5deg) scale(1);opacity:1}}
-@keyframes popin{0%{transform:scale(.3);opacity:0}100%{transform:none;opacity:1}}
-.cnt{font-size:12px;color:var(--muted);margin-left:2px}
+.bub .e{font-size:16px}
+.bub.hit{background:var(--matcha-l);border-color:var(--matcha)}
+.bub.near{background:var(--caramel-l);border-color:var(--caramel)}
+.bub.miss{color:var(--ink3)}
+.bub.star{border:1px solid var(--ink);font-weight:400}
+.bub .ya{font-family:var(--f-serif);font-weight:700;color:var(--seal);font-size:11px;border:1px solid var(--seal);border-radius:50%;width:16px;height:16px;display:inline-grid;place-items:center;margin-left:2px;line-height:1}
+.fresh .bub{animation:fadeup .45s ease both;animation-delay:calc(var(--d) + .55s)}
+.stamp{position:absolute;right:4px;top:-6px;font-family:var(--f-serif);font-weight:700;font-size:13px;letter-spacing:.14em;padding:3px 8px 3px 10px;border:2px solid var(--seal);color:var(--seal);border-radius:3px;transform:rotate(-7deg);background:rgba(251,248,240,.82);white-space:nowrap;opacity:.92}
+.stamp.good{border-color:var(--matcha-d);color:var(--matcha-d)}
+.stamp.plain{border-color:var(--ink2);color:var(--ink2)}
+.fresh .stamp{animation:stampin .5s cubic-bezier(.3,1.2,.4,1) both;animation-delay:.95s}
+@keyframes stampin{0%{transform:rotate(-7deg) scale(1.9);opacity:0}70%{opacity:1}100%{transform:rotate(-7deg) scale(1);opacity:.92}}
+@keyframes fadeup{0%{transform:translateY(8px);opacity:0}100%{transform:none;opacity:1}}
+@keyframes settle{0%{transform:translateY(-6px) rotate(-2deg);opacity:0}100%{transform:none;opacity:1}}
+.cnt{font-size:12px;color:var(--ink3);margin-left:2px}
+
+/* vote */
+.vote{display:flex;flex-direction:column;gap:12px}
+.vote h3{font-size:18px;line-height:1.6}
+.cands{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.cand{display:flex;align-items:center;gap:8px;min-height:56px;padding:8px 12px;border:1px solid var(--ink);border-radius:var(--r);background:var(--card);cursor:pointer;font-size:16px;font-weight:400;text-align:left}
+.cand .e{font-size:24px}
+.cand.on{background:var(--ink);color:var(--card)}
+.vlist{display:flex;flex-direction:column;gap:4px;margin:0;padding:0;list-style:none;font-size:14px}
+.vlist li{display:flex;gap:6px;align-items:center;flex-wrap:wrap;border-bottom:1px dashed var(--line);padding:4px 0}
+.vlist .ok{color:var(--matcha-d);font-weight:500}
 
 /* round result */
-.res{display:flex;flex-direction:column;gap:12px;animation:popin .45s cubic-bezier(.3,1.5,.5,1)}
-.banner{font-size:clamp(28px,8.4vw,38px);text-align:center;margin:0;color:#fff;text-shadow:0 0 18px rgba(255,61,127,.7);animation:boom .6s cubic-bezier(.2,1.7,.4,1)}
-@keyframes boom{0%{transform:scale(.2) rotate(-10deg)}100%{transform:none}}
-.x2tag{margin:0;text-align:center;color:var(--gold);font-family:var(--f-num);letter-spacing:.06em;font-size:14px}
-.quip{text-align:center;margin:0;color:var(--muted);font-size:16px}
-.sur{margin:0;padding:10px 14px;border-radius:var(--r-md);background:var(--well);border:1px dashed var(--line2);font-size:15px;text-align:center}
-.sur b{font-family:var(--f-tier);font-size:18px}
-.tc0{color:var(--S)}.tc1{color:var(--A)}.tc2{color:var(--B)}.tc3{color:var(--C)}.tc4{color:var(--D)}
-.line{display:grid;grid-template-columns:34px minmax(0,1fr) 58px;gap:10px;align-items:center}
-.line .e{font-size:24px}
-.line .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar{height:10px;border-radius:99px;background:var(--well);overflow:hidden;margin-top:4px}
-.bar i{display:block;height:100%;background:var(--C);width:0;transition:width 1.1s cubic-bezier(.2,.9,.3,1);box-shadow:0 0 12px var(--C)}
-.pts{font-family:var(--f-num);font-size:20px;text-align:right;font-variant-numeric:tabular-nums;color:var(--gold)}
-.badge{display:inline-block;font-size:12px;background:var(--S);color:#fff;border-radius:6px;padding:0 6px;margin-left:6px;vertical-align:2px}
-.badge.fireb{background:var(--A);color:var(--ink)}
-.badge.lose{background:#3a2f5c;color:var(--muted)}
-.board{display:flex;flex-direction:column;gap:6px}
-.brow{display:grid;grid-template-columns:30px 30px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 12px;border-radius:var(--r-sm);background:var(--well)}
-.brow .rk{font-family:var(--f-num);text-align:center;color:var(--muted)}
-.brow .sc{font-family:var(--f-num);font-variant-numeric:tabular-nums}
-.brow .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.brow.me{box-shadow:0 0 0 1px var(--S),0 0 18px -8px var(--S)}
+.res{display:flex;flex-direction:column;gap:14px;animation:fadeup .6s ease both}
+.banner{font-family:var(--f-serif);font-weight:700;font-size:clamp(26px,8vw,34px);margin:0;letter-spacing:.1em}
+.x2tag{margin:0;color:var(--seal);font-size:13px;letter-spacing:.2em}
+.quip{margin:0;color:var(--ink2);font-family:var(--f-hand);font-size:17px}
+.sur{margin:0;padding:10px 14px;border-left:3px solid var(--seal);background:rgba(179,65,45,.06);font-size:14.5px;line-height:1.8}
+.sur b{font-family:var(--f-grade);font-size:22px;font-weight:600;padding:0 3px}
+.line{display:grid;grid-template-columns:32px minmax(0,1fr) 54px;gap:10px;align-items:center}
+.line .e{font-size:22px}
+.line .nm{min-width:0;font-weight:400;font-size:15px}
+.bar{height:3px;background:var(--paper2);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--matcha);width:0;transition:width 1.2s cubic-bezier(.2,.9,.3,1)}
+.bar i.s{background:var(--caramel)}
+.pts{font-family:var(--f-grade);font-size:26px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums;line-height:1}
+.badge{display:inline-block;font-size:11px;border:1px solid var(--seal);color:var(--seal);border-radius:2px;padding:0 5px;margin-left:6px;vertical-align:1px;letter-spacing:.04em;white-space:nowrap}
+.badge.lose{border-color:var(--ink3);color:var(--ink3)}
+.badge.g{border-color:var(--matcha-d);color:var(--matcha-d)}
+.board{display:flex;flex-direction:column}
+.brow{display:grid;grid-template-columns:26px 28px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 2px;border-bottom:1px dashed var(--line)}
+.brow .rk{font-family:var(--f-grade);font-size:22px;font-weight:600;color:var(--ink2);line-height:1}
+.brow .sc{font-family:var(--f-grade);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1}
+.brow .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:400}
+.brow.me .nm{border-bottom:2px solid var(--caramel);justify-self:start}
 
 /* reactions */
-.rx{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:6px;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(transparent,rgba(17,11,34,.94) 45%);z-index:20;pointer-events:none}
-.rx button{pointer-events:auto;font-size:25px;width:48px;height:48px;border-radius:14px;border:1px solid var(--line2);background:var(--panel);cursor:pointer;transition:transform .1s}
-.rx button:active{transform:scale(.82)}
+.rx{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:8px;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(243,238,226,0),var(--paper) 45%);z-index:20;pointer-events:none}
+.rx button{pointer-events:auto;font-size:22px;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--card);cursor:pointer;transition:transform .15s ease}
+.rx button:active{transform:scale(.88)}
 #fx{position:fixed;inset:0;pointer-events:none;z-index:30;overflow:hidden}
-.fl{position:absolute;bottom:76px;font-size:42px;animation:rise 2.6s ease-out forwards;display:flex;flex-direction:column;align-items:center}
-.fl small{font-size:12px;background:var(--panel);color:var(--text);border:1px solid var(--line2);border-radius:6px;padding:0 6px;font-family:var(--f-ui)}
-@keyframes rise{0%{transform:translateY(0) scale(.4);opacity:0}15%{transform:translateY(-30px) scale(1.2);opacity:1}100%{transform:translateY(-62vh) translateX(var(--dx)) scale(1);opacity:0}}
+.fl{position:absolute;bottom:76px;font-size:36px;animation:rise 3s ease-out forwards;display:flex;flex-direction:column;align-items:center}
+.fl small{font-size:12px;background:var(--card);color:var(--ink2);border:1px solid var(--line);border-radius:2px;padding:0 6px;font-family:var(--f-hand)}
+@keyframes rise{0%{transform:translateY(0);opacity:0}15%{transform:translateY(-24px);opacity:1}100%{transform:translateY(-58vh) translateX(var(--dx));opacity:0}}
 #cf{position:fixed;inset:0;pointer-events:none;z-index:29;width:100%;height:100%}
 
-/* round splash */
-#splash{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(10,6,22,.9);padding:24px;backdrop-filter:blur(3px)}
-#splash .sw{text-align:center;max-width:480px;animation:boom .55s cubic-bezier(.2,1.6,.4,1)}
-#splash .r{font-family:var(--f-num);color:var(--gold);font-size:20px;letter-spacing:.1em;text-shadow:0 0 16px rgba(255,208,46,.6)}
-#splash .s{font-size:21px;margin:12px 0 16px;color:var(--text)}
-#splash .s .e{font-size:68px;display:block;animation:bob 1.2s ease-in-out infinite}
-#splash .tp{display:inline-block;background:var(--box);color:var(--ink);border-radius:18px;padding:14px 22px;font-size:clamp(25px,7.4vw,36px);transform:rotate(-2deg);box-shadow:0 0 0 1px #fff,0 0 50px -6px var(--S)}
-#splash .x2big{margin-top:16px;font-size:20px;color:var(--gold);text-shadow:0 0 16px var(--gold);animation:pulse .6s ease-in-out infinite}
+/* round title page */
+#splash{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(243,238,226,.97);padding:28px;cursor:pointer}
+#splash .sw{display:grid;grid-template-columns:auto 1fr;gap:22px;max-width:440px;width:100%;animation:fadeup .6s ease both;text-align:left}
+#splash .r{writing-mode:vertical-rl;font-family:var(--f-serif);font-weight:700;font-size:30px;letter-spacing:.3em;border-right:1px solid var(--ink);padding-right:14px}
+#splash .s{font-size:15px;color:var(--ink2);margin:0 0 12px;letter-spacing:.08em}
+#splash .s .e{font-size:44px;display:block;line-height:1.3}
+#splash .s b{color:var(--ink);font-weight:500}
+#splash .tp{font-family:var(--f-serif);font-weight:700;font-size:clamp(25px,7.6vw,34px);line-height:1.5;letter-spacing:.06em}
+#splash .evs{margin-top:18px;display:flex;gap:10px;align-items:flex-start}
+#splash .evs .seal{flex:0 0 auto}
+#splash .evs p{margin:0;font-family:var(--f-hand);font-size:16px;color:var(--ink2);line-height:1.6}
+.seal{display:inline-block;border:2px solid var(--seal);color:var(--seal);font-family:var(--f-serif);font-weight:700;font-size:14px;letter-spacing:.16em;padding:4px 6px 4px 9px;border-radius:3px;transform:rotate(-5deg);animation:stampin .5s cubic-bezier(.3,1.2,.4,1) .5s both}
 
 /* awards */
-.aw{display:grid;grid-template-columns:60px 1fr;gap:12px;align-items:center;animation:awin .7s cubic-bezier(.2,1.5,.4,1)}
-@keyframes awin{0%{transform:scale(.3) rotate(-8deg);opacity:0}100%{transform:none;opacity:1}}
-.aw .ic{font-size:46px;text-align:center;filter:drop-shadow(0 0 14px rgba(255,208,46,.45))}
-.aw h3{font-size:20px;color:var(--gold)}
-.aw .who{font-size:19px}
-.aw p{margin:0;font-size:14px;color:var(--muted)}
-.drum{text-align:center;font-size:20px;color:var(--muted);animation:breathe .6s ease-in-out infinite}
-.help h3{margin:14px 0 4px;font-size:18px;color:var(--gold)}
-.help p,.help li{margin:0 0 6px;font-size:15px;color:var(--text)}
+.aw{display:grid;grid-template-columns:54px 1fr;gap:14px;align-items:center;animation:fadeup .7s ease both}
+.aw .ic{display:grid;place-items:center;width:50px;height:50px;border:2px solid var(--seal);border-radius:50%;color:var(--seal);font-family:var(--f-serif);font-weight:700;font-size:24px;transform:rotate(-8deg);animation:stampin .5s cubic-bezier(.3,1.2,.4,1) .2s both}
+.aw h3{font-size:18px}
+.aw .who{font-size:17px;font-weight:400}
+.aw p{margin:0;font-size:13px;color:var(--ink2)}
+.drum{font-family:var(--f-hand);font-size:17px;color:var(--ink2);animation:breathe 1.6s ease-in-out infinite;margin:0}
+.pagehead{padding:18px 0 0}
+.pagehead h1{font-size:34px;letter-spacing:.2em}
+.pagehead p{margin:6px 0 0;color:var(--ink2);letter-spacing:.14em;font-size:14px}
+
+/* share card */
+.share{position:relative;background:#fffdf7;border:1px solid var(--line);padding:34px 24px 22px;box-shadow:0 18px 34px -22px rgba(70,55,30,.7);display:flex;flex-direction:column;gap:16px}
+.share .dt{font-size:11px;letter-spacing:.3em;color:var(--ink3);margin:0}
+.share h2{font-size:30px;letter-spacing:.24em;line-height:1.2}
+.share .sub{margin:2px 0 0;font-family:var(--f-hand);color:var(--ink2);font-size:15px}
+.share .hd{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;border-bottom:1px solid var(--ink);padding-bottom:12px}
+.share .win{position:relative;display:flex;gap:16px;align-items:center}
+.share .win .photo{margin:0;transform:rotate(-4deg);padding:7px 7px 22px;flex:0 0 auto}
+.share .win .photo .face{width:86px;height:86px;font-size:50px}
+.share .win h3{font-size:22px;margin:2px 0}
+.share .win p{margin:0;font-size:13px;color:var(--ink2)}
+.share .win .seal{position:absolute;right:0;top:-6px;animation:none}
+.share ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:2px 18px}
+.share ol li{display:grid;grid-template-columns:20px 1fr auto;gap:6px;align-items:baseline;border-bottom:1px dashed var(--line);padding:4px 0;font-size:14px;min-width:0}
+.share ol li span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.share ol li b{font-family:var(--f-grade);font-size:20px;font-weight:600;line-height:1}
+.share ol li i{font-style:normal;font-family:var(--f-grade);font-size:17px;color:var(--ink3)}
+.share .aws{display:flex;flex-direction:column;gap:5px;margin:0;padding:0;list-style:none;font-size:14px}
+.share .aws li{display:flex;gap:8px;align-items:baseline}
+.share .aws b{flex:0 0 auto;font-family:var(--f-serif);font-weight:700;color:var(--seal);font-size:13px;letter-spacing:.1em}
+.share .hl{margin:0;padding:10px 12px;background:var(--paper);font-size:13.5px;line-height:1.8}
+.share .hl small{display:block;font-size:11px;letter-spacing:.3em;color:var(--ink3)}
+.share .qt{margin:0;font-family:var(--f-hand);font-size:18px;line-height:1.6;transform:rotate(-1deg)}
+.share .qt cite{display:block;font-style:normal;font-size:13px;color:var(--ink2);text-align:right}
+.share .ft{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);letter-spacing:.14em;margin:0;border-top:1px solid var(--line);padding-top:10px}
+.share .sc-big{font-family:var(--f-grade);font-size:30px;font-weight:600;line-height:1}
+
+.help h3{margin:18px 0 6px;font-size:16px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.help p,.help li{margin:0 0 6px;font-size:14.5px}
 .help ul{padding-left:20px;margin:0}
-.cl{display:flex;align-items:flex-start;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.cl{display:flex;align-items:flex-start;gap:8px;padding:10px 0;border-bottom:1px dashed var(--line)}
 .cl:last-child{border-bottom:0}
 .cl div{flex:1;min-width:0}
-.cl b{display:block}
-.cl small{color:var(--muted);overflow-wrap:anywhere}
-.empty{text-align:center;color:var(--muted);padding:10px 0;margin:0}
+.cl b{display:block;font-family:var(--f-serif);font-weight:700}
+.cl small{color:var(--ink2);overflow-wrap:anywhere}
+.empty{color:var(--ink2);padding:10px 0;margin:0;font-family:var(--f-hand)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 
@@ -495,7 +528,6 @@ tw|機場最期待的瞬間|出發,買免稅,登機,起飛,飛機餐,落地,領�
 tw|台灣最經典的聲音|垃圾車音樂,廟會鞭炮,夜市叫賣,便利商店叮咚,機車引擎,雞鳴,地震警報,颱風雨聲
 tw|騎機車最怕|下雨,紅燈太長,爆胎,沒油,忘記停哪,被開罰單,安全帽被拿走,大貨車
 tw|最常去的地方|便利商店,捷運站,夜市,百貨公司,公園,咖啡廳,健身房,家
-tw|最想住的城市|台北,新北,台中,台南,高雄,花蓮,宜蘭,新竹
 tw|台灣最強早餐|燒餅油條,蘿蔔糕,飯糰,蛋餅,鹹粥,碗粿,虱目魚粥,牛肉湯
 tw|最實用的台語|夭壽,好呷,歹勢,厚工,足讚,莫法度,哩賀,緊張
 tw|最想看的台灣慶典|元宵燈會,媽祖遶境,鹽水蜂炮,平溪天燈,端午划龍舟,中元搶孤,跨年煙火,豐年祭
@@ -543,8 +575,214 @@ food|最強的飯店早餐|現煎蛋,鬆餅,煙燻鮭魚,炒麵,咖哩,麵包,�
 food|最受歡迎的家常菜|番茄炒蛋,三杯雞,滷肉,炒青菜,麻婆豆腐,糖醋排骨,蒸魚,玉米濃湯
 tw|最強的台灣水果季|芒果季,荔枝季,西瓜季,草莓季,柚子季,鳳梨季,釋迦季,蓮霧季
 tw|台灣人最常說的客套話|改天約,下次請你,有空來坐,不用啦,我請,好啊好啊,再聯絡,吃飽沒
-tw|最有台灣味的店|雜貨店,檳榔攤,早餐店,廟口小吃,夾娃娃機店,手搖飲店,熱炒店,自助餐`;
-const CATS = {food:'美食',tw:'台灣日常',life:'生活',fun:'娛樂',love:'戀愛',work:'學校職場',wild:'腦洞',debate:'爭議',kid:'童年'};
+tw|最有台灣味的店|雜貨店,檳榔攤,早餐店,廟口小吃,夾娃娃機店,手搖飲店,熱炒店,自助餐
+joy|最幸福的小瞬間|鬧鐘響前自然醒,發現明天放假,外送提早到,冷氣房蓋厚被,洗完澡躺上床,咖啡第一口,下班剛好不塞車,發票中兩百,喜歡的人秒回
+joy|最療癒的家中角落|床,沙發,浴缸,陽台,書桌,廚房,地板,窗邊,衣櫃裡
+joy|一個人的時候最享受|一個人吃火鍋,一個人看電影,一個人旅行,一個人唱歌,一個人逛超市,一個人散步,一個人喝酒,一個人吃吃到飽
+joy|最舒服的天氣|微涼的秋天,下雨的午後,冬天出太陽,起霧的清晨,颱風前的風,夏夜晚風,乾冷的冬天,春天的毛毛雨
+joy|最讓人安心的味道|媽媽的洗衣精,曬過的棉被,書店,咖啡店,雨後柏油路,舊書,剛煮好的飯,嬰兒香,中藥行
+joy|下班後的小儀式|喝一罐啤酒,泡澡,追一集劇,買一杯手搖,散步回家,滑手機放空,煮一頓飯,馬上換睡衣,去健身房
+joy|最值得花錢的小奢侈|好一點的床墊,現磨咖啡,計程車回家,鮮花,按摩,好吃的甜點,正版訂閱,貴一點的衛生紙,乾洗
+joy|週末早晨最理想的開始|睡到自然醒,早起去市場,出門吃早午餐,在床上滑手機,晨跑,賴床聽雨,煮一壺咖啡,打開窗戶打掃
+joy|最喜歡的雨天場景|窩在家聽雨,咖啡廳靠窗,撐傘散步,公車上看窗外,下雨天睡午覺,雨停後的空氣,踩水坑,雨天吃火鍋
+joy|讓心情變好的最快方法|吃甜的,睡一覺,出門走走,跟朋友抱怨,聽大聲的音樂,洗頭,買東西,看貓狗影片,大掃除
+joy|最喜歡的便利商店時刻|半夜買宵夜,新品上架,集點換到東西,夏天進門吹冷氣,第二件六折,店員記得你,加熱便當的味道,咖啡買一送一
+joy|最棒的睡眠|午睡半小時,週末睡到中午,下雨天睡覺,回籠覺,旅行飯店的床,沙發上睡著,通勤時睡著,冷氣房午覺
+joy|最想收藏的小東西|明信片,紙膠帶,馬克杯,扭蛋,票根,底片照片,香氛蠟燭,襪子,書籤
+joy|最愛的生活噪音|洗衣機運轉,電鍋跳起來,咖啡機,貓踩鍵盤,隔壁炒菜,冷氣低鳴,翻書聲,電風扇
+joy|最有成就感的小事|把冰箱清空,回完所有訊息,早起成功,把書看完,準時下班,存到錢,沒遲到,衣服全摺好,手機電池撐一整天
+joy|最想擁有的慢生活|種一盆植物,每天手沖咖啡,寫手帳,散步一小時,自己做便當,不看手機的早晨,每週讀一本書,學做麵包
+joy|最讓人放鬆的地方|書店,咖啡廳,公園,溫泉,美術館,海邊,圖書館,老街,超市
+joy|最喜歡的一杯|熱拿鐵,冰美式,熱可可,無糖綠茶,溫開水,氣泡水,鮮奶茶,啤酒,熱豆漿
+joy|最棒的回家路|騎腳踏車吹風,走路聽音樂,公車最後一排,捷運有位子坐,邊走邊吃,繞去買晚餐,有人來接,在車上睡著
+joy|最想養在家裡的植物|龜背芋,多肉,仙人掌,空氣鳳梨,薄荷,小番茄,蘭花,黃金葛,什麼都養不活
+joy|最喜歡的早餐配置|吐司加咖啡,飯糰加豆漿,蛋餅加奶茶,只喝咖啡,水果優格,清粥小菜,便利商店三明治,不吃早餐
+joy|最療癒的家事|洗碗,摺衣服,擦桌子,曬棉被,整理書櫃,刷浴室,燙衣服,倒垃圾,通通不療癒
+joy|收到會偷偷開心的訊息|你到了沒我來接你,這個讓我想到你,薪水入帳,包裹已送達,明天不用開會,要不要吃宵夜,你今天很好看,我請客
+joy|最喜歡的書店角落|新書平台,雜誌區,文具區,繪本區,旅遊書區,漫畫區,咖啡座,特價花車
+joy|最喜歡的光線|清晨斜射的光,黃昏的橘光,檯燈的黃光,雨天的灰光,蠟燭,百葉窗的影子,夜晚的霓虹,正午的大太陽
+joy|最適合發呆的地方|公車上,浴室,陽台,辦公桌前,公園長椅,馬桶上,床上,咖啡廳,便利商店座位區
+joy|最有儀式感的事|買花回家,寫手帳,好好擺盤,點香氛蠟燭,穿好看的睡衣,手沖咖啡,寫明信片,每年同一天拍照
+joy|最想重溫的感覺|第一次領薪水,放暑假的第一天,收到情書,考完試的下午,搬新家,第一次出國,生日被記得,熬夜後看到日出
+joy|最讓人滿足的聲音|可樂開罐,撕開包裝膜,鍵盤敲擊,踩落葉,蓋印章,氣泡紙,打開洋芋片,筆寫在紙上
+joy|散步時最喜歡遇到的|別人家的貓,好看的招牌,沒人的小巷,麵包店的香味,夕陽,老房子,街頭藝人,認識的鄰居,賣花的攤子
+joy|最喜歡的甜點時間|下午三點,晚餐後,半夜,早餐就吃,心情不好時,慶祝的時候,咖啡廳裡,邊追劇邊吃
+joy|最想擁有的一天假期|什麼都不做,去海邊,泡溫泉,待在咖啡廳,整理房間,當天來回小旅行,跟朋友吃吃喝喝,睡一整天
+joy|最喜歡的季節限定|春天的草莓,夏天的芒果冰,秋天的栗子,冬天的火鍋,中秋的柚子,聖誕節的熱紅酒,夏天的西瓜,冬天的草莓大福
+joy|讓房間變舒服最重要的|燈光,香味,床單,窗簾,地毯,植物,音樂,收納,沒有雜物
+joy|最喜歡的手寫物|明信片,手帳,便利貼留言,生日卡片,購物清單,情書,日記,課本塗鴉,餐廳留言本
+joy|最容易感到被愛的時刻|有人幫你留飯,記得你不吃什麼,下雨來接你,生病時被照顧,被認真聽完,收到手寫卡片,有人等你回家,被偷偷多夾一塊肉
+love|第一次約會最理想的地點|咖啡廳,電影院,夜市,美術館,居酒屋,動物園,河濱散步,書店,KTV
+love|最讓人心動的穿搭|白襯衫,帽T,西裝,運動服,寬褲,眼鏡,圍巾,牛仔外套,全身黑
+love|最加分的小動作|走路走外側,記得你說過的話,幫忙開瓶蓋,自然地分享食物,認真看著你說話,主動訂位,傳到家訊息,把最後一口留給你
+love|最扣分的行為|對店員沒禮貌,一直看手機,遲到不說,太愛講自己,吃飯很吵,不洗手,愛比較前任,已讀很久才回
+love|訊息多久沒回會生氣|十分鐘,一小時,三小時,半天,一天,三天,不會生氣,看對方是誰
+love|最能接受的戀愛形式|遠距離,辦公室戀情,姊弟戀,網友變情侶,閃婚,不結婚一直交往,週末情侶,分房睡
+love|情侶之間最該公開的|手機密碼,薪水,前任數量,行蹤定位,存款,聊天紀錄,社群帳密,什麼都不必
+love|吵架時最好的做法|馬上講清楚,先冷靜一晚,寫長訊息,抱一下,出去走走,找朋友評理,假裝沒事,先道歉再說
+love|最浪漫的禮物|手寫信,花,項鍊,親手做的料理,一趟旅行,合照相本,對方提過一次的小東西,現金,演唱會門票
+love|曖昧時最讓人暈船的|每天說早安晚安,只對你特別,記得你的小事,深夜聊很久,約你去看海,幫你取綽號,借外套,限動只給你看
+love|交往後最重要的事|溝通,信任,個人空間,一起吃飯,金錢觀,家人相處,生活習慣,幽默感,親密感
+love|最能看出合不合的旅行瞬間|迷路,行李誰拿,行程誰排,吃到雷店,趕不上車,預算超支,早起,拍照,下雨改行程
+love|最想一起完成的事|看日出,養一隻寵物,一起下廚,環島,搬家佈置,看完一部長劇,去演唱會,拼一千片拼圖,存一筆旅費
+love|最難啟齒的話|我喜歡你,我們分手吧,對不起,我需要空間,我吃醋了,借我錢,我其實不喜歡這個禮物,我想結婚
+love|理想的情人節|在家煮飯,高級餐廳,當平常日過,一日小旅行,看電影,交換手寫信,去夜市,各過各的
+love|最想知道另一半的|手機裡的相簿,搜尋紀錄,跟朋友怎麼說你,上一段為什麼分手,存款,真正的喜好,最討厭你哪一點,夢想
+love|最容易吃醋的情境|跟異性單獨吃飯,前任按讚,幫別人拍照很用心,同事深夜傳訊息,誇別人好看,聚會不帶你,追蹤很多網美帥哥,跟前任還是朋友
+love|同居最容易吵的事|誰倒垃圾,冷氣幾度,東西亂放,洗碗時機,馬桶蓋,睡覺時間,誰關燈,帶朋友回家,追劇偷看進度
+love|最好的告白時機|第三次約會,認識三個月,喝了一點酒,旅行途中,對方生日,跨年倒數,感覺對了就說,等對方先說
+love|對另一半朋友的看法最在意|喜不喜歡你,異性好友多不多,愛不愛約喝酒,會不會亂說話,佔多少時間,有沒有前任在裡面,要不要一起玩,都不在意
+love|單身最爽的事|錢都自己花,不用報備,一個人睡大床,想去哪就去哪,不用過節,不用猜心,可以亂吃,追劇不用等人
+love|最想收到的稱讚|你很好聊,你很好看,跟你在一起很放鬆,你很聰明,你很溫柔,你很好笑,你很可靠,你聞起來很香,你很特別
+love|最不想在約會聽到的話|隨便都可以,我前任也喜歡這個,你決定就好,我媽說,AA到個位數,我等等還有約,你跟照片不太一樣,我其實很忙
+love|愛情裡最重要的相似|飲食習慣,作息,金錢觀,幽默感,追劇口味,整潔程度,對未來的想像,社交需求,政治以外的價值觀
+love|分手後最該做的|刪光照片,出國走走,大吃一頓,換髮型,馬上認識新的人,好好哭一場,跟朋友喝酒,專心工作,當朋友
+love|最能接受的另一半興趣|打電動,追星,健身,釣魚,露營,收集公仔,打麻將,重機,看動漫
+love|結婚最重要的條件|愛,經濟穩定,個性合,家人支持,生活習慣,價值觀,想不想生小孩,住哪裡,時機
+love|最甜的日常|一起買菜,睡前聊天,幫對方吹頭髮,牽手散步,一起賴床,分一副耳機,互相餵食,一起刷牙
+love|遠距離最重要的|每天視訊,信任,定期見面,有共同目標,各自有生活,寄東西給對方,報備行程,有結束的日期
+love|最浪漫的散步路線|河堤,海邊,老街巷弄,校園,夜市,公園,山上步道,天橋,回家的那條路
+love|最想被怎麼安慰|安靜陪著,抱一下,帶去吃好吃的,幫忙罵對方,給建議,逗你笑,傳長訊息,讓你自己靜一靜
+love|另一半最該會的家事|煮飯,洗碗,洗衣服,倒垃圾,修東西,掃廁所,換燈泡,記帳,都不會也沒關係
+love|交友軟體最在意的|照片,自我介紹,興趣,身高,職業,回訊息速度,第一句話,共同好友,距離
+love|最想跟另一半去的地方|京都,首爾,巴黎,冰島,東京迪士尼,花蓮,曼谷,北海道,哪裡都好
+love|最難忘的戀愛場景|下雨共撐一把傘,機車後座,捷運月台道別,深夜電話,畢業那天,演唱會合唱,煙火下,便利商店門口
+love|最容易暴露真面目的時刻|喝醉,肚子餓,塞車,輸掉遊戲,排隊很久,被吵醒,迷路,被拒絕,趕時間
+work|最想擁有的上班型態|完全遠端,週休三日,彈性上下班,一週進辦公室兩天,自己當老闆,接案,做四休三但工時長,朝九晚五準時下班
+work|最受不了的同事類型|愛甩鍋,愛邀功,訊息不回,愛抱怨,開會遲到,吃東西很大聲,過度熱情,什麼都要問,愛已讀
+work|主管最重要的特質|會扛責任,講話清楚,不情緒化,願意教,不臨時交辦,會爭取加薪,不半夜傳訊息,信任下屬,會請飲料
+work|離職最常見的真正原因|薪水太低,主管太雷,學不到東西,同事難相處,通勤太遠,加班太多,找到更好的,單純累了,公司沒未來
+work|上班最能提神的|咖啡,手搖飲,午睡,零食,聽音樂,出去走一圈,跟同事聊八卦,看存款,想到要下班
+work|最討厭的會議|沒有結論的會,臨下班的會,可以用訊息講的會,一開兩小時,人太多的會,週一早上的會,午餐會議,要開鏡頭的會
+work|工作群組最怕看到|收到請回覆,下班後的標記,老闆的長文,明天早上開會,這個誰負責,有空嗎,週末方便嗎,已讀沒人回
+work|面試最加分的表現|準時,有做功課,問好問題,談吐自然,作品集,穿著得體,誠實說不會,有笑容,敢談薪水
+work|最想刪掉的職場文化|加班等於認真,年資論輩,尾牙表演,下班聚餐,已讀要秒回,報告要漂亮,請假要理由,早到晚走,敬酒
+work|午餐最理想的吃法|自己帶便當,跟同事一起吃,一個人安靜吃,邊工作邊吃,外送,出去走走順便吃,只喝咖啡,公司附餐
+work|最能接受的加班理由|真的做不完,加班費很好,專案上線前,幫同事救火,老闆請晚餐,自己想做更好,客戶臨時改,都不能接受
+work|最想得到的職場超能力|一秒寫完報告,讀懂主管的心,開會隱形,郵件自動回,不會累,記得所有人名字,簡報不緊張,準時下班結界
+work|薪水以外最重要的|同事,主管,通勤時間,成長空間,工作內容,公司名氣,穩定性,彈性,假多
+work|下班後最不想做的事|回工作訊息,公司聚餐,進修上課,加班,跟同事唱歌,想明天的事,通勤,寫日報
+work|最尷尬的辦公室瞬間|電梯遇到大老闆,叫錯主管名字,視訊忘記關麥克風,傳錯群組,午睡流口水,打嗝被聽到,會議中肚子叫,薪水單被看到
+work|新人最該先學會的|問問題,做筆記,記住同事名字,看懂氣氛,準時,回報進度,拒絕,訂便當,找到影印紙
+work|最想在履歷上寫的專長|裝忙,精準踩線打卡,把簡單的事講得很難,秒回收到,會議中點頭,訂飲料,寫看起來很厲害的週報,臨危不亂
+work|請假最爽的用途|出國,平日看電影,睡一整天,去辦事不用排隊,平日泡湯,陪家人,追劇,什麼都不做,去面試
+work|遠端工作最大的好處|不用通勤,可以穿睡衣,午睡,省錢,不用社交,自己煮飯,隨時可以洗衣服,邊開會邊做別的事
+work|遠端工作最大的壞處|公私不分,沒人講話,一直吃,容易分心,電費變貴,更容易加班,溝通變慢,忘記今天星期幾
+work|最想問老闆的一句話|什麼時候加薪,你知道我在做什麼嗎,這個會議有必要嗎,為什麼是我,可以遠端嗎,你下班都在幹嘛,公司賺多少,我可以說實話嗎
+work|上班最常說的謊|我在路上了,快好了,我沒有意見,好的沒問題,我有收到,這很簡單,我不累,下次一定,信剛剛才看到
+work|最想要的辦公桌配備|人體工學椅,雙螢幕,升降桌,小冰箱,盆栽,好鍵盤,隔板,小電扇,零食抽屜
+work|職場最實用的技能|做簡報,寫信,說話,試算表,拒絕別人,向上管理,時間管理,外語,裝懂
+work|最理想的通勤方式|走路十分鐘,騎腳踏車,捷運有位子,自己開車,機車,住公司樓上,公司交通車,在家上班
+work|部門聚餐要訂哪間|燒肉,火鍋,熱炒,吃到飽,居酒屋,義式餐廳,韓式,老闆請什麼就吃什麼,不想去
+work|最容易爆炸的工作時刻|檔案沒存,臨時改需求,被搶功,開會被點名,電腦更新,下班前被交辦,客戶已讀,列印機卡紙,系統當機
+work|收到最開心的工作訊息|會議取消,提早下班,加薪通知,明天放假,專案結束,客戶說很滿意,老闆出差,飲料到了,獎金入帳
+work|最想轉行做的事|開咖啡店,當YouTuber,開民宿,當農夫,做甜點,寫小說,當全職旅人,開書店,什麼都不做
+work|星期一最需要的|咖啡,勇氣,晚一點的會議,好吃的午餐,沒有新需求,同事請假少一點,好天氣,耳機,奇蹟
+work|最難回的工作訊息|在嗎,方便通話嗎,有空聊一下嗎,這個再想一下,你覺得呢,可以幫個忙嗎,這禮拜能好嗎,老闆找你
+work|下班時間到了但主管還在|直接走,再坐十分鐘,假裝很忙,問有沒有要幫忙,傳訊息給朋友抱怨,去廁所躲,打招呼再走,等他先走
+work|辦公室零食櫃最該有的|洋芋片,巧克力,泡麵,堅果,餅乾,軟糖,茶包,即溶咖啡,水果
+work|最理想的公司旅遊|國外五天,國內兩天一夜,直接發錢,一日遊,泡溫泉,露營,不要辦,可以帶家人
+travel|最想去的旅行型態|自由行,跟團,背包客,郵輪,自駕,打工度假,一個人流浪,住一個城市一個月,說走就走
+travel|出國最期待的事|吃當地食物,逛超市,買藥妝,拍照,住好飯店,看風景,什麼都不用想,逛便利商店,搭飛機
+travel|行李一定會帶的|泡麵,自己的枕頭,轉接頭,常備藥,拖鞋,保溫瓶,行動電源,暈車藥,延長線
+travel|旅伴最重要的條件|不遲到,會看地圖,吃東西不挑,錢算得清楚,不抱怨,會拍照,體力好,作息合,不會一直滑手機
+travel|最崩潰的旅行意外|護照不見,班機取消,行李沒到,訂錯日期,下大雨,生病,手機沒電,跟旅伴吵架,錢包被偷
+travel|最理想的住宿|設計旅店,溫泉旅館,青年旅館,民宿,五星飯店,露營車,膠囊旅館,朋友家,機場過夜
+travel|旅行中最花錢也甘願的|吃,住,買東西,門票體驗,交通升等,伴手禮,按摩,拍照服裝,咖啡廳
+travel|最想去的日本城市|東京,京都,大阪,北海道,沖繩,福岡,金澤,奈良,鎌倉
+travel|最想嘗試的交通工具|臥鋪火車,郵輪,熱氣球,直升機,重機,露營車,渡輪,纜車,觀光巴士二樓
+travel|旅行的早晨最想|睡到自然醒,早起看日出,吃飯店早餐,逛早市,晨跑,泡湯,喝咖啡發呆,趕第一班車
+travel|拍照最重要的|人要好看,風景要美,要有故事,光線,構圖,不要有路人,拍美食,拍合照,根本不拍
+travel|最難忍受的旅伴行為|一直遲到,什麼都說隨便,只想打卡,一直喊累,太會殺價,行程排太滿,一直找廁所,不吃當地食物,錢算太細
+travel|出國最容易失控的購物|零食,藥妝,衣服,文具,扭蛋,電器,伴手禮,免稅店,機場最後衝刺
+travel|國內旅行最想去|花蓮,台東,台南,墾丁,澎湖,宜蘭,阿里山,蘭嶼,日月潭
+travel|飛機上最想做的事|睡覺,看電影,吃飛機餐,看窗外,聽音樂,看書,喝酒,跟旁邊的人聊天,一直看飛行地圖
+travel|旅行最理想的長度|當天來回,兩天一夜,四天三夜,一週,兩週,一個月,半年,不想回來
+travel|最吸引人的旅行主題|美食之旅,溫泉之旅,追櫻花,追極光,演唱會順便玩,建築巡禮,咖啡廳巡禮,登山健行,什麼都不排
+travel|飯店最在意的|床好不好睡,浴室乾淨,隔音,早餐,離車站近,有浴缸,窗外風景,價格,冷氣夠冷
+travel|旅行回來最捨不得的|當地的食物,不用上班的感覺,飯店的床,便宜的物價,風景,天氣,慢步調,每天走兩萬步的自己
+travel|最想住一個月的地方|京都,清邁,巴黎,紐約,峇里島,首爾,里斯本,台東,北海道
+travel|選座位最在意|靠窗,靠走道,前排,逃生門旁,離廁所近,旁邊沒人,跟朋友坐一起,不要中間就好
+travel|旅行前最期待的階段|訂機票那一刻,排行程,買新衣服,出發前一晚,到機場,起飛,抵達飯店,都比不上回家
+travel|最能代表旅行的味道|機場的咖啡,飯店的沐浴乳,防曬乳,海風,行李箱,飛機餐,溫泉硫磺,陌生城市的雨
+travel|旅行中最想遇到的|親切的當地人,意外的好天氣,沒人的景點,隱藏版小店,免費升等,可愛的貓,祭典,剛好的夕陽
+travel|最常買的紀念品|磁鐵,明信片,鑰匙圈,當地零食,茶葉,T恤,馬克杯,文具,什麼都不買
+travel|露營最重要的|帳篷好搭,有廁所,食物,營火,天氣,沒有蟲,好睡的睡墊,咖啡,訊號
+travel|溫泉旅行最期待|露天風呂,會席料理,浴衣,泡完喝牛奶,榻榻米房間,雪景,按摩椅,什麼都不做
+travel|最想挑戰的旅行|一個人出國,不訂住宿,只帶一個背包,不用手機導航,搭便車,騎車環島,徒步朝聖,去語言不通的地方
+travel|迷路的時候|問路人,看地圖,隨便走走看,打給旅伴,叫計程車,先找東西吃,回到上一個認得的地方,當作行程的一部分
+travel|旅行排行程的方式|精確到分鐘,只訂住宿,只列想吃的,全靠旅伴,當天早上才想,照網路推薦走,只去沒人的地方,完全不排
+travel|最喜歡的旅行季節|櫻花季,盛夏海邊,楓葉季,下雪的冬天,淡季,連假,梅雨季沒人,聖誕節
+travel|機場最喜歡的地方|免稅店,貴賓室,美食街,登機門前,觀景台,書店,入境大廳,行李轉盤
+travel|旅行最想省的錢|住宿,機票,交通,吃飯,門票,伴手禮,網路,行李托運,都不想省
+travel|最想體驗的當地生活|逛傳統市場,搭通勤電車,去超市買菜,進錢湯,上料理課,去看球賽,參加祭典,在公園野餐,去當地理髮
+food|最完美的火鍋湯底|麻辣,昆布,番茄,牛奶,酸菜白肉,沙茶,壽喜燒,剝皮辣椒雞,清水就好
+food|珍奶最重要的|珍珠口感,茶味,奶味,甜度,冰塊,價格,杯子大小,吸管粗細,店員手感
+food|滷肉飯的靈魂|肥肉比例,醬汁,白飯,滷蛋,醃黃瓜,香菜,筍絲,魚鬆,一定要用碗裝
+food|最該配白飯的|滷肉,生蛋拌醬油,明太子,肉鬆,泡菜,咖哩,海苔醬,麻婆豆腐,辣蘿蔔乾
+food|薯條最好的吃法|沾番茄醬,沾冰淇淋,沾糖醋醬,撒胡椒鹽,沾蜂蜜芥末,泡奶昔,夾進漢堡,放軟再吃,原味
+food|最有爭議的披薩口味|夏威夷,珍珠奶茶,香菜皮蛋,榴槤,巧克力棉花糖,海鮮,泡菜,芋泥,只放起司
+food|牛排幾分熟|一分,三分,五分,七分,全熟,生的也行,看心情,問廚師
+food|吃拉麵最重要的|湯頭,麵的硬度,叉燒,溏心蛋,蒜泥加多少,要不要加麵,筍乾,排隊多久,能不能喝完湯
+food|最好的宵夜組合|鹽酥雞配啤酒,泡麵加蛋,滷味配手搖,清粥小菜,麥當勞得來速,燒烤,豆漿油條,永和豆漿蛋餅,只喝水忍住
+food|水餃要沾什麼|醬油,醬油加醋,辣油,蒜泥醬油,不沾,烏醋,醬油膏,辣椒醬,番茄醬
+food|最好吃的蛋餅|原味,起司,玉米,鮪魚,培根,蔥抓餅皮,粉漿蛋餅,肉鬆,薯餅
+food|早餐店飲料之王|大冰奶,紅茶,豆漿,米漿,鮮奶茶,咖啡牛奶,冬瓜茶,柳橙汁,溫的無糖豆漿
+food|香菜的正確用法|加越多越好,只能一點點,配花生捲冰淇淋,煮湯,拌麵,做成香菜鍋,完全不要,當裝飾
+food|吃到飽的戰略|先吃貴的,先吃甜點,只吃愛吃的,每樣都拿,先喝湯墊胃,餓一整天再去,慢慢吃吃滿時間,飲料不喝留肚子
+food|最好的下午茶|手搖配雞排,蛋糕配咖啡,司康配紅茶,車輪餅,豆花,鹹食拼盤,水果,冰淇淋,不吃
+food|便當最重要的配菜|滷蛋,炒高麗菜,番茄炒蛋,滷豆干,醃蘿蔔,炸物,蒸蛋,青菜,滷白菜
+food|最能代表夏天的食物|芒果冰,涼麵,西瓜,仙草,冰啤酒,愛玉,綠豆湯,涼拌小黃瓜,冰棒
+food|最能代表冬天的食物|薑母鴨,羊肉爐,燒仙草,麻油雞,湯圓,烤地瓜,火鍋,熱紅豆湯,關東煮
+food|辣度的極限|不辣,微辣,小辣,中辣,大辣,辣到流淚,辣到後悔,辣椒是配菜
+food|最該被正名的吃法|布丁加醬油,泡麵乾吃,西瓜撒鹽,番茄沾醬油膏,飯配巧克力,薯條沾霜淇淋,芒果沾辣椒粉,肉粽沾甜辣醬,冰淇淋夾麵包
+food|甜點最重要的|不要太甜,口感,好不好拍,份量,價格,季節限定,配的飲料,店的氣氛,排隊時間
+food|便利商店最神的組合|茶葉蛋配御飯糰,關東煮加泡麵,霜淇淋配咖啡,烤地瓜配鮮奶,微波便當配沙拉,大亨堡加辣,布丁配鮮奶茶,三明治配豆漿
+food|最容易吵起來的料理|番茄炒蛋要不要加糖,粽子南北,湯圓甜鹹,豆花甜鹹,滷肉飯要不要肥肉,蛋餅沾什麼,火鍋放不放芋頭,肉圓蒸的炸的
+food|咖啡店最會點的|美式,拿鐵,手沖單品,卡布奇諾,西西里,燕麥奶拿鐵,摩卡,不喝咖啡點茶,只點甜點
+food|最愛的麵包店戰利品|鹽可頌,菠蘿,明太子法國,肉鬆,生吐司,肉桂捲,紅豆麵包,蔥麵包,波蘿油
+food|一個人吃飯的首選|拉麵,便當,速食,自助餐,火鍋,牛肉麵,咖哩,便利商店,在家煮
+meme|最常用的網路用語|笑死,真的假的,我不行了,好喔,確實,傻眼,太扯,哭啊,歸剛欸
+meme|最常見的已讀不回理由|忘了,在忙,不知道回什麼,以為回了,手機沒電,睡著了,故意的,想晚點認真回,訊息太多
+meme|限時動態最常發|食物,自拍,風景,寵物,歌詞,抱怨,演唱會,健身,轉發迷因
+meme|最容易社死的瞬間|傳錯對象,語音訊息外放,截圖傳給本人,直播忘記關,按到舊照片的讚,視訊鏡頭沒關,搜尋紀錄被看到,小帳被發現,群組回錯人
+meme|最受不了的社群行為|洗版限動,每餐都拍,放閃,無病呻吟,狂標記,曬小孩,轉發長輩文,炫富,每則都留言
+meme|手機裡最不能被看的|相簿,搜尋紀錄,聊天紀錄,備忘錄,購物車,螢幕使用時間,小帳,最近刪除,外送紀錄
+meme|最浪費時間的APP類型|短影音,社群,手遊,購物,論壇,影音平台,交友軟體,新聞,地圖亂逛
+meme|貼圖使用哲學|一張貼圖回一切,只用免費的,買了一堆只用三張,不用貼圖,只用表情符號,會自己做貼圖,看人用貼圖,用長輩圖
+meme|最常說但沒做到的|下次約,明天開始運動,我要早睡,這個月要存錢,再看一集就睡,馬上到,下次一定,我要戒手搖,週末要整理房間
+meme|網購最常踩的雷|實品跟圖片差很多,尺寸不合,買了沒用,湊免運買更多,等很久才到,退貨很麻煩,衝動購物,買到一樣的,評價是假的
+meme|群組裡最常見的人|潛水的,秒回的,只回貼圖的,愛發長文的,半夜出沒的,專門揪團的,只會哈哈的,永遠已讀的,傳錯群的
+meme|最想取消的網路現象|爆雷,標題殺人,開箱業配,假消息,留言吵架,演算法推薦,強迫看廣告,訂閱才能看,驗證碼
+meme|最能代表現代人的病|手機成癮,選擇障礙,拖延症,社交電量低,報復性熬夜,資訊焦慮,外送依賴,購物車不結帳,不想接電話
+meme|接到不明來電會|直接掛掉,等它響完,接起來不講話,先查號碼,接起來說喂,轉靜音繼續滑手機,回撥,傳訊息問是誰
+meme|最常看的短影音|貓狗,美食,搞笑,舞蹈,開箱,旅遊,生活小技巧,戲劇片段,吵架八卦
+meme|最想擁有的網路人設|美食家,旅遊達人,迷因大師,健身狂,文青,神秘低調,科技宅,穿搭達人,什麼都懂一點
+meme|手機沒電時的反應|焦慮到不行,趁機休息,到處借充電線,立刻回家,找便利商店,還好我有行動電源,假裝很淡定,開始觀察路人
+meme|最常拍但不會再看的照片|演唱會影片,食物,煙火,簡報截圖,風景,停車位置,菜單,課堂白板,夕陽
+meme|最有共鳴的迷因主題|不想上班,月底吃土,社恐,減肥失敗,熬夜,貓奴日常,選擇障礙,已讀不回,外送等很久
+meme|打字習慣|不加標點,狂用驚嘆號,句尾加哈哈,用很多表情符號,分很多則傳,一次打很長,愛用注音文,語音輸入,只回一個字
+meme|最常搜尋的東西|附近美食,怎麼去,天氣,症狀自我診斷,這個字怎麼唸,明星幾歲,懶人包,歌詞,價格比較
+meme|追劇的方式|一口氣看完,一天一集,1.5倍速,邊看邊滑手機,先看結局,只看剪輯,等完結再看,看到一半就棄
+meme|最不想被演算法知道的|半夜搜尋的東西,看了很多貓影片,偷看前任,買過什麼,追哪個明星,看了多久短影音,聽什麼歌,跟誰最常聊
+meme|通訊軟體的大頭貼|自己的照片,寵物,風景,動漫角色,迷因圖,小孩,偶像,預設灰色人頭,跟另一半的合照
+meme|開箱影片最吸引人的|拆封那一刻,真實評價,價格,翻車現場,主持人的反應,比較實測,送禮抽獎,根本只是想看別人花錢
+meme|最常見的拖延藉口|先滑一下手機,等整點再開始,先吃點東西,桌子太亂先整理,今天狀態不好,明天比較有時間,還有很久才截止,先睡一下
+meme|最常忘記的密碼|銀行,電子信箱,網購平台,社群小帳,Wi-Fi,政府網站,訂票網站,手機解鎖,全部都同一組所以不會忘
+meme|看到朋友發文炫耀|按讚祝福,默默滑過,留言酸一下,截圖給別人看,認真替他開心,開始檢討自己,取消追蹤,回一個貼圖
+meme|音樂播放清單的樣子|只聽老歌,全是抖音神曲,韓團,日文歌,獨立樂團,華語抒情,遊戲配樂,隨機播放,只聽podcast
+meme|最容易被種草的方式|朋友推薦,短影音,開箱文,打折,限量,網紅同款,路上看到別人用,評價五顆星,包裝好看
+meme|訊息通知的習慣|全部關掉,有紅點就要點掉,累積九十九則,只開重要的,靜音所有群組,通知一來就看,只看不回,手機永遠勿擾
+meme|最常放進購物車沒買的|衣服,書,家電,鞋子,保養品,遊戲,家具,課程,機票
+meme|遇到網路吵架|看留言吃瓜,加入戰局,截圖分享,默默按讚,檢舉,關掉不看,查證真相,等懶人包
+meme|最常自拍的角度|左臉,右臉,由上往下,對鏡自拍,只拍半張臉,用濾鏡,請別人拍,不自拍,只拍影子
+meme|手機桌面的樣子|整齊分類,一頁到底,全丟一個資料夾,桌布是偶像,桌布是寵物,預設桌布,小工具滿版,通知紅點一堆
+meme|最想回到的網路年代|部落格,即時通,無名小站,臉書剛紅的時候,論壇,撥接上網,手機只有貪食蛇,現在就很好
+food|鹹酥雞一定要加|九層塔,蒜頭,辣粉,胡椒鹽,梅粉,海苔粉,洋蔥,什麼都不加,全部都加
+food|豆花的正確吃法|冰的,熱的,加花生,加粉圓,加薑汁,加豆漿,加黑糖,鹹豆花,什麼料都不加
+food|最想復活的童年美食|福利社炸雞排,營養午餐咖哩,校門口雞蛋糕,阿嬤的滷肉,夜市彈珠汽水,叭噗冰淇淋,巷口蔥油餅,雜貨店冰棒
+food|吃火鍋最不能少的沾醬|沙茶,蒜泥,蔥花,辣椒,白醋,蘿蔔泥,生蛋黃,芝麻醬,豆腐乳`;
+const CATS = {food:'美食',tw:'台灣日常',life:'生活',fun:'娛樂',love:'戀愛',work:'職場・校園',travel:'旅行',joy:'日常小確幸',meme:'迷因／網路文化',wild:'腦洞',debate:'爭議',kid:'童年'};
 const PROMPTS = RAW.trim().split('\n').map(l=>{const [c,t,w]=l.split('|');return {c:c.trim(),t:t.trim(),w:w.split(/[,，]/).map(s=>s.trim()).filter(Boolean)}}).filter(p=>p.w.length>=3);
 const NAME_PROMPTS = ['最可能遲到的人','吃到飽最能吃的人','最可能半夜傳訊息的人','最會撒嬌的人','最可能變網紅的人','最可能忘記帶錢包的人','殭屍末日最能活下來的人','KTV最會霸佔麥克風的人','最可能一秒睡著的人','看電影最容易哭的人','最會殺價的人','最容易迷路的人','最可能說走就走出國的人','最會講冷笑話的人','最可能變有錢人的人','最可能養十隻貓的人','最可能已讀不回的人','最會拍照的人','最容易被推坑的人','最可能當上老闆的人','最愛吃甜食的人','最怕鬼的人','最可能在群組潛水的人','最會安慰人的人','最可能上新聞的人','最常說「我等一下就到」的人','手機最不離手的人','最可能邊哭邊吃東西的人','最可能突然消失的人','最會亂取綽號的人','最愛拍食物的人','最可能變成大明星的人','最愛買東西的人','最可能被貓欺負的人','最常說「隨便」的人','最可能半夜吃泡麵的人','最會記仇的人','最可能在旅行中弄丟東西的人','最會照顧人的人','最適合當隊長的人'];
 const TIERS = 'SABCD';
@@ -588,20 +826,21 @@ function noise(dur, vol=.15, when=0, freq=1200, q=.8){
   s.buffer=b; s.connect(f).connect(g).connect(c.destination); s.start(t);
 }
 const SFX = {
-  tap(){ tone(660,.07,'square',.06); },
-  place(){ tone(520,.09,'triangle',.14); tone(780,.12,'triangle',.12,.05); },
-  back(){ tone(500,.1,'triangle',.12,0,.6); },
-  send(){ [523,659,784].forEach((f,i)=>tone(f,.14,'triangle',.14,i*.06)); },
-  tick(){ tone(1200,.05,'sine',.08); },
-  whoosh(){ noise(.5,.22,0,700,.6); tone(300,.45,'sine',.08,0,3); },
-  ding(){ tone(880,.25,'sine',.16); tone(1320,.35,'sine',.1,.05); },
-  cheer(){ [523,659,784,1047].forEach((f,i)=>tone(f,.22,'square',.07,i*.07)); noise(.6,.1,.2,3000,.5); },
-  boing(){ tone(420,.5,'triangle',.2,0,.35); tone(210,.4,'sine',.1,.12,.5); },
-  drum(){ for(let i=0;i<14;i++) noise(.06,.12+i*.008,i*.055,180,1.2); },
-  cymbal(){ noise(.9,.18,0,6000,.4); tone(130,.3,'sine',.25); },
-  fanfare(){ [[523,0],[659,.12],[784,.24],[1047,.36],[784,.52],[1047,.64]].forEach(([f,w])=>{tone(f,.28,'square',.07,w);tone(f/2,.28,'triangle',.08,w)}); noise(1,.1,.4,4000,.4); },
-  sad(){ [392,370,349,330].forEach((f,i)=>tone(f,.35,'triangle',.12,i*.22,.97)); },
-  pop(){ tone(900,.08,'sine',.12,0,1.8); }
+  tap(){ tone(520,.06,'sine',.07); },
+  place(){ tone(440,.09,'sine',.11); tone(660,.12,'sine',.08,.05); },
+  back(){ tone(420,.1,'sine',.09,0,.7); },
+  send(){ [392,494,587].forEach((f,i)=>tone(f,.18,'sine',.1,i*.08)); },
+  tick(){ tone(880,.05,'sine',.06); },
+  whoosh(){ noise(.32,.12,0,1800,.5); noise(.2,.07,.12,3200,.6); },
+  stamp(){ tone(110,.18,'sine',.3,0,.6); noise(.08,.2,0,400,1); },
+  ding(){ tone(784,.3,'sine',.12); tone(1175,.45,'sine',.07,.06); },
+  cheer(){ [523,659,784].forEach((f,i)=>tone(f,.28,'sine',.09,i*.09)); },
+  boing(){ tone(330,.4,'triangle',.12,0,.5); },
+  drum(){ for(let i=0;i<10;i++) noise(.05,.05+i*.006,i*.07,220,1.2); },
+  cymbal(){ noise(.6,.08,0,5000,.4); },
+  fanfare(){ [[392,0],[494,.14],[587,.28],[784,.44]].forEach(([f,w])=>{tone(f,.4,'sine',.1,w);tone(f/2,.4,'triangle',.05,w)}); },
+  sad(){ [392,349,330].forEach((f,i)=>tone(f,.4,'sine',.09,i*.24,.97)); },
+  pop(){ tone(700,.08,'sine',.09,0,1.5); }
 };
 const sfx = n => { try{ SFX[n] && SFX[n](); }catch(e){} };
 
@@ -609,9 +848,9 @@ const sfx = n => { try{ SFX[n] && SFX[n](); }catch(e){} };
 const CF = { parts:[], raf:0 };
 function confetti(x=innerWidth/2, y=innerHeight/3, n=90, spread=1){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const cols=['#ff4d7d','#ff9433','#ffd23a','#33d597','#46c1f4','#fff7fb'];
-  for(let i=0;i<n;i++){ const a=Math.random()*Math.PI*2, v=(4+Math.random()*9)*spread;
-    CF.parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-6,r:Math.random()*6.28,vr:(Math.random()-.5)*.4,w:6+Math.random()*7,h:4+Math.random()*5,c:pick(cols),life:110+Math.random()*60}); }
+  const cols=['#ecc0b0','#efd09a','#c6d6b0','#bccbd2','#b3412d','#7c8f68'];
+  for(let i=0;i<n;i++){ const a=Math.random()*Math.PI*2, v=(3+Math.random()*6)*spread;
+    CF.parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-4,r:Math.random()*6.28,vr:(Math.random()-.5)*.4,w:6+Math.random()*7,h:4+Math.random()*5,c:pick(cols),life:110+Math.random()*60}); }
   if(!CF.raf) CF.raf=requestAnimationFrame(cfLoop);
 }
 function cfLoop(){
@@ -619,7 +858,7 @@ function cfLoop(){
   if(cv.width!==innerWidth*dpr){ cv.width=innerWidth*dpr; cv.height=innerHeight*dpr; }
   ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,innerWidth,innerHeight);
   CF.parts=CF.parts.filter(p=>p.life>0 && p.y<innerHeight+40);
-  for(const p of CF.parts){ p.vy+=.28; p.vx*=.985; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; p.life--;
+  for(const p of CF.parts){ p.vy+=.16; p.vx*=.985; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; p.life--;
     ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle=p.c; ctx.globalAlpha=Math.min(1,p.life/30); ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore(); }
   CF.raf = CF.parts.length ? requestAnimationFrame(cfLoop) : 0;
   if(!CF.raf) ctx.clearRect(0,0,innerWidth,innerHeight);
@@ -636,11 +875,11 @@ function floatEmoji(e, who){
 function newGame(pl, o){
   const n=pl.length;
   return { v:0, mode:o.mode, pl:pl.map(p=>({p:p.p,n:p.n,a:p.a})), ri:-1,
-    tot: o.mode==='guess' ? n*o.per : o.rounds, ph:'rank', rid:'', star:-1, topic:null, done:[], rr:0,
-    sc:Array(n).fill(0), st:pl.map(()=>[0,0,0,0,0,0,0,0,0]), pr:{}, streak:0, best:0, syncs:0,
-    cats:o.cats, time:o.time||0, res:null, step:0, ms:0, aw:null, off:[], x2:false };
+    tot: o.mode==='guess' ? n*o.per : o.rounds, ph:'rank', rid:'', star:-1, star2:-1, ev:'', rt:0, topic:null, done:[], vd:[], rr:0,
+    sc:Array(n).fill(0), st:pl.map(()=>[0,0,0,0,0,0,0,0,0,0]), pr:{}, streak:0, best:0, syncs:0,
+    cats:o.cats, time:o.time||0, res:null, step:0, ms:0, aw:null, off:[], x2:false, hl:null, qt:null };
 }
-const newH = customs => ({ subs:{}, bets:{}, used:new Set(), customs:customs||[] });
+const newH = (customs, online) => ({ subs:{}, bets:{}, ex:{}, votes:{}, used:new Set(), customs:customs||[], online:!!online, lastEv:'' });
 const activeSeats = G => G.pl.map((_,i)=>i).filter(i=>!G.off.includes(i));
 function pickTopic(G,H){
   const act=activeSeats(G);
@@ -659,84 +898,134 @@ function pickTopic(G,H){
   }
   return { t:p.t, w:shuffle(p.w).slice(0,5), c:p.c, by:p.by||'' };
 }
-function freshRound(G,H){ G.rid=rid(); G.done=[]; H.subs={}; H.bets={}; ENG.dl = G.time ? Date.now()+G.time*1000 : 0; }
+function freshRound(G,H){ G.rid=rid(); G.done=[]; G.vd=[]; H.subs={}; H.bets={}; H.ex={}; H.votes={}; ENG.dl = G.rt ? Date.now()+G.rt*1000 : 0; }
+// 每回合的小事件：第一回合暖身、最後一回合決勝，其他回合隨機抽，不連續重複
+function pickEvent(G,H,act){
+  if(G.ri===0) return '';
+  if(G.tot>=3 && G.ri===G.tot-1) return 'x2';
+  let pool = G.mode==='guess' ? ['rev','gam','fast'] : ['fast',''];
+  if(G.mode==='guess' && act.length>=4) pool.push('duo','duo');
+  pool=pool.filter(e=>e!==H.lastEv); if(!pool.length) pool=[''];
+  return pick(pool);
+}
 function startRound(G,H){
   G.ri++; G.res=null; G.step=0; G.rr=0;
   const act=activeSeats(G);
   if(G.ri>=G.tot || act.length<2){ endGame(G); return; }
   G.star = G.mode==='guess' ? act[G.ri % act.length] : -1;
-  G.x2 = G.tot>=3 && G.ri===G.tot-1;
+  G.ev = pickEvent(G,H,act); H.lastEv=G.ev; G.x2 = G.ev==='x2';
+  G.star2 = G.ev==='duo' ? pick(act.filter(s=>s!==G.star)) : -1;
+  G.rt = G.ev==='fast' ? 25 : G.time;
   G.topic = pickTopic(G,H); G.ph='rank'; freshRound(G,H);
 }
 function reroll(G,H){ if(G.ph!=='rank'||G.rr>=2) return; G.topic=pickTopic(G,H); G.rr++; freshRound(G,H); }
-function submit(G,H,seat,k,b){
+const isStar = (G,s) => G.mode==='guess' && (s===G.star || (G.star2>=0 && s===G.star2));
+function submit(G,H,seat,k,b,ex){
   if(G.ph!=='rank' || !Array.isArray(k)) return false;
   const K=G.topic.w.length;
   if(k.length!==K || [...k].sort((a,b)=>a-b).some((v,i)=>v!==i)) return false;
   if(G.off.includes(seat) || seat<0 || seat>=G.pl.length) return false;
   H.subs[seat]=k.slice();
-  H.bets[seat] = (G.mode==='guess' && seat!==G.star && Number.isInteger(b) && b>=0 && b<K) ? b : -1;
+  H.bets[seat] = (G.mode==='guess' && !isStar(G,seat) && Number.isInteger(b) && b>=0 && b<K) ? b : -1;
+  if(isStar(G,seat) && typeof ex==='string'){ const x=ex.replace(/\s+/g,' ').trim().slice(0,30); if(x) H.ex[seat]=x; }
   G.done=Object.keys(H.subs).map(Number); return true;
 }
 const allIn = (G,H) => G.ph==='rank' && activeSeats(G).every(s=>H.subs[s]);
 const canForce = (G,H) => G.ph==='rank' && (G.mode==='guess' ? (H.subs[G.star] && Object.keys(H.subs).length>=2) : Object.keys(H.subs).length>=2);
 function doReveal(G,H){
-  const K=G.topic.w.length, subs={}; Object.keys(H.subs).forEach(s=>subs[s]=H.subs[s]);
-  const seats=Object.keys(subs).map(Number), T={}; seats.forEach(s=>T[s]=tierOf(subs[s]));
-  const mult=G.x2?2:1;
-  const res={ k:subs, pts:{}, perf:[], sp:0, max:2*K+5, bet:{}, sur:null, x2:G.x2 };
+  const K=G.topic.w.length, raw={}; Object.keys(H.subs).forEach(s=>raw[s]=H.subs[s]);
+  const seats=Object.keys(raw).map(Number), T={}; seats.forEach(s=>T[s]=tierOf(raw[s]));
+  const mult=G.ev==='x2'?2:1;
+  const res={ k:{}, pts:{}, perf:[], sp:0, max:2*K+5, bet:{}, sur:null, x2:mult===2, ev:G.ev, ex:{}, stars:[], gs:[], tk:null, vt:false, vs:[], votes:null, top:[], vp:[] };
   if(seats.length>=3) seats.forEach(s=>{ let d=0; for(let w=0;w<K;w++){ let m=0; seats.forEach(o=>{ if(o!==s) m+=T[o][w]; }); m/=seats.length-1; d+=Math.abs(T[s][w]-m); } G.st[s][5]=r1(G.st[s][5]+d/K); G.st[s][6]++; });
   if(G.mode==='guess'){
-    const S=G.star, gs=seats.filter(s=>s!==S); let sum=0;
-    gs.forEach(s=>{ let p=0, ex=0; for(let w=0;w<K;w++){ const d=Math.abs(T[s][w]-T[S][w]); if(!d){p+=2;ex++;} else if(d===1) p+=1; }
+    const stars=[G.star]; if(G.ev==='duo' && G.star2>=0 && raw[G.star2]) stars.push(G.star2);
+    const S=stars[0], gs=seats.filter(s=>!stars.includes(s));
+    let tk;
+    if(stars.length===2){
+      const S2=stars[1];
+      tk=[...Array(K).keys()].sort((a,b)=>(T[S][a]+T[S2][a])-(T[S][b]+T[S2][b]) || T[S][a]-T[S][b]);
+      let d=0; for(let w=0;w<K;w++) d+=Math.abs(T[S][w]-T[S2][w]);
+      res.agree=Math.round((1-d/Math.floor(K*K/2))*100);
+    } else tk=raw[S].slice();
+    const tT=tierOf(tk), rev=G.ev==='rev', TG={};
+    seats.forEach(s=>{ res.k[s] = (rev && gs.includes(s)) ? raw[s].slice().reverse() : raw[s].slice(); });
+    gs.forEach(s=>TG[s]=tierOf(res.k[s]));
+    stars.forEach(s=>{ if(H.ex[s]) res.ex[s]=H.ex[s]; });
+    const bw = G.ev==='gam' ? [6,-2] : [3,-1];
+    let sum=0;
+    gs.forEach(s=>{ let p=0, ex=0; for(let w=0;w<K;w++){ const d=Math.abs(TG[s][w]-tT[w]); if(!d){p+=2;ex++;} else if(d===1) p+=1; }
       if(ex===K){ p+=5; res.perf.push(s); }
-      const b=H.bets[s]; if(b>=0){ const hit=subs[s][b]===subs[S][b]; res.bet[s]=[b,hit?1:0]; p+=hit?3:-1; G.st[s][7]++; if(hit) G.st[s][8]++; }
+      let b=H.bets[s]; if(b>=0){ if(rev) b=K-1-b; const hit=res.k[s][b]===tk[b]; res.bet[s]=[b,hit?1:0,hit?bw[0]:bw[1]]; p+=hit?bw[0]:bw[1]; G.st[s][7]++; if(hit) G.st[s][8]++; }
       p=Math.max(0,p)*mult;
-      res.pts[s]=p; sum+=p; G.sc[s]+=p; const st=G.st[s]; st[0]+=p; st[1]++; if(ex===K) st[2]++;
-      const key=s+'>'+S, pr=G.pr[key]||(G.pr[key]=[0,0]); pr[0]+=p/mult; pr[1]++; });
-    const avg=gs.length?sum/gs.length:0; res.sp=Math.round(avg); res.avg=r1(avg/mult); G.sc[S]+=res.sp; G.st[S][3]=r1(G.st[S][3]+avg/mult); G.st[S][4]++;
+      res.pts[s]=p; sum+=p; G.sc[s]+=p; const st=G.st[s]; st[0]+=p/mult; st[1]++; if(ex===K) st[2]++;
+      stars.forEach(x=>{ const key=s+'>'+x, pr=G.pr[key]||(G.pr[key]=[0,0]); pr[0]+=p/mult; pr[1]++; }); });
+    const avg=gs.length?sum/gs.length:0; res.sp=Math.round(avg); res.avg=r1(avg/mult);
+    stars.forEach(x=>{ G.sc[x]+=res.sp; G.st[x][3]=r1(G.st[x][3]+avg/mult); G.st[x][4]++; });
     // 最大驚嚇：大家平均猜得最遠的詞
-    if(gs.length){ let bw=-1, bd=0; for(let w=0;w<K;w++){ let d=0; gs.forEach(s=>d+=Math.abs(T[s][w]-T[S][w])); d/=gs.length; if(d>bd){ bd=d; bw=w; } }
-      if(bw>=0 && bd>=1.5){ const c={}; gs.forEach(s=>c[T[s][bw]]=(c[T[s][bw]]||0)+1); const gt=+Object.entries(c).sort((a,b)=>b[1]-a[1])[0][0]; res.sur={w:bw, st:T[S][bw], gt}; } }
+    if(gs.length && !rev){ let bw2=-1, bd=0; for(let w=0;w<K;w++){ let d=0; gs.forEach(s=>d+=Math.abs(TG[s][w]-tT[w])); d/=gs.length; if(d>bd){ bd=d; bw2=w; } }
+      if(bw2>=0 && bd>=1.5){ const c={}; gs.forEach(s=>c[TG[s][bw2]]=(c[TG[s][bw2]]||0)+1); const gt=+Object.entries(c).sort((a,b)=>b[1]-a[1])[0][0]; res.sur={w:bw2, st:tT[bw2], gt};
+        if(!G.hl || bd>G.hl.d) G.hl={ d:r1(bd), t:G.topic.t, w:G.topic.w[bw2], st:tT[bw2], gt, s:stars.slice() }; } }
+    const exs=stars.filter(x=>res.ex[x]); if(exs.length){ const pct=res.max?res.avg/res.max:0; if(!G.qt || pct<G.qt.p) G.qt={ p:pct, s:exs[0], x:res.ex[exs[0]], t:G.topic.t }; }
+    res.stars=stars; res.gs=gs; res.tk=tk;
+    if(gs.length>=2){ res.vt=true; res.vs = H.online ? seats.slice() : stars.slice(); }
   } else {
-    const same=seats.every(s=>subs[s].join()===subs[seats[0]].join());
+    seats.forEach(s=>res.k[s]=raw[s].slice());
+    const same=seats.every(s=>raw[s].join()===raw[seats[0]].join());
     res.same=same; if(same){ G.streak++; G.syncs++; G.best=Math.max(G.best,G.streak); } else G.streak=0;
     for(let i=0;i<seats.length;i++) for(let j=i+1;j<seats.length;j++){ const a=seats[i], b=seats[j]; let d=0; for(let w=0;w<K;w++) d+=Math.abs(T[a][w]-T[b][w]); const key=a+'-'+b, pr=G.pr[key]||(G.pr[key]=[0,0]); pr[0]=r1(pr[0]+d/K); pr[1]++; }
-    seats.forEach(s=>{ let p=0; for(let t=0;t<K;t++) seats.forEach(o=>{ if(o!==s && subs[o][t]===subs[s][t]) p++; }); if(same) p+=3; p*=mult; res.pts[s]=p; G.sc[s]+=p; });
+    seats.forEach(s=>{ let p=0; for(let t=0;t<K;t++) seats.forEach(o=>{ if(o!==s && raw[o][t]===raw[s][t]) p++; }); if(same) p+=3; p*=mult; res.pts[s]=p; G.sc[s]+=p; });
     if(!same){ let bw=-1, bd=0; for(let w=0;w<K;w++){ const ts=seats.map(s=>T[s][w]), d=Math.max(...ts)-Math.min(...ts); if(d>bd){ bd=d; bw=w; } }
-      if(bw>=0 && bd>=2){ const ts=seats.map(s=>T[s][bw]); res.sur={w:bw, lo:Math.min(...ts), hi:Math.max(...ts)}; } }
+      if(bw>=0 && bd>=2){ const ts=seats.map(s=>T[s][bw]); res.sur={w:bw, lo:Math.min(...ts), hi:Math.max(...ts)};
+        if(!G.hl || bd>G.hl.d) G.hl={ d:bd, t:G.topic.t, w:G.topic.w[bw], lo:Math.min(...ts), hi:Math.max(...ts), s:[] }; } }
   }
   G.res=res; G.ph='reveal'; G.step=0; G.ms=K+1;
 }
+// 揭曉前投票「誰最懂主角」：投中本回合最高分的人 +2
+function vote(G,H,seat,target){
+  const R=G.res;
+  if(G.ph!=='reveal' || G.step!==0 || !R || !R.vt || R.votes) return false;
+  if(!R.vs.includes(seat) || !R.gs.includes(target) || seat===target || H.votes[seat]!==undefined) return false;
+  H.votes[seat]=target; G.vd=Object.keys(H.votes).map(Number); return true;
+}
+function closeVotes(G,H){
+  const R=G.res; if(!R || !R.vt || R.votes) return;
+  R.votes={...H.votes};
+  const mx=Math.max(...R.gs.map(s=>R.pts[s]));
+  R.top = mx>0 ? R.gs.filter(s=>R.pts[s]===mx) : [];
+  Object.keys(R.votes).forEach(v=>{ const t=R.votes[v]; G.st[t][9]++; if(R.top.includes(t)){ G.sc[+v]+=2; R.vp.push(+v); } });
+}
+function advance(G,H){ if(G.ph!=='reveal' || G.step>=G.ms) return; if(G.step===0) closeVotes(G,H); G.step++; }
 function endGame(G){ G.ph='end'; G.aw=computeAwards(G); }
 function computeAwards(G){
   const n=G.pl.length, A=[], st=G.st;
   const best=(f,dir)=>{ let b=null, s=[]; for(let i=0;i<n;i++){ const v=f(i); if(v==null) continue; if(b==null || (v-b)*dir>0){ b=v; s=[i]; } else if(v===b) s.push(i); } return b==null?null:{v:b,s}; };
   const champ=best(i=>G.sc[i],1);
   if(G.mode==='guess'){
-    if(champ) A.push({i:'👑',t:'全場最會讀心',d:`總分 ${champ.v} 分`,s:champ.s});
-    const det=best(i=>st[i][1]?r1(st[i][0]/st[i][1]):null,1); if(det) A.push({i:'🔍',t:'名偵探',d:`猜別人平均每回合拿 ${det.v} 分`,s:det.s});
+    if(champ) A.push({i:'冠',t:'全場最會讀心',d:`總分 ${champ.v} 分`,s:champ.s});
+    const det=best(i=>st[i][1]?r1(st[i][0]/st[i][1]):null,1); if(det) A.push({i:'探',t:'名偵探',d:`猜別人平均每回合拿 ${det.v} 分`,s:det.s});
     const easy=best(i=>st[i][4]?r1(st[i][3]/st[i][4]):null,1), myst=best(i=>st[i][4]?r1(st[i][3]/st[i][4]):null,-1);
-    if(easy) A.push({i:'📖',t:'一秒看穿',d:`大家猜他平均拿 ${easy.v} 分，根本透明人`,s:easy.s});
-    if(myst && easy && myst.v!==easy.v) A.push({i:'🌫️',t:'謎一樣的人',d:`大家猜他平均只拿 ${myst.v} 分`,s:myst.s});
-    const pf=best(i=>st[i][2]||null,1); if(pf) A.push({i:'🧠',t:'讀心術大師',d:`完美猜中 ${pf.v} 次`,s:pf.s});
+    if(easy) A.push({i:'透',t:'一秒看穿',d:`大家猜他平均拿 ${easy.v} 分，根本透明人`,s:easy.s});
+    if(myst && easy && myst.v!==easy.v) A.push({i:'謎',t:'謎一樣的人',d:`大家猜他平均只拿 ${myst.v} 分`,s:myst.s});
+    const fav=best(i=>st[i][9]||null,1); if(fav) A.push({i:'知',t:'大家的知己',d:`被投「最懂他的人」${fav.v} 票`,s:fav.s});
+    const pf=best(i=>st[i][2]||null,1); if(pf) A.push({i:'心',t:'讀心術大師',d:`完美猜中 ${pf.v} 次`,s:pf.s});
     let bp=null; for(let a=0;a<n;a++) for(let b=a+1;b<n;b++){ const x=G.pr[a+'>'+b], y=G.pr[b+'>'+a]; if(x&&y){ const v=(x[0]/x[1]+y[0]/y[1])/2; if(!bp||v>bp.v) bp={v,s:[a,b]}; } }
-    if(bp) A.push({i:'💞',t:'靈魂伴侶',d:`互猜平均 ${r1(bp.v)} 分`,s:bp.s});
-    const gam=best(i=>st[i][8]||null,1); if(gam) A.push({i:'🎰',t:'賭神',d:`🔥 押注押中 ${gam.v} 次`,s:gam.s});
+    if(bp) A.push({i:'伴',t:'靈魂伴侶',d:`互猜平均 ${r1(bp.v)} 分`,s:bp.s});
+    const gam=best(i=>st[i][8]||null,1); if(gam) A.push({i:'賭',t:'賭神',d:`押注押中 ${gam.v} 次`,s:gam.s});
   } else {
-    A.push({i:'🔥',t:'全員神同步',d:`${G.syncs} / ${G.tot} 回合完全一致，最高連續 ${G.best} 回合`,s:[]});
-    if(champ) A.push({i:'🤝',t:'最合拍的人',d:`和大家撞排 ${champ.v} 分`,s:champ.s});
+    A.push({i:'同',t:'全員神同步',d:`${G.syncs} / ${G.tot} 回合完全一致，最高連續 ${G.best} 回合`,s:[]});
+    if(champ) A.push({i:'拍',t:'最合拍的人',d:`和大家撞排 ${champ.v} 分`,s:champ.s});
     let bp=null; for(const k in G.pr){ const [a,b]=k.split('-').map(Number), v=G.pr[k][0]/G.pr[k][1]; if(!bp||v<bp.v) bp={v,s:[a,b]}; }
-    if(bp) A.push({i:'💞',t:'腦波最像',d:`兩人的排法幾乎一樣`,s:bp.s});
+    if(bp) A.push({i:'伴',t:'腦波最像',d:`兩人的排法幾乎一樣`,s:bp.s});
   }
   const con=best(i=>st[i][6]?r1(st[i][5]/st[i][6]):null,1);
-  if(con && con.v>0) A.push({i:'🙃',t:'唱反調王',d:'排法最常跟大家不一樣',s:con.s});
+  if(con && con.v>0) A.push({i:'反',t:'唱反調王',d:'排法最常跟大家不一樣',s:con.s});
   return A;
 }
 const pubG = G => { if(!G) return null; const {st,pr,...rest}=G; return rest; };
 
 /* 執行者：房主（線上）或本機（同機模式） */
-const ENG = { G:null, H:null, timer:0, tkey:'' };
+const ENG = { G:null, H:null, timer:0, tkey:'', dl:0 };
 function engCommit(){
   const G=ENG.G; if(!G) return;
   G.v++; engSchedule();
@@ -745,9 +1034,16 @@ function engCommit(){
   applyG(g);
 }
 function engSchedule(){
-  const G=ENG.G; let key='', fn=null, ms=0;
-  if(G && G.ph==='rank' && allIn(G,ENG.H)){ key='rv'+G.rid; fn=()=>doReveal(G,ENG.H); ms=900; }
-  else if(G && G.ph==='reveal' && G.step<G.ms){ key='st'+G.rid+'.'+G.step; fn=()=>{ G.step++; }; ms=G.step===0?2200:G.step===G.ms-2?3600:2500; }
+  const G=ENG.G, H=ENG.H; let key='', fn=null, ms=0;
+  if(G && G.ph==='rank' && allIn(G,H)){ key='rv'+G.rid; fn=()=>doReveal(G,H); ms=900; }
+  else if(G && G.ph==='reveal' && G.step<G.ms){
+    key='st'+G.rid+'.'+G.step; fn=()=>advance(G,H);
+    if(G.step===0 && G.res.vt){
+      const need=G.res.vs.filter(s=>!G.off.includes(s) && G.res.gs.some(c=>c!==s));
+      const done=need.every(s=>H.votes[s]!==undefined);
+      key+=done?'d':'w'; ms=done?1200:(H.online?15000:40000);
+    } else ms = G.step===0 ? 2600 : G.step===G.ms-2 ? 3800 : 2700;
+  }
   if(key!==ENG.tkey){ clearTimeout(ENG.timer); ENG.tkey=key; if(fn) ENG.timer=setTimeout(()=>{ ENG.tkey=''; fn(); engCommit(); }, ms); }
 }
 function engStop(){ clearTimeout(ENG.timer); ENG.tkey=''; ENG.G=null; ENG.H=null; }
@@ -805,11 +1101,11 @@ setTimeout(async ()=>{
 /* 倒數計時 */
 setInterval(()=>{
   const G=CUR.G;
-  if(G && G.ph==='rank' && G.time && UI.draft && UI.draft.rid===G.rid && UI.deadline && document.querySelector('[data-act="submit"]')){
+  if(G && G.ph==='rank' && G.rt && UI.draft && UI.draft.rid===G.rid && UI.deadline && document.querySelector('[data-act="submit"]')){
     const left=Math.max(0,UI.deadline-Date.now()), sec=Math.ceil(left/1000), el=document.getElementById('timer');
-    if(el){ el.querySelector('span').textContent=sec; el.querySelector('i').style.width=(left/(G.time*10))+'%'; el.classList.toggle('hurry',sec<=10); }
+    if(el){ el.querySelector('span').textContent=sec; el.querySelector('i').style.width=(left/(G.rt*10))+'%'; el.classList.toggle('hurry',sec<=10); }
     if(sec<=5 && sec>0 && UI.tickAt!==sec){ UI.tickAt=sec; sfx('tick'); }
-    if(left<=0){ const d=UI.draft; const rest=shuffle(G.topic.w.map((_,i)=>i).filter(i=>!d.arr.includes(i))); d.arr=d.arr.map(x=>x>=0?x:rest.shift()); sfx('boing'); floatEmoji('⏰'); myAction('submit',{seat:d.seat,k:d.arr.slice(),b:d.bet}); render(); }
+    if(left<=0){ const d=UI.draft; const rest=shuffle(G.topic.w.map((_,i)=>i).filter(i=>!d.arr.includes(i))); d.arr=d.arr.map(x=>x>=0?x:rest.shift()); sfx('boing'); myAction('submit',{seat:d.seat,k:d.arr.slice(),b:d.bet,ex:UI.ex||''}); render(); }
   }
   const E=ENG.G;
   if(E && CUR.online && NET.isHost && E.ph==='rank' && ENG.dl && Date.now()>ENG.dl+6000 && canForce(E,ENG.H) && !allIn(E,ENG.H)){ doReveal(E,ENG.H); engCommit(); }
@@ -875,10 +1171,14 @@ function hostProcess(){
     if(off!==G.off.includes(i)){ if(off) G.off.push(i); else G.off=G.off.filter(x=>x!==i); ch=true; }
     if(p && !p.sameTab && G.ph==='rank'){
       const s=p.presence.s;
-      if(s && s.r===G.rid && !ENG.H.subs[i] && submit(G,ENG.H,i,s.k,s.b)) ch=true;
+      if(s && s.r===G.rid && !ENG.H.subs[i] && submit(G,ENG.H,i,s.k,s.b,s.x)) ch=true;
       if(i===G.star && p.presence.rq===G.rid && G.rr<2){ reroll(G,ENG.H); ch=true; }
     }
+    if(p && !p.sameTab && G.ph==='reveal' && G.step===0){
+      const v=p.presence.vt; if(v && v.r===G.rid && vote(G,ENG.H,i,v.s)) ch=true;
+    }
   });
+  if(G.ph==='rank' && G.star2>=0 && G.off.includes(G.star2)){ G.star2=-1; G.ev=''; ch=true; }
   if(G.ph==='rank' && G.mode==='guess' && G.off.includes(G.star)){ startRound(G,ENG.H); ch=true; }
   if(ch) engCommit();
 }
@@ -893,7 +1193,7 @@ function hostStart(){
   const customs=[];
   ps.forEach(p=>{ const my=Array.isArray(p.presence.my)?p.presence.my:[]; my.forEach(c=>{ if(c && typeof c.t==='string' && Array.isArray(c.w)){ const w=c.w.map(x=>String(x).slice(0,16)).filter(Boolean).slice(0,8); if(w.length>=3) customs.push({t:String(c.t).slice(0,30),w,by:String(p.presence.n).slice(0,8)}); } }); });
   ENG.G=newGame(ps.map(p=>({p:p.peer,n:String(p.presence.n).slice(0,8),a:String(p.presence.a||'🙂').slice(0,4)})), SET);
-  ENG.H=newH(customs); startRound(ENG.G,ENG.H);
+  ENG.H=newH(customs, true); startRound(ENG.G,ENG.H);
   CUR.online=true; UI.scr='game'; engCommit();
 }
 function hostBackToLobby(){
@@ -907,7 +1207,7 @@ const ME = LS.get('xyp.me', null) || { n:'', a:pick(AVATARS) };
 const SET = Object.assign({ mode:'guess', per:1, rounds:8, time:60, cats:Object.keys(CATS) }, LS.get('xyp.set', {}));
 Object.keys(CATS).forEach(k=>{ if(!LS.get('xyp.cat.'+k,false)){ if(!SET.cats.includes(k)) SET.cats.push(k); LS.set('xyp.cat.'+k,true); } });
 let CUSTOM = LS.get('xyp.custom', []);
-const UI = { scr:'home', err:'', code:'', busy:false, draft:null, sel:-1, ppTurn:null, ppl:null, awStep:0, awT:0, ct:'', cw:'', cerr:'', sentRid:'', rqRid:'', lastRx:0, help:false };
+const UI = { scr:'home', err:'', code:'', busy:false, draft:null, sel:-1, ppTurn:null, ppl:null, awStep:0, awT:0, ct:'', cw:'', cerr:'', sentRid:'', rqRid:'', lastRx:0, help:false, ex:'', votedRid:'', votePick:-1, cardOnly:false };
 const CUR = { G:null, online:false };
 const saveMe = () => LS.set('xyp.me', ME);
 const saveSet = () => { LS.set('xyp.set', SET); if(NET.isHost && NET.r && !ENG.G) NET.r.presence({ lob:{...SET} }).catch(()=>{}); };
@@ -927,42 +1227,55 @@ function applyG(g){
 function onStateChange(prev,g){
   if(!g) return;
   if(g.ph==='rank' && (!prev || prev.rid!==g.rid)){
-    UI.draft=null; UI.sel=-1; UI.ppTurn=null;
+    UI.draft=null; UI.sel=-1; UI.ppTurn=null; UI.ex='';
     const newRound = !prev || prev.ri!==g.ri;
-    showSplash(g, newRound ? '' : '換一題！'); sfx('whoosh');
+    showSplash(g, !newRound); sfx('whoosh');
   }
   if(g.ph==='rank' && prev && prev.rid===g.rid && g.done.length>prev.done.length) sfx('tick');
   if(g.ph==='reveal' && (!prev || prev.ph!=='reveal' || prev.step!==g.step || prev.rid!==g.rid)) setTimeout(()=>stepFx(g),30);
-  if(g.ph==='end' && (!prev || prev.ph!=='end')) startAwards();
+  if(g.ph==='end' && (!prev || prev.ph!=='end')){ UI.cardOnly=false; startAwards(); }
 }
+const EV = {
+  rev:['反轉回合','猜的人要排出「最不像主角」的排法，完全顛倒才是滿分'],
+  duo:['雙主角','兩位主角各排各的，大家猜兩人合起來的排名'],
+  gam:['豪賭回合','押注加倍：押中 +6，押錯 −2'],
+  fast:['閃電回合','只有 25 秒，憑直覺排'],
+  x2:['決勝回合','這回合分數 ×2']
+};
+const cn = n => { const d='零一二三四五六七八九'; if(n<=10) return n===10?'十':d[n]; if(n<20) return '十'+d[n-10]; const t=Math.floor(n/10), o=n%10; return d[t]+'十'+(o?d[o]:''); };
+const starNames = (G,stars) => (stars||[G.star,G.star2].filter(s=>s>=0)).map(s=>G.pl[s].n).join(' 和 ');
 let splashT=0;
-function showSplash(g, extra){
+function showSplash(g, swapped){
   hideSplash();
   const d=document.createElement('div'); d.id='splash'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','新回合');
-  const who = g.mode==='guess' ? `<div class="s"><span class="e">${esc(g.pl[g.star].a)}</span>這回合的主角是 <b>${esc(g.pl[g.star].n)}</b></div>` : `<div class="s"><span class="e">🔮</span>全員神同步：大家要排得一模一樣！</div>`;
-  d.innerHTML=`<div class="sw"><div class="r">${extra?esc(extra):`ROUND ${g.ri+1} / ${g.tot}`}</div>${who}<div class="tp">${esc(g.topic.t)}</div>${g.x2&&!extra?'<div class="x2big">決勝回合　分數 ×2！</div>':''}<p class="note" style="margin-top:18px">點一下繼續</p></div>`;
+  let who;
+  if(g.mode!=='guess') who=`<p class="s">全員神同步<br>大家要排得一模一樣</p>`;
+  else if(g.star2>=0) who=`<p class="s"><span class="e">${esc(g.pl[g.star].a)}${esc(g.pl[g.star2].a)}</span>這回合的主角是 <b>${esc(g.pl[g.star].n)}</b> 和 <b>${esc(g.pl[g.star2].n)}</b></p>`;
+  else who=`<p class="s"><span class="e">${esc(g.pl[g.star].a)}</span>這回合的主角是 <b>${esc(g.pl[g.star].n)}</b></p>`;
+  const ev=EV[g.ev];
+  d.innerHTML=`<div class="sw"><div class="r">${swapped?'換一題':`第${cn(g.ri+1)}回`}</div><div>${who}<div class="tp">${esc(g.topic.t)}</div>${ev?`<div class="evs"><span class="seal">${ev[0]}</span><p>${ev[1]}</p></div>`:''}<p class="note" style="margin-top:22px">點一下開始</p></div></div>`;
   d.addEventListener('click',hideSplash);
-  document.body.appendChild(d); splashT=setTimeout(hideSplash,2600);
+  document.body.appendChild(d); splashT=setTimeout(hideSplash, ev?3800:2800);
 }
 function hideSplash(){ clearTimeout(splashT); const s=$('#splash'); if(s) s.remove(); }
 function stepFx(g){
   if(!g.res) return;
   const K=g.topic.w.length, R=g.res;
-  if(g.step===0){ sfx('drum'); return; }
+  if(g.step===0){ sfx('whoosh'); return; }
   if(g.step<=K){
     const t=K-g.step, el=document.querySelector('.tier.fresh'), rc=el?el.getBoundingClientRect():null;
     const x=rc?rc.left+rc.width/2:innerWidth/2, y=rc?rc.top+rc.height/2:innerHeight/2;
     let all=false, none=false;
-    if(g.mode==='guess'){ const gs=Object.keys(R.k).map(Number).filter(s=>s!==g.star); const hits=gs.filter(s=>R.k[s][t]===R.k[g.star][t]).length; all=gs.length>0&&hits===gs.length; none=hits===0; }
+    if(g.mode==='guess'){ const hits=R.gs.filter(s=>R.k[s][t]===R.tk[t]).length; all=R.gs.length>0&&hits===R.gs.length; none=hits===0; }
     else { const seats=Object.keys(R.k).map(Number); all=seats.every(s=>R.k[s][t]===R.k[seats[0]][t]); none=!all; }
-    sfx('place');
-    if(g.step===K-1) setTimeout(()=>sfx('drum'),1700);
-    setTimeout(()=>{ if(all){ sfx('cheer'); confetti(x,y,50,.7); } else if(none) sfx('boing'); else sfx('ding'); },650);
+    sfx('whoosh');
+    if(g.step===K-1) setTimeout(()=>sfx('drum'),1900);
+    setTimeout(()=>{ sfx('stamp'); if(all){ setTimeout(()=>sfx('cheer'),120); confetti(x,y,26,.7); } else if(none) setTimeout(()=>sfx('boing'),120); },950);
     return;
   }
   const good = g.mode==='guess' ? R.perf.length>0 : R.same;
-  if(good){ sfx('fanfare'); confetti(innerWidth/2,innerHeight/3,160,1.2); setTimeout(()=>confetti(innerWidth*.2,innerHeight*.5,70),400); setTimeout(()=>confetti(innerWidth*.8,innerHeight*.5,70),700); }
-  else if(g.mode==='sync') sfx('sad'); else sfx('cheer');
+  if(good){ sfx('fanfare'); confetti(innerWidth/2,innerHeight/4,90,1.1); }
+  else if(g.mode==='sync') sfx('sad'); else sfx('ding');
   setTimeout(()=>document.querySelectorAll('.bar i[data-w]').forEach(b=>b.style.width=b.dataset.w+'%'),60);
 }
 function startAwards(){
@@ -970,31 +1283,35 @@ function startAwards(){
   UI.awT=setInterval(()=>{
     const G=CUR.G; if(!G || G.ph!=='end'){ clearInterval(UI.awT); return; }
     UI.awStep++; const n=(G.aw||[]).length;
-    if(UI.awStep>n){ clearInterval(UI.awT); sfx('fanfare'); confetti(innerWidth/2,innerHeight/3,200,1.3); }
-    else { sfx('cymbal'); confetti(innerWidth/2,innerHeight*.4,60,.8); if(UI.awStep<n) setTimeout(()=>sfx('drum'),900); }
+    if(UI.awStep>n){ clearInterval(UI.awT); sfx('fanfare'); confetti(innerWidth/2,innerHeight/4,110,1.1); }
+    else { setTimeout(()=>sfx('stamp'),200); if(UI.awStep<n) setTimeout(()=>sfx('drum'),1200); }
     render();
-  },2600);
+  },2800);
 }
 
 /* ============ 畫面 ============ */
-const tl = t => `<b class="tl t${t}">${TIERS[t]}</b>`;
+const GL = ['本命','喜歡','普通','還好','不行'];
+const tl = t => `<b class="tl t${t}"><i>${TIERS[t]}</i><small>${GL[t]}</small></b>`;
+const EXPRE = ['我是認真的','這是信仰問題','你們不懂啦','別問，問就是愛','小時候的陰影','我今天比較餓','阿嬤教我的','不接受反駁'];
 function vTop(){
+  if(UI.cardOnly) return '';
   const inRoom = NET.r && (UI.scr==='lobby'||UI.scr==='game');
-  return `<header class="top"><button class="brand" data-act="home" aria-label="回首頁">心有靈<b>排</b></button><span class="sp"></span>${inRoom?`<span class="pill code" title="房號">${esc(NET.code)}</span>`:''}${UI.scr==='game'&&!CUR.online?'<span class="pill">同機模式</span>':''}<button class="iconbtn" data-act="mute" aria-label="${MUTED?'開啟音效':'關閉音效'}">${MUTED?'🔇':'🔊'}</button></header>`;
+  return `<header class="top"><button class="brand" data-act="home" aria-label="回首頁">心有靈排</button><span class="sp"></span>${inRoom?`<span class="pill code" title="房號">${esc(NET.code)}</span>`:''}${UI.scr==='game'&&!CUR.online?'<span class="pill">同機模式</span>':''}<button class="iconbtn" data-act="mute" aria-label="${MUTED?'開啟音效':'關閉音效'}">${MUTED?'🔇':'🔈'}</button></header>`;
 }
 function vHome(){
   const off = NET.status==='off', chk = NET.status==='checking';
-  return `<section class="hero"><h1 class="logo"><span class="k">心</span><span class="k">有</span><span class="k">靈</span><span class="k">排</span></h1><p class="tag">排出你的真心，猜中朋友的腦袋</p>
-  <div class="demo" aria-hidden="true"><div><b class="t0">S</b><span>珍珠奶茶</span></div><div><b class="t1">A</b><span>多多綠</span></div><div><b class="t4">D</b><span>你說什麼？冬瓜檸檬？</span></div></div></section>
+  return `<section class="hero"><h1 class="logo">心有靈排</h1>
+  <div class="heroR"><p class="issue">排名派對遊戲　2–10 人</p><p class="tag">排出你的真心，<br>猜中朋友的腦袋。</p>
+  <div class="demo" aria-hidden="true"><div>${tl(0)}<span>珍珠奶茶</span></div><div>${tl(1)}<span>多多綠</span></div><div>${tl(4)}<span>冬瓜檸檬？認真？</span></div></div></div></section>
   <div class="card stack"><div><label class="lb" for="nm">你的名字</label><input class="in" id="nm" maxlength="8" placeholder="最多 8 個字" value="${esc(ME.n)}" autocomplete="off"></div>
-  <div><span class="lb">選個頭像</span><div class="avs">${AVATARS.map(a=>`<button class="av ${a===ME.a?'on':''}" data-act="av" data-a="${a}" aria-label="頭像 ${a}">${a}</button>`).join('')}</div></div></div>
+  <div><span class="lb">選一個頭像</span><div class="avs">${AVATARS.map(a=>`<button class="av ${a===ME.a?'on':''}" data-act="av" data-a="${a}" aria-label="頭像 ${a}">${a}</button>`).join('')}</div></div></div>
   ${UI.err?`<p class="err" role="alert">${esc(UI.err)}</p>`:''}
   <div class="stack">
-    <button class="btn big pink" data-act="create" ${off||chk||UI.busy?'disabled':''}>開房間 · 大家用自己的手機</button>
+    <button class="btn big pink" data-act="create" ${off||chk||UI.busy?'disabled':''}>開房間，各用各的手機</button>
     <div class="row"><input class="in code" id="code" maxlength="4" placeholder="房號" value="${esc(UI.code)}" aria-label="房號" style="flex:1 1 120px" autocomplete="off"><button class="btn blue" data-act="join" style="flex:0 0 auto" ${off||chk||UI.busy?'disabled':''}>加入房間</button></div>
-    <p class="note">${chk?'正在檢查線上連線…':off?'這個頁面現在無法線上連線。一支手機也能玩！':'線上連線可用 · 朋友打開同一個頁面輸入房號就能加入'}</p>
+    <p class="note">${chk?'正在檢查線上連線…':off?'這個頁面現在無法線上連線。一支手機也能玩。':'朋友打開同一個網址，輸入房號就能加入。'}</p>
     <button class="btn big yellow" data-act="pp">一支手機輪流玩</button>
-    <div class="row"><button class="btn small" data-act="custom">✏️ 我的自訂題目（${CUSTOM.length}）</button><button class="btn small" data-act="help">❓ 怎麼玩</button></div>
+    <div class="row"><button class="btn small ghost" data-act="custom">我的自訂題目（${CUSTOM.length}）</button><button class="btn small ghost" data-act="help">怎麼玩</button></div>
   </div>`;
 }
 function vSettings(edit){
@@ -1003,25 +1320,25 @@ function vSettings(edit){
     ? `<div><span class="lb">每人當幾次主角</span><div class="chips">${[1,2,3].map(n=>`<button class="tg ${S.per===n?'on':''}" data-act="per" data-v="${n}" ${dis}>${n} 次</button>`).join('')}</div></div>`
     : `<div><span class="lb">回合數</span><div class="chips">${[5,8,12].map(n=>`<button class="tg ${S.rounds===n?'on':''}" data-act="rounds" data-v="${n}" ${dis}>${n} 回合</button>`).join('')}</div></div>`;
   return `<div class="card stack"><div class="seg">
-    <button class="opt ${S.mode==='guess'?'on':''}" data-act="mode" data-v="guess" ${dis}><b>🎯 猜猜主角</b><small>輪流當主角偷偷排，其他人猜他怎麼排</small></button>
-    <button class="opt ${S.mode==='sync'?'on':''}" data-act="mode" data-v="sync" ${dis}><b>🔮 全員神同步</b><small>大家一起排，目標排得一模一樣，拚連續同步</small></button></div>
+    <button class="opt ${S.mode==='guess'?'on':''}" data-act="mode" data-v="guess" ${dis}><b>猜猜主角</b><small>輪流當主角偷偷排，其他人猜他怎麼排</small></button>
+    <button class="opt ${S.mode==='sync'?'on':''}" data-act="mode" data-v="sync" ${dis}><b>全員神同步</b><small>大家一起排，目標排得一模一樣</small></button></div>
     ${per}
     <div><span class="lb">每回合排名時間</span><div class="chips">${[[0,'不限時'],[90,'90 秒'],[60,'60 秒'],[30,'30 秒']].map(([n,l])=>`<button class="tg ${(S.time||0)===n?'on':''}" data-act="time" data-v="${n}" ${dis}>${l}</button>`).join('')}</div></div>
-    <div><span class="lb">題庫</span><div class="chips">${Object.entries(CATS).map(([k,v])=>`<button class="tg ${S.cats.includes(k)?'on':''}" data-act="cat" data-v="${k}" ${dis}>${v}</button>`).join('')}</div></div>
-    <p class="note l" >每個人的自訂題目也會混進來${S.mode==='sync'?'；3 人以上還會出「排排看你的朋友」題':''}。</p></div>`;
+    <div><span class="lb">題庫（共 ${PROMPTS.filter(p=>S.cats.includes(p.c)).length} 題）</span><div class="chips">${Object.entries(CATS).map(([k,v])=>`<button class="tg ${S.cats.includes(k)?'on':''}" data-act="cat" data-v="${k}" ${dis}>${v}</button>`).join('')}</div></div>
+    <p class="note">每個人的自訂題目也會混進來${S.mode==='sync'?'；3 人以上還會出「排排看你的朋友」題':''}。</p></div>`;
 }
 function vLobby(){
   if(!NET.r) return vHome();
   const ps=lobbyPlayers();
-  if(!NET.isHost && NET.hostGone) return `<div class="card stack" style="text-align:center"><h2>房主離開了 😢</h2><p>這個房間已經關閉。</p><button class="btn big" data-act="leave">回首頁</button></div>`;
-  if(!NET.isHost && !NET.seenHost) return `<div class="card stack" style="text-align:center"><h2>正在找房間 ${esc(NET.code)}…</h2><p class="muted">${NET.slow?'還沒找到房主。確認房號對不對，並請房主保持頁面開著。':'馬上就好'}</p><button class="btn" data-act="leave">取消</button></div>`;
+  if(!NET.isHost && NET.hostGone) return `<div class="card stack"><h2>房主離開了</h2><p style="margin:0">這個房間已經關閉。</p><button class="btn big" data-act="leave">回首頁</button></div>`;
+  if(!NET.isHost && !NET.seenHost) return `<div class="card stack"><h2>正在找房間 ${esc(NET.code)}</h2><p class="muted" style="margin:0">${NET.slow?'還沒找到房主。確認房號對不對，並請房主保持頁面開著。':'馬上就好。'}</p><button class="btn" data-act="leave">取消</button></div>`;
   const host = NET.isHost;
-  return `<div class="card" style="text-align:center"><small class="muted">房號</small><div class="bigcode">${esc(NET.code)}</div><p class="muted" style="margin:0">朋友打開這個頁面，輸入房號就能加入</p>${NET.kind==='ws'?`<button class="btn small ghost" data-act="invite" style="margin-top:10px">${UI.copied?'已複製邀請連結！':'複製邀請連結'}</button>`:''}</div>
-  <div class="card stack"><h3>玩家（${ps.length} / 10）</h3><div class="plist">${ps.map(p=>`<div class="pp ${p.presence.h===1?'host':''}"><span class="e">${esc(p.presence.a||'🙂')}</span><span class="nm">${esc(String(p.presence.n).slice(0,8))}${p.sameTab?'（你）':''}</span></div>`).join('')}</div>
-  ${ps.length<2?'<p class="muted" style="margin:0">至少要 2 個人才能開始</p>':''}</div>
+  return `<div class="card tape center"><span class="lb" style="margin:0">房號</span><div class="bigcode">${esc(NET.code)}</div><p class="note c">朋友打開這個頁面，輸入房號就能加入</p>${NET.kind==='ws'?`<button class="btn small ghost" data-act="invite" style="margin-top:12px">${UI.copied?'已複製邀請連結':'複製邀請連結'}</button>`:''}</div>
+  <div class="card stack"><h3>玩家　${ps.length} / 10</h3><div class="plist">${ps.map(p=>`<div class="pp ${p.presence.h===1?'host':''}"><span class="e">${esc(p.presence.a||'🙂')}</span><span class="nm">${esc(String(p.presence.n).slice(0,8))}${p.sameTab?'（你）':''}</span></div>`).join('')}</div>
+  ${ps.length<2?'<p class="note">至少要 2 個人才能開始</p>':''}</div>
   ${UI.err?`<p class="err">${esc(UI.err)}</p>`:''}
   ${vSettings(host)}
-  ${host?`<button class="btn big pink" data-act="start" ${ps.length<2?'disabled':''}>開始遊戲！</button>`:`<p class="note">等房主開始遊戲…</p>`}
+  ${host?`<button class="btn big pink" data-act="start" ${ps.length<2?'disabled':''}>開始遊戲</button>`:`<p class="note c">等房主開始遊戲…</p>`}
   <button class="btn ghost" data-act="leave">離開房間</button>`;
 }
 function vPP(){
@@ -1029,26 +1346,27 @@ function vPP(){
   const ok=UI.ppl.length>=2 && UI.ppl.every(p=>p.n.trim());
   return `<div class="card stack"><h2>誰要玩？</h2>
   ${UI.ppl.map((p,i)=>`<div class="ppl"><button class="av on" data-act="ppav" data-i="${i}" aria-label="換頭像">${p.a}</button><input class="in" id="ppn-${i}" maxlength="8" placeholder="玩家 ${i+1} 的名字" value="${esc(p.n)}" autocomplete="off"><button class="x" data-act="ppdel" data-i="${i}" aria-label="移除玩家" ${UI.ppl.length<=2?'disabled':''}>×</button></div>`).join('')}
-  ${UI.ppl.length<10?`<button class="btn small" data-act="ppadd">＋ 加一個人</button>`:''}</div>
+  ${UI.ppl.length<10?`<button class="btn small ghost" data-act="ppadd">＋ 加一個人</button>`:''}</div>
   ${vSettings(true)}
-  <button class="btn big pink" data-act="ppstart" ${ok?'':'disabled'}>開始！</button>
-  <p class="note">輪到誰就把手機交給誰，其他人不要偷看喔 🙈</p>`;
+  <button class="btn big pink" data-act="ppstart" ${ok?'':'disabled'}>開始</button>
+  <p class="note c">輪到誰就把手機交給誰，其他人不要偷看。</p>`;
 }
 function vCustom(){
-  return `<div class="card stack"><h2>✏️ 我的自訂題目</h2><p class="muted" style="margin:0">放進只有你們懂的梗！線上玩時，房裡每個人的自訂題目都會混進題庫，還會標出是誰出的題。</p>
+  return `<div class="card stack"><h2>我的自訂題目</h2><p class="muted" style="margin:0">放進只有你們懂的梗。線上玩時，房裡每個人的自訂題目都會混進題庫，還會標出是誰出的題。</p>
   <div><label class="lb" for="ct">題目</label><input class="in" id="ct" maxlength="30" placeholder="例：同事最常說的話" value="${esc(UI.ct)}" autocomplete="off"></div>
   <div><label class="lb" for="cw">詞語（3–8 個，一行一個或用逗號分開）</label><textarea class="in" id="cw" placeholder="明天再說&#10;我看一下&#10;好喔&#10;收到&#10;等等開會">${esc(UI.cw)}</textarea></div>
   ${UI.cerr?`<p class="err">${esc(UI.cerr)}</p>`:''}
   <button class="btn mint" data-act="cadd">加入題庫</button></div>
-  <div class="card">${CUSTOM.length?CUSTOM.map((c,i)=>`<div class="cl"><div><b>${esc(c.t)}</b><small>${c.w.map(esc).join('、')}</small></div><button class="x" data-act="cdel" data-i="${i}" aria-label="刪除 ${esc(c.t)}">×</button></div>`).join(''):'<p class="empty">還沒有自訂題目。上面打一題試試看！</p>'}</div>
+  <div class="card">${CUSTOM.length?CUSTOM.map((c,i)=>`<div class="cl"><div><b>${esc(c.t)}</b><small>${c.w.map(esc).join('、')}</small></div><button class="x" data-act="cdel" data-i="${i}" aria-label="刪除 ${esc(c.t)}">×</button></div>`).join(''):'<p class="empty">還沒有自訂題目。上面寫一題試試看。</p>'}</div>
   <button class="btn ghost" data-act="home">回首頁</button>`;
 }
 function vHelp(){
   return `<div class="card help"><h2>怎麼玩</h2>
-  <h3>🎯 猜猜主角</h3><ul><li>每回合有一位主角，大家看到同一個題目和 5 個詞。</li><li>主角照真心把詞排成 S（最愛）到 D（最不愛）。</li><li>其他人同時猜主角會怎麼排。</li><li>揭曉從 D 一路翻到 S。每個詞猜中位置得 2 分，差一格得 1 分，全部猜中再加 5 分！</li><li>主角拿到大家的平均分，越好懂分越高。</li><li>🔥 加倍押注：猜的人可以押一列最有把握的，押中 +3，押錯 −1。</li><li>最後一回合是決勝回合，分數 ×2！</li></ul>
-  <h3>🔮 全員神同步</h3><ul><li>沒有主角，大家一起排同一題，目標是排得一模一樣。</li><li>3 人以上會出現「排排看你的朋友」題，詞語就是大家的名字。</li><li>看看你們能連續同步幾回合！</li></ul>
-  <h3>⏱️ 倒數計時</h3><p>可以設定每回合 30／60／90 秒，時間到還沒排完的會被自動排好送出。</p><h3>📱 兩種玩法</h3><ul><li><b>開房間</b>：每人用自己的手機開這個頁面，輸入房號加入（2–10 人）。</li><li><b>一支手機輪流玩</b>：輪到誰就把手機交給誰，揭曉時大家圍過來看。</li></ul>
-  <h3>🏆 最後頒獎</h3><p>名偵探、一秒看穿、謎一樣的人、唱反調王、靈魂伴侶…看看誰最懂誰！</p></div>
+  <h3>猜猜主角</h3><ul><li>每回合有一位主角，大家看到同一個題目和 5 個詞。</li><li>主角照真心把詞排成 S（本命）到 D（不行），還可以留一句「辯解」。</li><li>其他人同時猜主角會怎麼排，並可以押一列最有把握的：押中 +3，押錯 −1。</li><li>揭曉前，大家先投「誰最懂主角」，投中本回合最高分的人 +2。</li><li>揭曉從 D 一頁一頁翻到 S。位置猜中 2 分，差一格 1 分，全部猜中再加 5 分。</li><li>主角拿到大家的平均分，越好懂分越高。</li></ul>
+  <h3>每回合的小事件</h3><ul><li><b>反轉回合</b>：猜的人要排出最不像主角的排法。</li><li><b>雙主角</b>（4 人以上）：兩位主角各排各的，大家猜兩人合起來的排名。</li><li><b>豪賭回合</b>：押中 +6，押錯 −2。</li><li><b>閃電回合</b>：只有 25 秒。</li><li><b>決勝回合</b>：最後一回合分數 ×2。</li></ul>
+  <h3>全員神同步</h3><ul><li>沒有主角，大家一起排同一題，目標是排得一模一樣。</li><li>3 人以上會出現「排排看你的朋友」題，詞語就是大家的名字。</li></ul>
+  <h3>兩種開局</h3><ul><li><b>開房間</b>：每人用自己的手機開這個頁面，輸入房號加入。</li><li><b>一支手機輪流玩</b>：輪到誰就把手機交給誰，揭曉時大家圍過來看。</li></ul>
+  <h3>結束之後</h3><p>頒完獎會有一張成果卡，截圖就能分享。</p></div>
   <button class="btn ghost" data-act="home">回首頁</button>`;
 }
 function statusChips(G){
@@ -1056,14 +1374,15 @@ function statusChips(G){
 }
 function topicCard(G){
   const lab = G.topic.c==='my' ? '自訂題' : G.topic.c==='name' ? '排排看你的朋友' : (CATS[G.topic.c]||'題目');
-  return `<div class="card topic"><small>${esc(lab)}</small><h2>${esc(G.topic.t)}</h2>${G.topic.by?`<span class="by">由 ${esc(G.topic.by)} 出題</span>`:''}</div>`;
+  return `<div class="card topic tape"><small>${esc(lab)}</small><h2>${esc(G.topic.t)}</h2>${G.topic.by?`<span class="by">出題：${esc(G.topic.by)}</span>`:''}</div>`;
 }
 function roundBar(G){
-  return `<div class="roundbar"><span class="pill">第 ${G.ri+1} / ${G.tot} 回合</span><span class="pill">${G.mode==='guess'?'🎯 猜猜主角':'🔮 全員神同步'}</span>${G.mode==='sync'&&G.streak?`<span class="pill">🔥 連續 ${G.streak}</span>`:''}${G.x2?'<span class="pill x2">決勝回合 ×2</span>':''}<span class="sp"></span></div>`;
+  const ev=EV[G.ev];
+  return `<div class="roundbar"><span class="pill">第 ${G.ri+1} / ${G.tot} 回合</span><span class="pill">${G.mode==='guess'?'猜猜主角':'全員神同步'}</span>${G.mode==='sync'&&G.streak?`<span class="pill">連續同步 ${G.streak}</span>`:''}${ev?`<span class="pill ev">${ev[0]}</span>`:''}</div>`;
 }
 function vGame(){
   const G=CUR.G; if(!G) return CUR.online?vLobby():vHome();
-  if(CUR.online && !NET.isHost && NET.hostGone) return `<div class="card stack" style="text-align:center"><h2>房主離開了 😢</h2><p>遊戲中斷了，下次再一起玩！</p><button class="btn big" data-act="leave">回首頁</button></div>`;
+  if(CUR.online && !NET.isHost && NET.hostGone) return `<div class="card stack"><h2>房主離開了</h2><p style="margin:0">遊戲中斷了，下次再一起玩。</p><button class="btn big" data-act="leave">回首頁</button></div>`;
   if(G.ph==='rank') return vRankPhase(G);
   if(G.ph==='reveal') return vReveal(G);
   if(G.ph==='end') return vEnd(G);
@@ -1071,7 +1390,7 @@ function vGame(){
 }
 function ppQueue(G){
   const need=activeSeats(G).filter(s=>!G.done.includes(s));
-  if(G.mode==='guess'){ need.sort((a,b)=>(a===G.star?-1:b===G.star?1:a-b)); }
+  if(G.mode==='guess') need.sort((a,b)=>(isStar(G,b)-isStar(G,a)) || a-b);
   return need;
 }
 function vRankPhase(G){
@@ -1079,52 +1398,81 @@ function vRankPhase(G){
   if(!CUR.online){
     if(seat<0){
       const q=ppQueue(G);
-      if(!q.length) return `${roundBar(G)}<div class="card hand"><span class="face">📣</span><h2>全員送出！</h2><p>大家圍過來，準備揭曉！</p></div>`;
-      const s=q[0], isStar=G.mode==='guess'&&s===G.star;
-      return `${roundBar(G)}<div class="card hand"><span class="face">${esc(G.pl[s].a)}</span><p style="margin:0">請把手機交給</p><h2>${esc(G.pl[s].n)}</h2><p class="muted">${isStar?'你是這回合的主角！':G.mode==='sync'?'輪到你排了':'輪到你猜了'}　其他人不要偷看 🙈</p><button class="btn big pink" data-act="ppgo" data-s="${s}">我是 ${esc(G.pl[s].n)}，開始</button></div>${statusChips(G)}`;
+      if(!q.length) return `${roundBar(G)}<div class="card handoff"><h2>全員送出</h2><p style="margin:0">大家圍過來，準備揭曉。</p></div>`;
+      const s=q[0], star=isStar(G,s);
+      return `${roundBar(G)}<div class="card handoff tape c"><div class="photo"><div class="face">${esc(G.pl[s].a)}</div><small>${star?'本回合主角':'換你了'}</small></div><p style="margin:0" class="muted">請把手機交給</p><h2>${esc(G.pl[s].n)}</h2><p class="note c" style="margin-bottom:16px">${star?'你是這回合的主角。':G.mode==='sync'?'輪到你排了。':'輪到你猜了。'}其他人不要偷看。</p><button class="btn big pink" data-act="ppgo" data-s="${s}">我是 ${esc(G.pl[s].n)}，開始</button></div>${statusChips(G)}`;
     }
     return vRank(G,seat);
   }
-  if(seat<0) return `${roundBar(G)}${topicCard(G)}<div class="card" style="text-align:center"><h3>👀 你正在觀戰</h3><p class="muted" style="margin:6px 0 0">這場結束後回到大廳就能加入</p></div>${statusChips(G)}`;
+  if(seat<0) return `${roundBar(G)}${topicCard(G)}<div class="card"><h3>你正在觀戰</h3><p class="muted" style="margin:6px 0 0">這場結束後回到大廳就能加入。</p></div>${statusChips(G)}`;
   if(G.done.includes(seat) || UI.sentRid===G.rid) return vWait(G,seat);
   return vRank(G,seat);
 }
 function ensureDraft(G,seat){
   const K=G.topic.w.length;
-  if(!UI.draft || UI.draft.rid!==G.rid || UI.draft.seat!==seat) { UI.draft={rid:G.rid,seat,arr:Array(K).fill(-1),bet:-1}; UI.sel=-1; UI.deadline = G.time ? Date.now()+G.time*1000 : 0; UI.tickAt=0; }
+  if(!UI.draft || UI.draft.rid!==G.rid || UI.draft.seat!==seat) { UI.draft={rid:G.rid,seat,arr:Array(K).fill(-1),bet:-1}; UI.sel=-1; UI.ex=''; UI.deadline = G.rt ? Date.now()+G.rt*1000 : 0; UI.tickAt=0; }
   return UI.draft;
 }
 function vRank(G,seat){
   const d=ensureDraft(G,seat), K=G.topic.w.length, W=G.topic.w;
-  const isStar=G.mode==='guess'&&seat===G.star;
-  const timer = G.time ? `<div class="timer" id="timer" aria-live="off"><i style="width:100%"></i><span>${G.time}</span></div>` : '';
-  const role = G.mode==='sync' ? `🔮 跟大家排得<b>一模一樣</b>才算同步！` : isStar ? `⭐ 你是主角！照<b>你的真心</b>排` : `🕵️ 猜猜 <b>${esc(pname(G,G.star))}</b> 會怎麼排`;
+  const star=isStar(G,seat), guess=G.mode==='guess', rev=G.ev==='rev', duo=G.star2>=0;
+  const timer = G.rt ? `<div class="timer" id="timer" aria-live="off"><i style="width:100%"></i><span>${G.rt}</span></div>` : '';
+  let role;
+  if(!guess) role=`跟大家排得<b>一模一樣</b>才算同步`;
+  else if(star) role=duo?`你是雙主角之一，照<b>你的真心</b>排`:`你是主角，照<b>你的真心</b>排`;
+  else if(rev) role=`反轉回合：排出<b>最不像</b> ${esc(starNames(G))} 的排法`;
+  else if(duo) role=`猜 <b>${esc(starNames(G))}</b> 合起來的排名`;
+  else role=`猜猜 <b>${esc(pname(G,G.star))}</b> 會怎麼排`;
   const placed=new Set(d.arr.filter(x=>x>=0)), full=d.arr.every(x=>x>=0);
+  const ph0 = !guess||star ? '最愛的放這裡' : rev ? '他最不愛的放這裡' : '他最愛的放這裡';
   let h=`${roundBar(G)}${timer}${topicCard(G)}<p class="role">${role}</p><div class="tiers">`;
   for(let t=0;t<K;t++){
-    const w=d.arr[t];
-    const canBet = G.mode==='guess' && !isStar && w>=0;
-    h+=`<div class="tier t${t} tap ${w>=0?'lit':''} ${UI.sel>=0&&UI.sel!==t?'tgt':''} ${d.bet===t?'betrow':''}" data-act="tier" data-t="${t}">${tl(t)}<div class="slot">${w>=0?`<button class="chip placed ${UI.sel===t?'sel':''}" data-act="placed" data-t="${t}">${esc(W[w])}</button>`:`<span class="ph">${t===0?(isStar||G.mode==='sync'?'最愛的放這裡':'他最愛的放這裡'):t===K-1?'最不愛的':''}</span>`}</div>${canBet?`<button class="betbtn ${d.bet===t?'on':''}" data-act="bet" data-t="${t}" aria-label="押注這一列" aria-pressed="${d.bet===t}">🔥</button>`:''}</div>`;
+    const w=d.arr[t], canBet = guess && !star && w>=0;
+    h+=`<div class="tier t${t} tap ${UI.sel>=0&&UI.sel!==t?'tgt':''}" data-act="tier" data-t="${t}">${tl(t)}<div class="slot">${w>=0?`<button class="chip placed ${UI.sel===t?'sel':''}" data-act="placed" data-t="${t}">${esc(W[w])}</button>`:`<span class="ph">${t===0?ph0:''}</span>`}</div>${canBet?`<button class="betbtn ${d.bet===t?'on':''}" data-act="bet" data-t="${t}" aria-label="押注這一列" aria-pressed="${d.bet===t}">押</button>`:''}</div>`;
   }
-  h+=`</div><div class="pool">${W.map((w,i)=>placed.has(i)?'':`<button class="chip" data-act="word" data-w="${i}">${esc(w)}</button>`).join('')||'<span class="hint">全部排好了！確認一下就送出吧</span>'}</div>
-  <p class="hint">點詞語會依序放進 S → D｜點排好的詞再點別列可以交換｜同一個詞點兩下拿回來</p>
-  ${G.mode==='guess'&&!isStar?`<p class="hint bet">🔥 可以押一列最有把握的：押中 +3，押錯 −1${d.bet>=0?`（已押 ${TIERS[d.bet]} 列）`:''}</p>`:''}
-  <div class="row"><button class="btn small" data-act="clear" style="flex:0 0 auto">重排</button><button class="btn big pink" data-act="submit" ${full?'':'disabled'} style="flex:1">${isStar?'鎖定我的排名':'送出'}</button></div>`;
-  if(isStar) h+=`<button class="btn ghost small" data-act="reroll" ${G.rr>=2||UI.rqRid===G.rid?'disabled':''}>🎲 這題不好排，換一題（剩 ${2-G.rr} 次）</button>`;
+  h+=`</div><div class="pool">${W.map((w,i)=>placed.has(i)?'':`<button class="chip" data-act="word" data-w="${i}">${esc(w)}</button>`).join('')||'<span class="hint">全部排好了，確認一下就送出。</span>'}</div>
+  <p class="hint">點詞語會依序放進 S 到 D。點排好的詞再點別列可以交換，同一個詞點兩下拿回來。</p>
+  ${guess&&!star?`<p class="hint bet">可以按「押」押一列最有把握的：押中 ${G.ev==='gam'?'+6，押錯 −2':'+3，押錯 −1'}${d.bet>=0?`（已押 ${TIERS[d.bet]} 列）`:''}</p>`:''}`;
+  if(star) h+=`<div class="exbox"><label class="lb" for="ex" style="margin:0">留一句辯解，揭曉前會貼給大家看（可以不寫）</label><input class="in" id="ex" maxlength="30" placeholder="例：這是信仰問題" value="${esc(UI.ex||'')}" autocomplete="off"><div class="chips">${EXPRE.map(x=>`<button class="tg" data-act="expre" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>`;
+  h+=`<div class="row"><button class="btn small ghost" data-act="clear" style="flex:0 0 auto">重排</button><button class="btn big pink" data-act="submit" ${full?'':'disabled'} style="flex:1">${star?'鎖定我的排名':'送出'}</button></div>`;
+  if(guess && seat===G.star) h+=`<button class="btn ghost small" data-act="reroll" ${G.rr>=2||UI.rqRid===G.rid?'disabled':''}>這題不好排，換一題（剩 ${2-G.rr} 次）</button>`;
   if(CUR.online) h+=statusChips(G);
   return h;
 }
 function vWait(G,seat){
   const d=UI.draft && UI.draft.rid===G.rid ? UI.draft.arr : null;
   const force = NET.isHost && canForce(G,ENG.H) && !allIn(G,ENG.H);
-  return `${roundBar(G)}${topicCard(G)}<div class="card" style="text-align:center"><h3>✅ 送出了！</h3><p class="muted" style="margin:4px 0 0">等其他人想好…</p></div>
-  ${d?`<div class="tiers" style="opacity:.75">${d.map((w,t)=>`<div class="tier t${t}">${tl(t)}<div class="slot"><span class="chip big">${esc(G.topic.w[w])}</span></div></div>`).join('')}</div>`:''}
-  ${statusChips(G)}${force?`<button class="btn small" data-act="force">有人掛機？不等了，直接揭曉</button>`:''}`;
+  return `${roundBar(G)}${topicCard(G)}<div class="card"><h3>送出了</h3><p class="muted" style="margin:4px 0 0">等其他人想好…</p></div>
+  ${d&&d.every(x=>x>=0)?`<div class="tiers" style="opacity:.7">${d.map((w,t)=>`<div class="tier t${t}">${tl(t)}<div class="slot"><span class="chip big">${esc(G.topic.w[w])}</span></div></div>`).join('')}</div>`:''}
+  ${statusChips(G)}${force?`<button class="btn small ghost" data-act="force">有人沒回來？不等了，直接揭曉</button>`:''}`;
+}
+function vVote(G){
+  const R=G.res, me=mySeat(), sn=esc(starNames(G,R.stars));
+  let voter=-1;
+  if(CUR.online){ if(R.vs.includes(me) && !G.vd.includes(me) && UI.votedRid!==G.rid) voter=me; }
+  else { const v=R.vs.find(s=>!G.vd.includes(s)); voter = v===undefined ? -1 : v; }
+  const cands = voter>=0 ? R.gs.filter(s=>s!==voter) : [];
+  let h='<div class="card vote tape c">';
+  if(voter>=0 && cands.length){
+    const q = R.stars.includes(voter) ? (CUR.online ? '你覺得誰最懂你？' : `${esc(G.pl[voter].n)}，你覺得誰最懂你？`) : `你覺得誰最懂 ${sn}？`;
+    h+=`<h3>揭曉之前<br>${q}</h3><p class="note">投中本回合最高分的人，你也 +2 分</p><div class="cands">${cands.map(s=>`<button class="cand" data-act="vote" data-v="${voter}" data-s="${s}"><span class="e">${esc(G.pl[s].a)}</span>${esc(G.pl[s].n)}</button>`).join('')}</div>`;
+  } else h+=`<h3>揭曉之前<br>大家正在投「最懂 ${sn} 的人」</h3>${UI.votedRid===G.rid&&UI.votePick>=0?`<p class="note">你投給了 ${esc(pname(G,UI.votePick))}</p>`:''}`;
+  h+=`<p class="note">已投票 ${G.vd.length} / ${R.vs.length}</p></div>`;
+  return h;
 }
 function vReveal(G){
   const K=G.topic.w.length, W=G.topic.w, R=G.res, seats=Object.keys(R.k).map(Number);
-  const guess=G.mode==='guess', star=G.star, sk=guess?R.k[star]:null, sT=guess?tierOf(sk):null, gs=guess?seats.filter(s=>s!==star):seats;
-  let h=`${roundBar(G)}<div class="rvhead"><p class="who">${guess?`揭曉 <b>${esc(pname(G,star))}</b> 的真心排名！`:'大家的排法揭曉！'}</p></div>${topicCard(G)}<div class="tiers">`;
+  const guess=G.mode==='guess', sk=guess?R.tk:null, sT=guess?tierOf(sk):null, gs=guess?R.gs:seats, duo=guess&&R.stars.length===2;
+  let head;
+  if(!guess) head='大家的排法';
+  else if(duo) head=`${esc(G.pl[R.stars[0]].n)} × ${esc(G.pl[R.stars[1]].n)} 的合體排名`;
+  else head=`${esc(pname(G,R.stars[0]))} 的真心排名`;
+  let h=`${roundBar(G)}<div class="rvhead"><p class="who">${head}</p></div>${topicCard(G)}`;
+  if(guess && R.ev==='rev') h+=`<p class="evnote">反轉回合：大家的答案已經上下顛倒來對照</p>`;
+  if(duo) h+=`<p class="evnote">兩位主角的默契 ${R.agree}%</p>`;
+  if(guess) R.stars.forEach(s=>{ if(R.ex[s]) h+=`<div class="memo"><small>主角的辯解</small><p>「${esc(R.ex[s])}」</p><cite>${esc(G.pl[s].n)}</cite></div>`; });
+  if(guess && G.step===0 && R.vt) h+=vVote(G);
+  h+='<div class="tiers">';
   for(let t=0;t<K;t++){
     const shown=G.step>=K-t, fresh=G.step===K-t;
     if(!shown){ h+=`<div class="tier t${t} rv hide">${tl(t)}<div class="slot"><span class="q">?</span></div></div>`; continue; }
@@ -1132,67 +1480,98 @@ function vReveal(G){
     if(guess){
       const w=sk[t], hits=gs.filter(s=>R.k[s][t]===w).length;
       slot=`<span class="chip big">${esc(W[w])}</span>`;
-      bubs=gs.map((s,j)=>{ const gw=R.k[s][t], c=gw===w?'hit':Math.abs(sT[gw]-t)===1?'near':'miss', bt=R.bet&&R.bet[s]&&R.bet[s][0]===t; return `<span class="bub ${c} ${bt?'bet':''}" style="--d:${j*110}ms"><span class="e">${esc(G.pl[s].a)}</span><i>${esc(W[gw])}</i>${bt?'<b class="fire">🔥</b>':''}</span>`; }).join('');
-      if(gs.length){ if(hits===gs.length){ stamp=`<span class="stamp good">${gs.length>1?'全中！':'猜中！'}</span>`; cls='allhit'; } else if(!hits){ stamp=`<span class="stamp bad">沒人猜到😱</span>`; cls='nohit'; } else stamp=`<span class="stamp">${hits} 人猜中</span>`; }
+      if(duo) bubs+=R.stars.map((s,j)=>`<span class="bub star" style="--d:${j*110}ms"><span class="e">${esc(G.pl[s].a)}</span><i>${esc(W[R.k[s][t]])}</i></span>`).join('');
+      bubs+=gs.map((s,j)=>{ const gw=R.k[s][t], c=gw===w?'hit':Math.abs(sT[gw]-t)===1?'near':'miss', bt=R.bet&&R.bet[s]&&R.bet[s][0]===t; return `<span class="bub ${c}" style="--d:${(j+2)*110}ms"><span class="e">${esc(G.pl[s].a)}</span><i>${esc(W[gw])}</i>${bt?'<b class="ya">押</b>':''}</span>`; }).join('');
+      if(gs.length){ if(hits===gs.length){ stamp=`<span class="stamp good">${gs.length>1?'全員猜中':'猜中'}</span>`; cls='allhit'; } else if(!hits) stamp=`<span class="stamp">無人猜中</span>`; else stamp=`<span class="stamp plain">${hits} 人猜中</span>`; }
     } else {
       const cnt={}; seats.forEach(s=>{ const w=R.k[s][t]; cnt[w]=(cnt[w]||0)+1; });
       const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0], same=top[1]===seats.length;
       slot=`<span class="chip big">${esc(W[top[0]])}</span><span class="cnt">${top[1]}/${seats.length}</span>`;
       bubs=seats.map((s,j)=>{ const gw=R.k[s][t]; return `<span class="bub ${String(gw)===top[0]?'hit':'miss'}" style="--d:${j*110}ms"><span class="e">${esc(G.pl[s].a)}</span><i>${esc(W[gw])}</i></span>`; }).join('');
-      stamp = same ? `<span class="stamp good">同！</span>` : `<span class="stamp bad">分歧！</span>`; cls = same?'allhit':'';
+      stamp = same ? `<span class="stamp good">一致</span>` : `<span class="stamp">分歧</span>`; cls = same?'allhit':'';
     }
-    h+=`<div class="tier t${t} rv lit ${fresh?'fresh':''} ${t===0?'climax':''} ${cls}">${tl(t)}<div class="slot">${slot}<div class="bubs">${bubs}</div></div>${stamp}</div>`;
+    h+=`<div class="tier t${t} rv ${fresh?'fresh':''} ${t===0?'climax':''} ${cls}">${tl(t)}<div class="slot">${slot}<div class="bubs">${bubs}</div></div>${stamp}</div>`;
   }
   h+='</div>';
   if(G.step>=G.ms) h+=vRoundResult(G);
-  else if(canControl()) h+=`<button class="btn ghost small" data-act="skip">快轉 ▶</button>`;
+  else if(canControl()) h+=`<button class="btn ghost small" data-act="skip">${G.step===0&&R.vt?'不等投票，開始揭曉':'快轉'}</button>`;
   h+=vRx();
   return h;
 }
 const QUIPS = {
-  perfect:['完美讀心！你住在他腦袋裡嗎？','神同步！這已經不是猜，是預言','根本是同一個人吧？'],
-  easy:['一眼看穿，透明人無誤','太好懂了，下次藏深一點','大家都很懂你喔 😏'],
-  mid:['有懂有不懂，剛剛好','還算有默契！','差一點就心有靈排了'],
-  hard:['這位主角太神祕了吧！','原來大家都不認識你…','你的腦袋是迷宮嗎？']
+  perfect:['你住在他腦袋裡嗎？','這已經不是猜，是預言。','根本是同一個人吧。'],
+  easy:['一眼看穿，透明人無誤。','太好懂了，下次藏深一點。','大家都很懂你。'],
+  mid:['有懂有不懂，剛剛好。','還算有默契。','差一點就心有靈排了。'],
+  hard:['這位主角太神祕了。','原來大家都不認識你。','你的腦袋是迷宮嗎？']
 };
+function boardHTML(G, medals){
+  const me=mySeat(), board=G.pl.map((p,i)=>({i,s:G.sc[i]})).sort((a,b)=>b.s-a.s);
+  return `<div class="board">${board.map((b,r)=>`<div class="brow ${b.i===me&&CUR.online?'me':''}"><span class="rk">${r+1}</span><span>${esc(G.pl[b.i].a)}</span><span class="nm">${esc(G.pl[b.i].n)}</span><span class="sc">${b.s}</span></div>`).join('')}</div>`;
+}
 function vRoundResult(G){
-  const R=G.res, me=mySeat();
-  const board=G.pl.map((p,i)=>({i,s:G.sc[i]})).sort((a,b)=>b.s-a.s);
-  const boardH=`<div class="board">${board.map((b,r)=>`<div class="brow ${b.i===me&&CUR.online?'me':''}"><span class="rk">${r+1}</span><span>${esc(G.pl[b.i].a)}</span><span class="nm">${esc(G.pl[b.i].n)}</span><span class="sc">${b.s}</span></div>`).join('')}</div>`;
+  const R=G.res;
   let h='<div class="card res">';
   if(G.mode==='guess'){
-    const gs=Object.keys(R.pts).map(Number).sort((a,b)=>R.pts[b]-R.pts[a]);
+    const gs=R.gs.slice().sort((a,b)=>R.pts[b]-R.pts[a]);
     const pct=R.max?Math.round(R.avg/R.max*100):0;
     const q=R.perf.length?QUIPS.perfect:pct>=60?QUIPS.easy:pct>=35?QUIPS.mid:QUIPS.hard;
-    h+=`${R.x2?'<p class="x2tag">決勝回合 分數 ×2</p>':''}<p class="banner">${R.perf.length?'🎉 完美讀心！':pct>=60?'😎 默契滿點':pct>=35?'🙂 還不錯':'🤯 謎之主角'}</p><p class="quip">${esc(seededPick(q,G.rid))}</p>
-    <div class="line"><span class="e">${esc(G.pl[G.star].a)}</span><div><div class="nm">${esc(G.pl[G.star].n)}（主角）被讀懂度 ${pct}%</div><div class="bar"><i data-w="${pct}" style="background:var(--S)"></i></div></div><span class="pts">+${R.sp}</span></div>
-    ${R.sur?`<p class="sur">😱 最大驚嚇：大家以為「${esc(G.topic.w[R.sur.w])}」在 <b class="tc${R.sur.gt}">${TIERS[R.sur.gt]}</b>，結果在 <b class="tc${R.sur.st}">${TIERS[R.sur.st]}</b>！</p>`:''}
-    ${gs.map(s=>`<div class="line"><span class="e">${esc(G.pl[s].a)}</span><div><div class="nm">${esc(G.pl[s].n)}${R.perf.includes(s)?'<span class="badge">完美 +5</span>':''}${R.bet&&R.bet[s]?(R.bet[s][1]?'<span class="badge fireb">🔥押中 +3</span>':'<span class="badge lose">🔥押錯 −1</span>'):''}</div><div class="bar"><i data-w="${Math.round(R.pts[s]/R.max*100)}"></i></div></div><span class="pts">+${R.pts[s]}</span></div>`).join('')}`;
+    const ev=EV[R.ev];
+    h+=`${ev?`<p class="x2tag">${ev[0]}</p>`:''}<p class="banner">${R.perf.length?'完美讀心':pct>=60?'默契滿點':pct>=35?'還算懂你':'謎之主角'}</p><p class="quip">${esc(seededPick(q,G.rid))}</p>
+    ${R.stars.map(s=>`<div class="line"><span class="e">${esc(G.pl[s].a)}</span><div><div class="nm">${esc(G.pl[s].n)}（主角）被讀懂 ${pct}%</div><div class="bar"><i class="s" data-w="${pct}"></i></div></div><span class="pts">+${R.sp}</span></div>`).join('')}
+    ${R.sur?`<p class="sur">最大驚嚇：大家以為「${esc(G.topic.w[R.sur.w])}」在 <b>${TIERS[R.sur.gt]}</b>，結果在 <b>${TIERS[R.sur.st]}</b>。</p>`:''}
+    ${gs.map(s=>`<div class="line"><span class="e">${esc(G.pl[s].a)}</span><div><div class="nm">${esc(G.pl[s].n)}${R.perf.includes(s)?'<span class="badge">完美 +5</span>':''}${R.bet&&R.bet[s]?(R.bet[s][1]?`<span class="badge">押中 +${R.bet[s][2]}</span>`:`<span class="badge lose">押錯 −${-R.bet[s][2]}</span>`):''}${R.vp.includes(s)?'<span class="badge g">投中 +2</span>':''}</div><div class="bar"><i data-w="${Math.min(100,Math.round(R.pts[s]/(R.max*(R.x2?2:1))*100))}"></i></div></div><span class="pts">+${R.pts[s]}</span></div>`).join('')}`;
+    if(R.votes && Object.keys(R.votes).length){
+      h+=`<h3>誰最懂 ${esc(starNames(G,R.stars))}？</h3><ul class="vlist">${Object.keys(R.votes).map(Number).map(v=>`<li>${esc(pname(G,v))}${R.stars.includes(v)?'（主角）':''} 投給 ${esc(pname(G,R.votes[v]))}${R.vp.includes(v)?'<span class="ok">投中 +2</span>':''}</li>`).join('')}</ul>
+      <p class="note">${R.top.length?`這回合最懂的人其實是 ${R.top.map(s=>esc(pname(G,s))).join('、')}`:'這回合沒有人猜到分數'}</p>`;
+    }
   } else {
     const K=G.topic.w.length, seats=Object.keys(R.k).map(Number);
     let sameT=0; for(let t=0;t<K;t++) if(seats.every(s=>R.k[s][t]===R.k[seats[0]][t])) sameT++;
-    h+=`<p class="banner">${R.same?`🔥 全員神同步！`:sameT>=K-1?'😭 只差一點點！':'💥 破功！'}</p><p class="quip">${R.same?`連續同步 ${G.streak} 回合（最高 ${G.best}）`:`${sameT} / ${K} 列完全一致${G.best?`　最高連續 ${G.best} 回合`:''}`}</p>${R.sur?`<p class="sur">💥 最大分歧：「${esc(G.topic.w[R.sur.w])}」有人放 <b class="tc${R.sur.lo}">${TIERS[R.sur.lo]}</b>，有人放 <b class="tc${R.sur.hi}">${TIERS[R.sur.hi]}</b></p>`:''}`;
+    h+=`<p class="banner">${R.same?'全員神同步':sameT>=K-1?'只差一點點':'破功'}</p><p class="quip">${R.same?`連續同步 ${G.streak} 回合（最高 ${G.best}）`:`${sameT} / ${K} 列完全一致${G.best?`，最高連續 ${G.best} 回合`:''}`}</p>${R.sur?`<p class="sur">最大分歧：「${esc(G.topic.w[R.sur.w])}」有人放 <b>${TIERS[R.sur.lo]}</b>，有人放 <b>${TIERS[R.sur.hi]}</b>。</p>`:''}`;
   }
-  h+=`<h3 style="margin-top:6px">目前排名</h3>${boardH}</div>`;
+  h+=`<h3>目前排名</h3>${boardHTML(G)}</div>`;
   const last=G.ri+1>=G.tot;
-  if(canControl()) h+=`<button class="btn big pink" data-act="next">${last?'🏆 看頒獎！':'下一回合 →'}</button>`;
-  else h+=`<p class="note">等房主按下一回合…</p>`;
+  if(canControl()) h+=`<button class="btn big pink" data-act="next">${last?'看頒獎':'下一回合'}</button>`;
+  else h+=`<p class="note c">等房主按下一回合…</p>`;
   return h;
 }
 function seededPick(arr,seed){ let h=0; for(const c of String(seed)) h=(h*31+c.charCodeAt(0))|0; return arr[Math.abs(h)%arr.length]; }
 function vRx(){ return `<div class="rx" role="group" aria-label="表情反應">${REACTS.map(e=>`<button data-act="rx" data-e="${e}" aria-label="送出 ${e}">${e}</button>`).join('')}</div>`; }
+function shareCard(G){
+  const board=G.pl.map((p,i)=>({i,s:G.sc[i]})).sort((a,b)=>b.s-a.s);
+  const top=board.filter(b=>b.s===board[0].s), rest=board.filter(b=>b.s!==board[0].s);
+  const now=new Date(), wk=['SUN','MON','TUE','WED','THU','FRI','SAT'][now.getDay()];
+  const dt=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${wk}`;
+  const aws=(G.aw||[]).slice(1).filter(a=>a.s.length).slice(0,4);
+  const host=/onrender\.com$/.test(location.hostname)?location.hostname:'心有靈排';
+  let hl='';
+  if(G.hl){ hl = G.hl.gt!==undefined
+    ? `<p class="hl"><small>本日名場面</small>「${esc(G.hl.t)}」大家以為「${esc(G.hl.w)}」是 ${TIERS[G.hl.gt]}，結果${esc(G.hl.s.map(s=>G.pl[s].n).join('和'))}放在 ${TIERS[G.hl.st]}。</p>`
+    : `<p class="hl"><small>本日名場面</small>「${esc(G.hl.t)}」的「${esc(G.hl.w)}」，有人放 ${TIERS[G.hl.lo]}，有人放 ${TIERS[G.hl.hi]}。</p>`; }
+  return `<div class="share tape" id="share">
+    <div class="hd"><div><p class="dt">${dt}</p><h2>心有靈排</h2><p class="sub">${G.mode==='guess'?'今天誰最懂誰的紀錄':'今天我們有多同步'}</p></div><span class="hanko">排</span></div>
+    <div class="win"><div class="photo"><div class="face">${esc(G.pl[top[0].i].a)}</div></div><div><p>${G.mode==='guess'?'最會讀心':'最合拍'}</p><h3>${top.map(b=>esc(G.pl[b.i].n)).join('、')}</h3><p><span class="sc-big">${top[0].s}</span> 分</p></div><span class="seal">優勝</span></div>
+    ${rest.length?`<ol>${rest.map((b,r)=>`<li><i>${r+1+top.length}</i><span>${esc(G.pl[b.i].a)} ${esc(G.pl[b.i].n)}</span><b>${b.s}</b></li>`).join('')}</ol>`:''}
+    ${aws.length?`<ul class="aws">${aws.map(a=>`<li><b>${esc(a.t)}</b><span>${a.s.map(s=>esc(G.pl[s].n)).join('、')}</span></li>`).join('')}</ul>`:''}
+    ${G.mode==='sync'?`<p class="hl"><small>同步紀錄</small>${G.syncs} / ${G.tot} 回合完全一致，最高連續 ${G.best} 回合。</p>`:''}
+    ${hl}
+    ${G.qt?`<p class="qt">「${esc(G.qt.x)}」<cite>${esc(G.pl[G.qt.s].n)}，關於「${esc(G.qt.t)}」</cite></p>`:''}
+    <p class="ft"><span>${G.mode==='guess'?'猜猜主角':'全員神同步'}　${G.tot} 回合　${G.pl.length} 人</span><span>${esc(host)}</span></p>
+  </div>`;
+}
 function vEnd(G){
-  const aw=G.aw||[], n=Math.min(UI.awStep, aw.length), me=mySeat();
-  let h=`<div class="hero" style="padding-top:4px"><h1 class="logo" style="font-size:40px">頒獎典禮</h1><p class="tag">${G.mode==='guess'?'誰最懂誰？':'你們有多同步？'}</p></div><div class="stack">`;
-  for(let i=0;i<n;i++){ const a=aw[i]; h+=`<div class="card aw"><span class="ic">${a.i}</span><div><h3>${esc(a.t)}</h3>${a.s.length?`<div class="who">${a.s.map(s=>esc(pname(G,s))).join('、')}</div>`:''}<p>${esc(a.d)}</p></div></div>`; }
-  if(UI.awStep<aw.length) h+=`<p class="drum">🥁 下一個獎項是…</p>`;
+  if(UI.cardOnly) return `${shareCard(G)}<button class="btn ghost small" data-act="cardonly">返回</button>`;
+  const aw=G.aw||[], n=Math.min(UI.awStep, aw.length);
+  let h=`<div class="pagehead"><h1>頒獎</h1><p>${G.mode==='guess'?'誰最懂誰':'你們有多同步'}</p></div><div class="stack">`;
+  for(let i=0;i<n;i++){ const a=aw[i]; h+=`<div class="card aw"><span class="ic">${esc(a.i)}</span><div><h3>${esc(a.t)}</h3>${a.s.length?`<div class="who">${a.s.map(s=>esc(pname(G,s))).join('、')}</div>`:''}<p>${esc(a.d)}</p></div></div>`; }
+  if(UI.awStep<aw.length) h+=`<p class="drum">下一個獎項是…</p>`;
   h+='</div>';
   if(UI.awStep>=aw.length){
-    const board=G.pl.map((p,i)=>({i,s:G.sc[i]})).sort((a,b)=>b.s-a.s), med=['🥇','🥈','🥉'];
-    h+=`<div class="card stack"><h3>最終排名</h3><div class="board">${board.map((b,r)=>`<div class="brow ${b.i===me&&CUR.online?'me':''}"><span class="rk">${med[r]||r+1}</span><span>${esc(G.pl[b.i].a)}</span><span class="nm">${esc(G.pl[b.i].n)}</span><span class="sc">${b.s}</span></div>`).join('')}</div></div>`;
-    if(canControl()) h+=`<button class="btn big pink" data-act="again">再玩一場！</button>`; else h+=`<p class="note">等房主開下一場…</p>`;
+    h+=`<div class="pagehead"><h1>成果卡</h1><p>截圖這張卡片就能分享</p></div>${shareCard(G)}
+    <button class="btn small ghost" data-act="cardonly">只顯示成果卡，方便截圖</button>`;
+    if(canControl()) h+=`<button class="btn big pink" data-act="again">再玩一場</button>`; else h+=`<p class="note c">等房主開下一場…</p>`;
     h+=`<button class="btn ghost" data-act="${CUR.online?'leave':'home'}">回首頁</button>`;
-  } else h+=`<button class="btn ghost small" data-act="awskip">直接看全部 ▶</button>`;
+  } else h+=`<button class="btn ghost small" data-act="awskip">直接看全部</button>`;
   return h+vRx();
 }
 
@@ -1223,15 +1602,17 @@ function myAction(kind, payload){
   const G=CUR.G; if(!G) return;
   if(!CUR.online || NET.isHost){
     const E=ENG.G; if(!E) return;
-    if(kind==='submit'){ if(submit(E,ENG.H,payload.seat,payload.k,payload.b)){ if(!CUR.online) UI.ppTurn=null; engCommit(); } }
+    if(kind==='submit'){ if(submit(E,ENG.H,payload.seat,payload.k,payload.b,payload.ex)){ if(!CUR.online) UI.ppTurn=null; engCommit(); } }
     else if(kind==='reroll'){ reroll(E,ENG.H); engCommit(); }
     else if(kind==='next'){ if(E.ph==='reveal'){ startRound(E,ENG.H); engCommit(); } }
-    else if(kind==='skip'){ if(E.ph==='reveal' && E.step<E.ms){ E.step++; engCommit(); } }
+    else if(kind==='skip'){ if(E.ph==='reveal' && E.step<E.ms){ advance(E,ENG.H); engCommit(); } }
     else if(kind==='force'){ if(canForce(E,ENG.H)){ doReveal(E,ENG.H); engCommit(); } }
+    else if(kind==='vote'){ if(vote(E,ENG.H,payload.seat,payload.target)) engCommit(); }
     return;
   }
-  if(kind==='submit'){ UI.sentRid=G.rid; NET.r.presence({ s:{ r:G.rid, k:payload.k, b:payload.b } }).catch(()=>{}); render(); }
+  if(kind==='submit'){ UI.sentRid=G.rid; NET.r.presence({ s:{ r:G.rid, k:payload.k, b:payload.b, x:payload.ex||'' } }).catch(()=>{}); render(); }
   else if(kind==='reroll'){ UI.rqRid=G.rid; NET.r.presence({ rq:G.rid }).catch(()=>{}); render(); }
+  else if(kind==='vote'){ NET.r.presence({ vt:{ r:G.rid, s:payload.target } }).catch(()=>{}); render(); }
 }
 document.addEventListener('click', e=>{
   const b=e.target.closest('[data-act]'); if(!b || b.disabled) return;
@@ -1250,6 +1631,7 @@ document.addEventListener('click', e=>{
     case 'mode': SET.mode=b.dataset.v; saveSet(); sfx('tap'); render(); break;
     case 'per': SET.per=+b.dataset.v; saveSet(); sfx('tap'); render(); break;
     case 'rounds': SET.rounds=+b.dataset.v; saveSet(); sfx('tap'); render(); break;
+    case 'time': SET.time=+b.dataset.v; saveSet(); sfx('tap'); render(); break;
     case 'cat': { const v=b.dataset.v, i=SET.cats.indexOf(v); if(i>=0){ if(SET.cats.length>1) SET.cats.splice(i,1); } else SET.cats.push(v); saveSet(); sfx('tap'); render(); break; }
     case 'start': if(NET.isHost) hostStart(); break;
     case 'ppav': { const p=UI.ppl[+b.dataset.i]; p.a=AVATARS[(AVATARS.indexOf(p.a)+1)%AVATARS.length]; sfx('tap'); render(); break; }
@@ -1257,7 +1639,7 @@ document.addEventListener('click', e=>{
     case 'ppdel': if(UI.ppl.length>2){ UI.ppl.splice(+b.dataset.i,1); render(); } break;
     case 'ppstart': {
       const pl=UI.ppl.map((p,i)=>({p:'L'+i,n:p.n.trim().slice(0,8),a:p.a}));
-      ENG.G=newGame(pl,SET); ENG.H=newH(CUSTOM.map(c=>({...c,by:''}))); startRound(ENG.G,ENG.H);
+      ENG.G=newGame(pl,SET); ENG.H=newH(CUSTOM.map(c=>({...c,by:''})), false); startRound(ENG.G,ENG.H);
       CUR.online=false; UI.scr='game'; engCommit(); break;
     }
     case 'ppgo': UI.ppTurn=+b.dataset.s; UI.draft=null; sfx('tap'); scrollTo(0,0); render(); break;
@@ -1265,21 +1647,23 @@ document.addEventListener('click', e=>{
     case 'placed': { const d=UI.draft, t=+b.dataset.t; if(UI.sel===t){ d.arr[t]=-1; if(d.bet===t) d.bet=-1; UI.sel=-1; sfx('back'); } else if(UI.sel>=0){ [d.arr[UI.sel],d.arr[t]]=[d.arr[t],d.arr[UI.sel]]; UI.sel=-1; sfx('place'); } else { UI.sel=t; sfx('tap'); } render(); break; }
     case 'tier': { const d=UI.draft, t=+b.dataset.t; if(!d) return; if(UI.sel>=0 && UI.sel!==t){ [d.arr[UI.sel],d.arr[t]]=[d.arr[t],d.arr[UI.sel]]; UI.sel=-1; sfx('place'); render(); } break; }
     case 'clear': if(UI.draft){ UI.draft.arr.fill(-1); UI.draft.bet=-1; UI.sel=-1; sfx('back'); render(); } break;
-    case 'submit': { const d=UI.draft; if(!d || d.arr.some(x=>x<0)) return; sfx('send'); myAction('submit',{seat:d.seat,k:d.arr.slice(),b:d.bet}); break; }
-    case 'bet': { const d=UI.draft, t=+b.dataset.t; if(!d) return; d.bet = d.bet===t ? -1 : t; sfx(d.bet>=0?'ding':'back'); render(); break; }
-    case 'time': SET.time=+b.dataset.v; saveSet(); sfx('tap'); render(); break;
+    case 'bet': { const d=UI.draft, t=+b.dataset.t; if(!d) return; d.bet = d.bet===t ? -1 : t; sfx(d.bet>=0?'stamp':'back'); render(); break; }
+    case 'expre': { UI.ex=b.dataset.v; sfx('tap'); render(); break; }
+    case 'submit': { const d=UI.draft; if(!d || d.arr.some(x=>x<0)) return; sfx('send'); myAction('submit',{seat:d.seat,k:d.arr.slice(),b:d.bet,ex:UI.ex||''}); break; }
+    case 'vote': { const seat=+b.dataset.v, target=+b.dataset.s; if(!G) return; UI.votedRid=G.rid; UI.votePick=target; sfx('stamp'); myAction('vote',{seat,target}); render(); break; }
     case 'reroll': myAction('reroll'); break;
-    case 'next': myAction('next'); break;
+    case 'next': myAction('next'); scrollTo(0,0); break;
     case 'skip': myAction('skip'); break;
     case 'force': myAction('force'); break;
-    case 'awskip': UI.awStep=99; clearInterval(UI.awT); sfx('fanfare'); confetti(); render(); break;
-    case 'again': clearInterval(UI.awT); if(CUR.online) hostBackToLobby(); else { engStop(); CUR.G=null; go('pp'); } break;
+    case 'awskip': UI.awStep=99; clearInterval(UI.awT); sfx('fanfare'); render(); break;
+    case 'cardonly': UI.cardOnly=!UI.cardOnly; scrollTo(0,0); render(); break;
+    case 'again': clearInterval(UI.awT); UI.cardOnly=false; if(CUR.online) hostBackToLobby(); else { engStop(); CUR.G=null; go('pp'); } break;
     case 'rx': { const now=Date.now(); if(now-UI.lastRx<250) return; UI.lastRx=now; const em=b.dataset.e; floatEmoji(em); sfx('pop'); if(NET.r && CUR.online) NET.r.presence({ rx:{ e:em, t:now } }).catch(()=>{}); break; }
     case 'cadd': {
       const t=UI.ct.trim(), w=[...new Set(UI.cw.split(/[\n,，、]/).map(s=>s.trim().slice(0,16)).filter(Boolean))];
       if(!t){ UI.cerr='題目還沒填'; render(); return; }
       if(w.length<3||w.length>8){ UI.cerr=`詞語要 3–8 個，現在是 ${w.length} 個`; render(); return; }
-      CUSTOM.unshift({t:t.slice(0,30),w}); LS.set('xyp.custom',CUSTOM); UI.ct=''; UI.cw=''; UI.cerr=''; sfx('cheer');
+      CUSTOM.unshift({t:t.slice(0,30),w}); LS.set('xyp.custom',CUSTOM); UI.ct=''; UI.cw=''; UI.cerr=''; sfx('stamp');
       if(NET.r) NET.r.presence({ my:myCustomsForPresence() }).catch(()=>{});
       render(); break;
     }
@@ -1292,6 +1676,7 @@ document.addEventListener('input', e=>{
   else if(id==='code'){ UI.code=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4); if(el.value!==UI.code) el.value=UI.code; }
   else if(id==='ct') UI.ct=el.value;
   else if(id==='cw') UI.cw=el.value;
+  else if(id==='ex') UI.ex=el.value.slice(0,30);
   else if(id.startsWith('ppn-')){ const i=+id.slice(4); if(UI.ppl[i]) UI.ppl[i].n=el.value.slice(0,8); }
   // 只有會影響按鈕狀態時才重畫
   if(id.startsWith('ppn-')||id==='nm') render();
