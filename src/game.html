@@ -348,7 +348,7 @@ const BEAR_NAMES = ['張育瑞','張紘瑞','王子齊','李彥霆','劉允城',
 // 詞語寫成 * 的題目，詞語就是作者專屬測驗包的人名
 const PROMPTS = RAW.trim().split('\n').map(l=>{const [c,t,w]=l.split('|');return {c:c.trim(),t:t.trim(),w:w.trim()==='*'?BEAR_NAMES.slice():w.split(/[,，]/).map(s=>s.trim()).filter(Boolean)}}).filter(p=>p.w.length>=3);
 const AB_RAW = `__AB__`;
-const AB_CATS = {afood:'美食',alife:'生活日常',alove:'戀愛',aval:'價值觀',asec:'私密問題',awild:'情境腦洞',awork:'職場・校園',amoney:'金錢',afrd:'友情・社交'};
+const AB_CATS = {afood:'美食',alife:'生活日常',alove:'戀愛',aval:'價值觀',asec:'私密問題',awild:'情境腦洞',awork:'職場・校園',amoney:'金錢',afrd:'友情・社交',apol:'政治・意識形態'};
 const AB = AB_RAW.trim().split('\n').map(l=>{const [c,t,a,b]=l.split('|').map(x=>(x||'').trim());return {c,t,w:[a,b]}}).filter(p=>p.t&&p.w[0]&&p.w[1]&&AB_CATS[p.c]);
 const ABRE = ['先別問','這有故事','我有我的原則','真心話','想都不用想','痛苦的選擇','不接受反駁'];
 const MODEN = { guess:'猜猜主角', sync:'全員神同步', ab:'二選一' };
