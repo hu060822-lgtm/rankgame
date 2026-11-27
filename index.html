@@ -335,6 +335,7 @@ textarea.in{min-height:130px;resize:vertical;line-height:2;border:1px solid var(
 .abp q{grid-column:1/-1;font-family:var(--f-hand);font-size:15px;color:var(--ink2);line-height:1.5;quotes:"「" "」";overflow-wrap:anywhere}
 .abp.lone .nm{border-bottom:2px solid var(--seal);justify-self:start}
 .abwait{text-align:center;padding:30px 20px}
+.sur .talk{display:block;font-family:var(--f-serif);font-size:12px;letter-spacing:.3em;color:var(--seal);padding:0;font-weight:700}
 .abwait .drum{font-size:22px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
@@ -1316,7 +1317,7 @@ asec|你有沒有半夜傳訊息給前任|有|沒有
 asec|你有沒有偷偷討厭一個大家都喜歡的人|有|沒有
 asec|你有沒有把喜歡的人的 IG 滑到好幾年前|有|沒有
 asec|你有沒有因為別人有錢而對他特別好|有|沒有
-asec|你有沒有在約會前一天才跟另一個人約會|有|沒有
+asec|你有沒有一天之內跟兩個不同的人約會|有|沒有
 asec|你有沒有對著鏡子練習過告白或吵架|有|沒有
 asec|你有沒有偷偷記仇到現在|有，名單很長|沒有，我很大方
 asec|你有沒有看過另一半的手機然後後悔|有|沒有
@@ -1596,7 +1597,7 @@ apol|為了經濟發展開發山林|開發帶來工作|環境優先
 apol|藝人公開談政治|有權表達立場|專心作品就好
 apol|選舉的時候你會|一定去投票|看心情，不一定
 apol|社會進步比較靠|制度|人心
-apol|安樂死和死刑都牽涉生命，你覺得國家|可以決定生死|不該決定任何人的生死
+apol|國家該不該介入個人的身體選擇（如安樂死、代理孕母）|國家要把關|自己的身體自己決定
 apol|政府補助生育|大方發錢鼓勵生小孩|發錢沒用，要改善環境
 apol|代理孕母|應該合法化|風險太高不該開放`;
 const AB_CATS = {afood:'美食',alife:'生活日常',alove:'戀愛',aval:'價值觀',asec:'私密問題',awild:'情境腦洞',awork:'職場・校園',amoney:'金錢',afrd:'友情・社交',apol:'政治・意識形態'};
@@ -1727,9 +1728,9 @@ function pickTopic(G,H){
 function freshRound(G,H){ G.rid=rid(); G.done=[]; G.vd=[]; H.subs={}; H.bets={}; H.ex={}; H.votes={}; ENG.dl = G.rt ? Date.now()+G.rt*1000 : 0; }
 // 每回合的小事件：第一回合暖身、最後一回合決勝，其他回合隨機抽，不連續重複
 function pickEvent(G,H,act){
-  if(G.ri===0) return '';
+  if(G.ri===0 || G.mode==='ab') return '';
   if(G.tot>=3 && G.ri===G.tot-1) return 'x2';
-  let pool = G.mode==='guess' ? ['rev','gam','fast'] : G.mode==='ab' ? ['','','fast'] : ['fast',''];
+  let pool = G.mode==='guess' ? ['rev','gam','fast'] : ['fast',''];
   if(G.mode==='guess' && act.length>=4) pool.push('duo','duo');
   pool=pool.filter(e=>e!==H.lastEv); if(!pool.length) pool=[''];
   return pick(pool);
@@ -1744,11 +1745,11 @@ function startRound(G,H){
   G.rt = G.ev==='fast' ? 25 : G.time;
   G.topic = pickTopic(G,H); G.ph='rank'; freshRound(G,H);
 }
-function reroll(G,H){ if(G.ph!=='rank'||G.rr>=2) return; G.topic=pickTopic(G,H); G.rr++; freshRound(G,H); }
+function reroll(G,H){ if(G.ph!=='rank'||G.rr>=(G.mode==='ab'?3:2)||(G.mode==='ab'&&G.done.length)) return; G.topic=pickTopic(G,H); G.rr++; freshRound(G,H); }
 const isStar = (G,s) => G.mode==='guess' && (s===G.star || (G.star2>=0 && s===G.star2));
 function submit(G,H,seat,k,b,ex){
   if(G.mode==='ab'){
-    if(G.ph!=='rank' || !Array.isArray(k) || k.length!==2 || !k.every(v=>v===0||v===1)) return false;
+    if(G.ph!=='rank' || !Array.isArray(k) || k.length!==2 || !(k[0]===0||k[0]===1) || !(k[1]===0||k[1]===1||k[1]===-1)) return false;
     if(G.off.includes(seat) || seat<0 || seat>=G.pl.length) return false;
     H.subs[seat]=k.slice(); delete H.ex[seat];
     if(typeof ex==='string'){ const x=ex.replace(/\s+/g,' ').trim().slice(0,30); if(x) H.ex[seat]=x; }
@@ -1782,6 +1783,7 @@ function abReveal(G,H){
     if(!G.hl || seats.length>G.hl.d) G.hl={ ab:1, d:seats.length, t:G.topic.t, w:G.topic.w[ch[L]], s:[L] };
     if(res.ex[L]) G.qt={ p:0, s:L, x:res.ex[L], t:G.topic.t };
   } else if(!G.qt){ const e=seats.find(s=>res.ex[s]); if(e!==undefined) G.qt={ p:1, s:e, x:res.ex[e], t:G.topic.t }; }
+  if(maj<0 && seats.length>=2 && !G.hl) G.hl={ ab:2, d:0, t:G.topic.t, w:G.topic.w.slice() };
   G.res=res; G.ph='reveal'; G.step=0; G.ms=1;
 }
 function doReveal(G,H){
@@ -1967,7 +1969,7 @@ setInterval(()=>{
     const left=Math.max(0,UI.deadline-Date.now()), sec=Math.ceil(left/1000), el=document.getElementById('timer');
     if(el){ el.querySelector('span').textContent=sec; el.querySelector('i').style.width=(left/(G.rt*10))+'%'; el.classList.toggle('hurry',sec<=10); }
     if(sec<=5 && sec>0 && UI.tickAt!==sec){ UI.tickAt=sec; sfx('tick'); }
-    if(left<=0 && UI.draft.ab){ const d=UI.draft; if(d.c<0) d.c=Math.random()<.5?0:1; if(d.g<0) d.g=d.c; sfx('boing'); myAction('submit',{seat:d.seat,k:[d.c,d.g],b:-1,ex:UI.ex||''}); render(); }
+    if(left<=0 && UI.draft.ab){ const d=UI.draft; if(d.c<0) d.c=Math.random()<.5?0:1; sfx('boing'); myAction('submit',{seat:d.seat,k:[d.c,d.g],b:-1,ex:UI.ex||''}); render(); }
     else if(left<=0){ const d=UI.draft; const rest=shuffle(G.topic.w.map((_,i)=>i).filter(i=>!d.arr.includes(i))); d.arr=d.arr.map(x=>x>=0?x:rest.shift()); sfx('boing'); myAction('submit',{seat:d.seat,k:d.arr.slice(),b:d.bet,ex:UI.ex||''}); render(); }
   }
   const E=ENG.G;
@@ -2094,8 +2096,8 @@ function applyG(g){
 function onStateChange(prev,g){
   if(!g) return;
   if(g.ph==='rank' && (!prev || prev.rid!==g.rid)){
-    UI.draft=null; UI.sel=-1; UI.ppTurn=null; UI.ex='';
     const newRound = !prev || prev.ri!==g.ri;
+    UI.draft=null; UI.sel=-1; UI.ex=''; if(newRound || CUR.online) UI.ppTurn=null;
     showSplash(g, !newRound); sfx('whoosh');
   }
   if(g.ph==='rank' && prev && prev.rid===g.rid && g.done.length>prev.done.length) sfx('tick');
@@ -2207,7 +2209,7 @@ function vSettings(edit){
     ${per}
     <div><span class="lb">${ab?'每題作答時間':'每回合排名時間'}</span><div class="chips">${[[0,'不限時'],[90,'90 秒'],[60,'60 秒'],[30,'30 秒']].map(([n,l])=>`<button class="tg ${(S.time||0)===n?'on':''}" data-act="time" data-v="${n}" ${dis}>${l}</button>`).join('')}</div></div>
     ${ab ? `<div><span class="lb">題庫（共 ${AB.filter(p=>(S.abcats||[]).includes(p.c)).length} 題）</span><div class="chips">${Object.entries(AB_CATS).map(([k,v])=>`<button class="tg ${(S.abcats||[]).includes(k)?'on':''}" data-act="abcat" data-v="${k}" ${dis}>${v}</button>`).join('')}</div></div>
-    <p class="note">選完再猜猜多數人選哪邊，猜中 +2。可以留一句理由，揭曉時貼出來。</p></div>` : `
+    <p class="note">沒有特殊回合，每題就是單純選一邊。可以加碼猜多數派（猜中 +2），也可以留一句理由，揭曉時貼出來。題目不夠勁爆可以換一題。</p></div>` : `
     <div><span class="lb">題庫（共 ${PROMPTS.filter(p=>S.cats.includes(p.c)).length + (S.cats.includes('my')?CUSTOM.length:0)} 題）</span><div class="chips">${Object.entries(CATS).map(([k,v])=>{
       const lk = LOCKED[k] && !unlocked(k) && !S.cats.includes(k);
       return `<button class="tg ${S.cats.includes(k)?'on':''}" data-act="cat" data-v="${k}" ${dis}>${lk?'🔒 ':''}${v}</button>`; }).join('')}<button class="tg ${S.cats.includes('my')?'on':''}" data-act="cat" data-v="my" ${dis}>自訂題</button></div></div>
@@ -2252,7 +2254,7 @@ function vHelp(){
   <h3>猜猜主角</h3><ul><li>每回合有一位主角，大家看到同一個題目和 5 個詞。</li><li>主角照真心把詞排成 S（本命）到 D（不行），還可以留一句「辯解」。</li><li>其他人同時猜主角會怎麼排，並可以押一列最有把握的：押中 +3，押錯 −1。</li><li>揭曉前，大家先投「誰最懂主角」，投中本回合最高分的人 +2。</li><li>揭曉從 D 一頁一頁翻到 S。位置猜中 2 分，差一格 1 分，全部猜中再加 5 分。</li><li>主角拿到大家的平均分，越好懂分越高。</li></ul>
   <h3>每回合的小事件</h3><ul><li><b>反轉回合</b>：猜的人要排出最不像主角的排法。</li><li><b>雙主角</b>（4 人以上）：兩位主角各排各的，大家猜兩人合起來的排名。</li><li><b>豪賭回合</b>：押中 +6，押錯 −2。</li><li><b>閃電回合</b>：只有 25 秒。</li><li><b>決勝回合</b>：最後一回合分數 ×2。</li></ul>
   <h3>全員神同步</h3><ul><li>沒有主角，大家一起排同一題，目標是排得一模一樣。</li><li>3 人以上會出現「排排看你的朋友」題，詞語就是大家的名字。</li></ul>
-  <h3>二選一</h3><ul><li>每題有兩個選項：情境、美食、價值觀、私密問題……大家偷偷選一邊。</li><li>選完再猜「多數人會選哪邊」，猜中 +2 分；平手這題不計分。</li><li>可以留一句理由，揭曉時跟名字一起貼出來，方便開吵。</li><li>最後頒獎：最會讀空氣、少數派代表、孤鳥、價值觀雙胞胎、天生冤家。</li></ul>
+  <h3>二選一</h3><ul><li>每題有兩個選項：情境、美食、價值觀、私密問題……大家偷偷選一邊。</li><li>沒有特殊回合。選完可以加碼猜「多數人會選哪邊」，猜中 +2 分，不想猜也能略過；平手這題不計分。</li><li>揭曉後會點名人出來辯護或回嘴，題目太無聊可以換一題（每題最多 3 次）。</li><li>可以留一句理由，揭曉時跟名字一起貼出來，方便開吵。</li><li>最後頒獎：最會讀空氣、少數派代表、孤鳥、價值觀雙胞胎、天生冤家。</li></ul>
   <h3>兩種開局</h3><ul><li><b>開房間</b>：每人用自己的手機開這個頁面，輸入房號加入。</li><li><b>一支手機輪流玩</b>：輪到誰就把手機交給誰，揭曉時大家圍過來看。</li></ul>
   <h3>結束之後</h3><p>頒完獎會有一張成果卡，截圖就能分享。</p></div>
   <button class="btn ghost" data-act="home">回首頁</button>`;
@@ -2310,9 +2312,10 @@ function vPick(G,seat){
   const timer = G.rt ? `<div class="timer" id="timer" aria-live="off"><i style="width:100%"></i><span>${G.rt}</span></div>` : '';
   let h=`${roundBar(G)}${timer}${topicCard(G)}<p class="role">偷偷選一邊，<b>沒有標準答案</b></p>
   <div class="ab" role="group" aria-label="選一邊">${W.map((w,i)=>`<button class="abopt o${i} ${d.c===i?'on':''}" data-act="abc" data-v="${i}" aria-pressed="${d.c===i}"><span class="abl">${'AB'[i]}</span><span class="abw">${esc(w)}</span></button>`).join('<span class="abvs" aria-hidden="true">or</span>')}</div>
-  <div><span class="lb">再猜猜：多數人會選哪邊？猜中 +${G.ev==='x2'?4:2}</span><div class="abg">${W.map((w,i)=>`<button class="tg ${d.g===i?'on':''}" data-act="abg" data-v="${i}" aria-pressed="${d.g===i}">${'AB'[i]}．${esc(w)}</button>`).join('')}</div></div>
+  <div><span class="lb">加碼猜：多數人會選哪邊？猜中 +2（可略過）</span><div class="abg">${W.map((w,i)=>`<button class="tg ${d.g===i?'on':''}" data-act="abg" data-v="${i}" aria-pressed="${d.g===i}">${'AB'[i]}．${esc(w)}</button>`).join('')}</div></div>
   <div class="exbox"><label class="lb" for="ex" style="margin:0">留一句理由，揭曉時會貼出來（可以不寫）</label><input class="in" id="ex" maxlength="30" placeholder="例：這有故事" value="${esc(UI.ex||'')}" autocomplete="off"><div class="chips">${ABRE.map(x=>`<button class="tg" data-act="expre" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
-  <button class="btn big pink" data-act="submit" ${d.c>=0&&d.g>=0?'':'disabled'}>${d.c<0?'先選一邊':d.g<0?'再猜一下多數派':'鎖定我的選擇'}</button>`;
+  <button class="btn big pink" data-act="submit" ${d.c>=0?'':'disabled'}>${d.c<0?'先選一邊':'鎖定我的選擇'}</button>`;
+  if(canControl() && !G.done.length && G.rr<3) h+=`<button class="btn ghost small" data-act="reroll">這題不夠勁爆，換一題（剩 ${3-G.rr} 次）</button>`;
   if(CUR.online) h+=statusChips(G);
   return h;
 }
@@ -2442,10 +2445,16 @@ function vRoundResult(G){
     const W=G.topic.w, one=!R.side[0].length || !R.side[1].length, ev=EV[R.ev];
     const nm=s=>esc(G.pl[s].n);
     const banner = one ? '全員一致' : R.maj<0 ? '五五波' : R.lone>=0 ? '孤鳥出現' : '多數決';
-    const quip = one ? esc(seededPick(ABQ.same,G.rid)) : R.maj<0 ? esc(seededPick(ABQ.tie,G.rid)) : R.lone>=0 ? `全場只有 ${nm(R.lone)} 選了「${esc(W[R.ch[R.lone]])}」，請發表感言。` : `少數派 ${R.side[1-R.maj].map(nm).join('、')}，說服一下大家？`;
+    const quip = one ? esc(seededPick(ABQ.same,G.rid)) : R.maj<0 ? esc(seededPick(ABQ.tie,G.rid)) : R.lone>=0 ? `全場只有 ${nm(R.lone)} 選了「${esc(W[R.ch[R.lone]])}」。` : `少數派 ${R.side[1-R.maj].map(nm).join('、')}，說服一下大家？`;
     const ss=R.seats.slice().sort((a,b)=>R.pts[b]-R.pts[a] || a-b);
-    h+=`${ev?`<p class="x2tag">${ev[0]}</p>`:''}<p class="banner">${banner}</p><p class="quip">${quip}</p>
-    ${R.maj<0?'<p class="note">平手沒有多數派，這題不計分。</p>':ss.map(s=>`<div class="line"><span class="e">${esc(G.pl[s].a)}</span><div><div class="nm">${nm(s)}${R.pts[s]?`<span class="badge g">猜中多數 +${R.pts[s]}</span>`:''}</div><small class="muted">選 ${'AB'[R.ch[s]]}，猜多數選 ${'AB'[R.gu[s]]}</small></div><span class="pts">+${R.pts[s]}</span></div>`).join('')}`;
+    const sp=arr=>arr[Math.abs([...String(G.rid)].reduce((h,c)=>(h*31+c.charCodeAt(0))|0,7))%arr.length];
+    let talk='';
+    if(one && R.seats.length>=2){ const all=R.side[0].length?0:1; talk=`請 ${nm(sp(R.seats))} 硬幫「${esc(W[1-all])}」辯護 30 秒，看能不能策反一個人。`; }
+    else if(R.maj<0 && R.seats.length>=2) talk=`${nm(sp(R.side[0]))} 代表 A、${nm(sp(R.side[1]))} 代表 B，各講一句，說服對方倒戈。`;
+    else if(R.lone>=0){ const mj=R.side[R.ch[R.lone]===0?1:0]; talk=`${nm(R.lone)} 先說理由，再由 ${nm(sp(mj))} 代表多數派回嘴。`; }
+    else if(R.maj>=0) talk=`少數派推一個代表說理由，多數派有人被說服就舉手。`;
+    h+=`${ev?`<p class="x2tag">${ev[0]}</p>`:''}<p class="banner">${banner}</p><p class="quip">${quip}</p>${talk?`<p class="sur"><b class="talk">討論時間</b>${talk}</p>`:''}
+    ${R.maj<0?'<p class="note">平手沒有多數派，這題不計分。</p>':ss.map(s=>`<div class="line"><span class="e">${esc(G.pl[s].a)}</span><div><div class="nm">${nm(s)}${R.pts[s]?`<span class="badge g">猜中多數 +${R.pts[s]}</span>`:''}</div><small class="muted">選 ${'AB'[R.ch[s]]}，${R.gu[s]>=0?`猜多數選 ${'AB'[R.gu[s]]}`:'沒有猜'}</small></div><span class="pts">+${R.pts[s]}</span></div>`).join('')}`;
   } else if(G.mode==='guess'){
     const gs=R.gs.slice().sort((a,b)=>R.pts[b]-R.pts[a]);
     const pct=R.max?Math.round(R.avg/R.max*100):0;
@@ -2480,7 +2489,9 @@ function shareCard(G){
   const aws=(G.aw||[]).slice(1).filter(a=>a.s.length).slice(0,4);
   const host=/onrender\.com$/.test(location.hostname)?location.hostname:'心有靈排';
   let hl='';
-  if(G.hl){ hl = G.hl.ab
+  if(G.hl){ hl = G.hl.ab===2
+    ? `<p class="hl"><small>本日名場面</small>「${esc(G.hl.t)}」吵翻天：「${esc(G.hl.w[0])}」和「${esc(G.hl.w[1])}」剛好平手。</p>`
+    : G.hl.ab
     ? `<p class="hl"><small>本日名場面</small>「${esc(G.hl.t)}」全場只有${esc(G.pl[G.hl.s[0]].n)}選了「${esc(G.hl.w)}」。</p>`
     : G.hl.gt!==undefined
     ? `<p class="hl"><small>本日名場面</small>「${esc(G.hl.t)}」大家以為「${esc(G.hl.w)}」是 ${TIERS[G.hl.gt]}，結果${esc(G.hl.s.map(s=>G.pl[s].n).join('和'))}放在 ${TIERS[G.hl.st]}。</p>`
@@ -2571,7 +2582,7 @@ document.addEventListener('click', e=>{
     case 'abr': SET.abr=+b.dataset.v; saveSet(); sfx('tap'); render(); break;
     case 'abcat': { const v=b.dataset.v, i=SET.abcats.indexOf(v); if(i>=0){ if(SET.abcats.length>1) SET.abcats.splice(i,1); } else SET.abcats.push(v); saveSet(); sfx('tap'); render(); break; }
     case 'abc': { const d=UI.draft; if(!d||!d.ab) return; d.c=+b.dataset.v; sfx('place'); render(); break; }
-    case 'abg': { const d=UI.draft; if(!d||!d.ab) return; d.g=+b.dataset.v; sfx('stamp'); render(); break; }
+    case 'abg': { const d=UI.draft; if(!d||!d.ab) return; const v=+b.dataset.v; d.g = d.g===v ? -1 : v; sfx(d.g>=0?'stamp':'back'); render(); break; }
     case 'time': SET.time=+b.dataset.v; saveSet(); sfx('tap'); render(); break;
     case 'cat': { const v=b.dataset.v, i=SET.cats.indexOf(v);
       if(i<0 && !unlocked(v)){ UI.lock=v; UI.pw=''; UI.pwerr=''; sfx('tap'); render(); focusLater('#pw'); break; } if(i>=0){ if(SET.cats.length>1) SET.cats.splice(i,1); } else SET.cats.push(v); saveSet(); sfx('tap'); render(); break; }
@@ -2593,7 +2604,7 @@ document.addEventListener('click', e=>{
     case 'clear': if(UI.draft){ UI.draft.arr.fill(-1); UI.draft.bet=-1; UI.sel=-1; sfx('back'); render(); } break;
     case 'bet': { const d=UI.draft, t=+b.dataset.t; if(!d) return; d.bet = d.bet===t ? -1 : t; sfx(d.bet>=0?'stamp':'back'); render(); break; }
     case 'expre': { UI.ex=b.dataset.v; sfx('tap'); render(); break; }
-    case 'submit': { const d=UI.draft; if(d && d.ab){ if(d.c<0||d.g<0) return; sfx('send'); myAction('submit',{seat:d.seat,k:[d.c,d.g],b:-1,ex:UI.ex||''}); break; } if(!d || d.arr.some(x=>x<0)) return; sfx('send'); myAction('submit',{seat:d.seat,k:d.arr.slice(),b:d.bet,ex:UI.ex||''}); break; }
+    case 'submit': { const d=UI.draft; if(d && d.ab){ if(d.c<0) return; sfx('send'); myAction('submit',{seat:d.seat,k:[d.c,d.g],b:-1,ex:UI.ex||''}); break; } if(!d || d.arr.some(x=>x<0)) return; sfx('send'); myAction('submit',{seat:d.seat,k:d.arr.slice(),b:d.bet,ex:UI.ex||''}); break; }
     case 'vote': { const seat=+b.dataset.v, target=+b.dataset.s; if(!G) return; UI.votedRid=G.rid; UI.votePick=target; sfx('stamp'); myAction('vote',{seat,target}); render(); break; }
     case 'reroll': myAction('reroll'); break;
     case 'next': myAction('next'); scrollTo(0,0); break;
