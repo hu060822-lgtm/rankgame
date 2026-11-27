@@ -336,7 +336,20 @@ textarea.in{min-height:130px;resize:vertical;line-height:2;border:1px solid var(
 .ask{border-color:var(--caramel)}
 .pen{position:relative;padding:14px 16px 12px;background:#fffdf6;border:1px dashed var(--seal);border-radius:var(--r);transform:rotate(-.8deg);animation:fadeup .6s ease .3s both}
 .pen small{display:block;font-size:12px;color:var(--seal);letter-spacing:.2em;font-weight:500}
-.pen p{margin:4px 0 0;font-family:var(--f-hand);font-size:20px;line-height:1.5}
+.pen .ph{margin:4px 0 8px;font-size:14px;color:var(--ink2)}
+.pcards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pcard{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:96px;padding:10px 6px;border:1px solid var(--ink);border-radius:6px;background:repeating-linear-gradient(135deg,var(--caramel-l) 0 8px,#fffdf6 8px 16px);cursor:pointer;box-shadow:1px 3px 0 rgba(70,55,30,.15);transition:transform .15s ease;text-align:center}
+.pcard.truth{background:repeating-linear-gradient(135deg,var(--matcha-l) 0 8px,#fffdf6 8px 16px)}
+.pcard.shame{background:repeating-linear-gradient(135deg,rgba(179,65,45,.14) 0 8px,#fffdf6 8px 16px)}
+button.pcard:active{transform:scale(.96)}
+button.pcard:disabled{cursor:default;opacity:.85}
+.pcard b{font-family:var(--f-serif);font-weight:700;font-size:15px;letter-spacing:.12em}
+.pcard span{font-family:var(--f-grade);font-size:34px;line-height:1;color:var(--ink2)}
+.pcard i{font-style:normal;font-size:11.5px;line-height:1.5;color:var(--ink2)}
+.pcard.on{border:2px solid var(--seal);animation:flip .7s cubic-bezier(.3,.7,.2,1) both}
+.pcard.off{opacity:.55;min-height:0}
+.pen .px{margin:10px 0 2px;font-family:var(--f-hand);font-size:21px;line-height:1.5}
+.pen .px small{display:inline-block;margin-right:8px;font-family:var(--f-serif);font-size:12px;color:var(--seal);border:1px solid var(--seal);border-radius:2px;padding:0 5px;vertical-align:3px;letter-spacing:.1em}
 .amap{display:flex;flex-direction:column;gap:4px}
 .amap small{font-size:11px;letter-spacing:.3em;color:var(--ink3)}
 .amap svg{width:100%;height:auto;background:var(--paper);border-radius:3px}
@@ -1771,7 +1784,8 @@ apol|政府應該補貼|大眾運輸|電動車`;
 const AB_CATS = {afood:'美食',alife:'生活日常',alove:'戀愛',aval:'價值觀',asec:'私密問題',awild:'情境腦洞',awork:'職場・校園',amoney:'金錢',afrd:'友情・社交',apol:'政治・意識形態'};
 const AB = AB_RAW.trim().split('\n').map(l=>{const [c,t,a,b]=l.split('|').map(x=>(x||'').trim());return {c,t,w:[a,b]}}).filter(p=>p.t&&p.w[0]&&p.w[1]&&AB_CATS[p.c]);
 const ABRE = ['先別問','這有故事','我有我的原則','真心話','想都不用想','痛苦的選擇','不接受反駁'];
-const PEN = ['喝一口飲料','講一件最近的糗事','用撒嬌的語氣說「我錯了」','模仿在場一個人，讓大家猜是誰','公開手機相簿裡最近的一張照片','清唱一句最近常聽的歌','說出在場一個人的一個優點和一個缺點','用台語再說一次你為什麼選這邊','讓大家看你的手機桌布','念出你最近的一筆搜尋紀錄','真心話：在場你最想跟誰交換人生一天？','對右手邊的人說一句肉麻的稱讚','十秒內說服一個人倒戈，失敗就喝一口','原地做十下深蹲','真心話：你上一次哭是因為什麼？','用三個詞形容你的理想型','學一種動物叫三聲，讓大家猜','說一個在場的人都不知道的小秘密','打開 IG 給大家看你最後按讚的貼文','用新聞主播的語氣播報你為什麼選這邊','跟左手邊的人自拍一張醜照','真心話：你最近一次說謊是什麼時候？','用三秒鐘擺出你最帥或最美的姿勢','真心話：在場誰最像你的前任或曖昧對象？','接下來一題只能用疊字說話','用一句話誇獎多數派，要很真心'];
+const PEN = {"dare": ["喝一口飲料", "原地做十下深蹲", "學一種動物叫三聲，讓大家猜是什麼", "用撒嬌的語氣說「人家選錯了啦」", "跟左手邊的人自拍一張醜照", "清唱一句最近常聽的歌的副歌", "用新聞主播的語氣播報你為什麼選這邊", "接下來一題只能用疊字說話", "擺出你最帥或最美的姿勢，撐三秒", "單腳站著，直到下一題揭曉", "模仿在場一個人，讓大家猜是誰", "用台語再說一次你為什麼選這邊", "對著空氣深情告白十秒", "讓右手邊的人幫你取綽號，大家要叫到遊戲結束", "做一個鬼臉撐五秒，讓大家拍照", "跳一段十秒的舞", "用外國人的腔調講一段自我介紹", "繞口令「吃葡萄不吐葡萄皮」連念三次不能錯", "用氣音講話，直到下一題開始", "十秒內說服一個人倒戈，失敗就喝一口", "學長輩的口氣說「天冷了要穿外套喔」", "用三種不同的情緒說「我不服」", "用綜藝節目主持人的語氣念下一題", "握拳當麥克風，用演唱會的氣勢喊「大家好！」", "雙手比愛心，對每個人說「謝謝你不殺之恩」", "用倒裝句說話，直到下一題開始", "跟右手邊的人大眼瞪小眼，先笑的再喝一口", "用廣告的語氣推銷你剛剛選的那個選項", "閉上眼睛轉三圈，再指出一個人說「我最欣賞你」", "接下來一題要用動作把理由比給大家猜"], "truth": ["你上一次哭是因為什麼？", "你最近一次說謊是什麼時候？騙了誰？", "在場你最想跟誰交換人生一天？", "在場誰最像你的前任或曖昧對象？", "你手機裡最不想被看到的 App 是哪個？", "你做過最丟臉的一件事是什麼？", "你暗戀過最久的人，暗戀了多久？", "在場誰最可能背叛你？為什麼？", "你最後悔的一個決定是什麼？", "你覺得自己最大的缺點是什麼？", "你最近一次在心裡偷罵人是為了什麼事？", "用三個詞形容你的理想型", "你做過最瘋狂的一件事是什麼？", "如果明天世界末日，你最想傳訊息給誰？", "你對在場哪個人的第一印象最差？", "你最近一次心動是什麼時候？", "你為了一個人做過最傻的事是什麼？", "你最怕被別人知道的一個習慣是什麼？", "你現在最想刪掉的一則貼文是哪一則？", "在場你最想跟誰一起出國？", "你有沒有偷偷滑過在場某人很久以前的貼文？是誰的？", "你覺得在場誰最會說謊？", "你人生最大的一個秘密，可以透露三個字嗎？", "你最近一次被罵是因為什麼？", "你最不能接受另一半做的一件事是什麼？", "你小時候最丟臉的綽號是什麼？", "你覺得自己在朋友面前的形象，跟真實的你差多少？", "你最近花得最冤枉的一筆錢是什麼？", "如果可以重來，你最想跟哪個前任說什麼？", "你最近一次失眠在想什麼？"], "shame": ["公開手機相簿裡最近的一張照片", "念出你最近的一筆搜尋紀錄", "打開 IG 給大家看你最後按讚的貼文", "給大家看你最近的一則聊天紀錄（可以自己挑一個群組）", "用最肉麻的語氣跟在場一個人說「你今天好好看」", "把你手機裡最醜的自拍給大家看", "說一個在場的人都不知道的小秘密", "給大家看你跟家人的最近一則對話", "給大家看你最常用的三個貼圖", "念出你手機備忘錄裡最新的一則", "朗讀你最近發的一則限動或貼文，要很有感情", "給大家看你今天的螢幕使用時間", "用十秒介紹你的前任或曖昧對象，沒有的話就介紹理想型", "給大家看你相簿裡數量最多的是什麼照片", "讓大家滑你的追蹤清單五秒", "用你國中時的口頭禪說一句話", "展示你手機裡存最久的一張截圖", "說出你最近一次網購買了什麼", "給大家看你通話紀錄的前三名", "站起來唱一句你的 KTV 招牌歌", "說出你地圖 App 最近搜尋的地點", "說出你最近一次半夜不睡在幹嘛", "說出你手機殼或錢包裡藏了什麼", "給大家看你相簿裡的「我的最愛」", "念出你最後一則傳給另一半或曖昧對象的訊息（沒有就念傳給媽媽的）", "說出你最近一次被已讀不回是被誰", "給大家看你瀏覽器現在開了幾個分頁", "在場每個人問你一個問題，你只能回答「是」或「不是」", "給大家看你手機裡最近一支影片的前五秒", "說出你手機鬧鐘設了幾個，最早是幾點"]};
+const PENT = [['dare','挑戰'],['truth','真心話'],['shame','社死']];
 const MODEN = { guess:'猜猜主角', sync:'全員神同步', ab:'二選一' };
 const NAME_PROMPTS = ['最可能遲到的人','吃到飽最能吃的人','最可能半夜傳訊息的人','最會撒嬌的人','最可能變網紅的人','最可能忘記帶錢包的人','殭屍末日最能活下來的人','KTV最會霸佔麥克風的人','最可能一秒睡著的人','看電影最容易哭的人','最會殺價的人','最容易迷路的人','最可能說走就走出國的人','最會講冷笑話的人','最可能變有錢人的人','最可能養十隻貓的人','最可能已讀不回的人','最會拍照的人','最容易被推坑的人','最可能當上老闆的人','最愛吃甜食的人','最怕鬼的人','最可能在群組潛水的人','最會安慰人的人','最可能上新聞的人','最常說「我等一下就到」的人','手機最不離手的人','最可能邊哭邊吃東西的人','最可能突然消失的人','最會亂取綽號的人','最愛拍食物的人','最可能變成大明星的人','最愛買東西的人','最可能被貓欺負的人','最常說「隨便」的人','最可能半夜吃泡麵的人','最會記仇的人','最可能在旅行中弄丟東西的人','最會照顧人的人','最適合當隊長的人'];
 const TIERS = 'SABCD';
@@ -1868,8 +1882,14 @@ function newGame(pl, o){
     sc:Array(n).fill(0), st:pl.map(()=>[0,0,0,0,0,0,0,0,0,0]), pr:{}, streak:0, best:0, syncs:0,
     cats:o.mode==='ab' ? (o.abcats||Object.keys(AB_CATS)) : o.cats, time:o.time||0, pen:o.mode==='ab' && o.pen!==false, res:null, step:0, ms:0, aw:null, off:[], x2:false, hl:null, qt:null };
 }
-const newH = (customs, online, abc) => ({ subs:{}, bets:{}, ex:{}, votes:{}, used:new Set(), customs:customs||[], abc:abc||[], online:!!online, lastEv:'', pen:[], q:[], aqSeen:{} });
+const newH = (customs, online, abc) => ({ subs:{}, bets:{}, ex:{}, votes:{}, used:new Set(), customs:customs||[], abc:abc||[], online:!!online, lastEv:'', pen:{dare:[],truth:[],shame:[]}, q:[], aqSeen:{} });
 const activeSeats = G => G.pl.map((_,i)=>i).filter(i=>!G.off.includes(i));
+// 懲罰卡三選一：被罰的人（或房主、同機模式）翻一張
+function pickPen(G,seat,i){
+  const P=G.res&&G.res.pen;
+  if(G.ph!=='reveal' || !P || P.k>=0 || !(i>=0&&i<3) || (seat>=0 && !P.s.includes(seat))) return false;
+  P.k=i; return true;
+}
 // 遊戲中現場出題：排進佇列，下一題優先用
 function addAsk(G,H,t,w,by){
   if(G.mode!=='ab' || G.ph==='end' || typeof t!=='string' || !Array.isArray(w) || w.length!==2 || H.q.length>=20) return false;
@@ -1965,7 +1985,7 @@ function abReveal(G,H){
   } else if(!G.qt){ const e=seats.find(s=>res.ex[s]); if(e!==undefined) G.qt={ p:1, s:e, x:res.ex[e], t:G.topic.t }; }
   if(maj<0 && seats.length>=2 && !G.hl) G.hl={ ab:2, d:0, t:G.topic.t, w:G.topic.w.slice() };
   if(G.pen){ const tg = res.lone>=0 ? [res.lone] : maj>=0 ? side[1-maj].slice() : [];
-    if(tg.length){ let pool=PEN.filter(x=>!H.pen.includes(x)); if(!pool.length){ H.pen=[]; pool=PEN; } const x=pick(pool); H.pen.push(x); res.pen={ s:tg, x }; } }
+    if(tg.length) res.pen={ s:tg, o:PENT.map(([k])=>{ let pool=PEN[k].filter(x=>!H.pen[k].includes(x)); if(!pool.length){ H.pen[k]=[]; pool=PEN[k]; } const x=pick(pool); H.pen[k].push(x); return x; }), k:-1 }; }
   (G.log||(G.log=[])).push({ t:G.topic.t, w:G.topic.w.slice(), c:G.topic.c, side:side.map(a=>a.slice()), lone:res.lone });
   G.res=res; G.ph='reveal'; G.step=0; G.ms=1;
 }
@@ -2243,6 +2263,8 @@ function hostProcess(){
   G.pl.forEach((pl,i)=>{
     const p=by[pl.p], off=!p;
     const aq=p && !p.sameTab && p.presence.aq;
+    const pk=p && !p.sameTab && p.presence.pk;
+    if(pk && pk.r===G.rid && pickPen(G,i,pk.i)) ch=true;
     if(aq && aq.id && ENG.H.aqSeen[pl.p]!==aq.id){ ENG.H.aqSeen[pl.p]=aq.id; if(addAsk(G,ENG.H,aq.t,aq.w,pl.n)) ch=true; }
     if(off!==G.off.includes(i)){ if(off) G.off.push(i); else G.off=G.off.filter(x=>x!==i); ch=true; }
     if(p && !p.sameTab && G.ph==='rank'){
@@ -2478,7 +2500,7 @@ function vHelp(){
   <h3>猜猜主角</h3><ul><li>每回合有一位主角，大家看到同一個題目和 5 個詞。</li><li>主角照真心把詞排成 S（本命）到 D（不行），還可以留一句「辯解」。</li><li>其他人同時猜主角會怎麼排，並可以押一列最有把握的：押中 +3，押錯 −1。</li><li>揭曉前，大家先投「誰最懂主角」，投中本回合最高分的人 +2。</li><li>揭曉從 D 一頁一頁翻到 S。位置猜中 2 分，差一格 1 分，全部猜中再加 5 分。</li><li>主角拿到大家的平均分，越好懂分越高。</li></ul>
   <h3>每回合的小事件</h3><ul><li><b>反轉回合</b>：猜的人要排出最不像主角的排法。</li><li><b>雙主角</b>（4 人以上）：兩位主角各排各的，大家猜兩人合起來的排名。</li><li><b>豪賭回合</b>：押中 +6，押錯 −2。</li><li><b>閃電回合</b>：只有 25 秒。</li><li><b>決勝回合</b>：最後一回合分數 ×2。</li></ul>
   <h3>全員神同步</h3><ul><li>沒有主角，大家一起排同一題，目標是排得一模一樣。</li><li>3 人以上會出現「排排看你的朋友」題，詞語就是大家的名字。</li></ul>
-  <h3>二選一</h3><ul><li>每題有兩個選項：情境、美食、價值觀、私密問題……大家偷偷選一邊。</li><li>沒有特殊回合。排名看「站在多數派的次數」：揭曉後跟多數人選同一邊就 +1，平手的題目不算。</li><li>揭曉後會點名人出來辯護或回嘴，題目太無聊可以換一題（每題最多 3 次）。</li><li>可以留一句理由，揭曉時跟名字一起貼出來，方便開吵。</li><li>懲罰卡（可在設定關掉）：少數派或孤鳥抽一張小懲罰或真心話。</li><li>可以在「我的自訂題目」出自己的二選一題，線上玩時每個人的題都會混進來。</li><li>遊戲中也能按「📣 我也要出一題」現場出題，下一題就會用，還會跳出「誰提出了問題！」。</li><li>最後頒獎：人民的聲音、少數派代表、孤鳥、價值觀雙胞胎、天生冤家，還能回顧每一題誰站哪邊，成果卡上會畫出大家的價值觀地圖。</li></ul>
+  <h3>二選一</h3><ul><li>每題有兩個選項：情境、美食、價值觀、私密問題……大家偷偷選一邊。</li><li>沒有特殊回合。排名看「站在多數派的次數」：揭曉後跟多數人選同一邊就 +1，平手的題目不算。</li><li>揭曉後會點名人出來辯護或回嘴，題目太無聊可以換一題（每題最多 3 次）。</li><li>可以留一句理由，揭曉時跟名字一起貼出來，方便開吵。</li><li>懲罰卡（可在設定關掉）：孤鳥或少數派從「挑戰／真心話／社死」三張蓋牌裡選一張翻開。</li><li>可以在「我的自訂題目」出自己的二選一題，線上玩時每個人的題都會混進來。</li><li>遊戲中也能按「📣 我也要出一題」現場出題，下一題就會用，還會跳出「誰提出了問題！」。</li><li>最後頒獎：人民的聲音、少數派代表、孤鳥、價值觀雙胞胎、天生冤家，還能回顧每一題誰站哪邊，成果卡上會畫出大家的價值觀地圖。</li></ul>
   <h3>兩種開局</h3><ul><li><b>開房間</b>：每人用自己的手機開這個頁面，輸入房號加入。</li><li><b>一支手機輪流玩</b>：輪到誰就把手機交給誰，揭曉時大家圍過來看。</li></ul>
   <h3>結束之後</h3><p>頒完獎會有一張成果卡，截圖就能分享。</p></div>
   <button class="btn ghost" data-act="home">回首頁</button>`;
@@ -2676,7 +2698,7 @@ function vRoundResult(G){
     else if(R.maj<0 && R.seats.length>=2) talk=`${nm(sp(R.side[0]))} 代表 A、${nm(sp(R.side[1]))} 代表 B，各講一句，說服對方倒戈。`;
     else if(R.lone>=0){ const mj=R.side[R.ch[R.lone]===0?1:0]; talk=`${nm(R.lone)} 先說理由，再由 ${nm(sp(mj))} 代表多數派回嘴。`; }
     else if(R.maj>=0) talk=`少數派推一個代表說理由，多數派有人被說服就舉手。`;
-    h+=`${ev?`<p class="x2tag">${ev[0]}</p>`:''}<p class="banner">${banner}</p><p class="quip">${quip}</p>${talk?`<p class="sur"><b class="talk">討論時間</b>${talk}</p>`:''}${R.pen?`<div class="pen"><small>懲罰卡・${R.pen.s.map(nm).join('、')}</small><p>${esc(R.pen.x)}</p></div>`:''}
+    h+=`${ev?`<p class="x2tag">${ev[0]}</p>`:''}<p class="banner">${banner}</p><p class="quip">${quip}</p>${talk?`<p class="sur"><b class="talk">討論時間</b>${talk}</p>`:''}${R.pen?penHTML(G,R,nm):''}
     ${R.maj<0?'<p class="note">平手沒有多數派，這題大家都不加。</p>':`<p class="note">站在多數派（${'AB'[R.maj]}．${esc(W[R.maj])}）的人 +1：${R.side[R.maj].map(nm).join('、')}</p>`}`;
   } else if(G.mode==='guess'){
     const gs=R.gs.slice().sort((a,b)=>R.pts[b]-R.pts[a]);
@@ -2730,6 +2752,12 @@ function shareCard(G){
     ${G.qt?`<p class="qt">「${esc(G.qt.x)}」<cite>${esc(G.pl[G.qt.s].n)}，關於「${esc(G.qt.t)}」</cite></p>`:''}
     <p class="ft"><span>${MODEN[G.mode]}　${G.tot} ${G.mode==='ab'?'題':'回合'}　${G.pl.length} 人</span><span>${esc(host)}</span></p>
   </div>`;
+}
+function penHTML(G,R,nm){
+  const P=R.pen, me=mySeat(), can = !CUR.online || NET.isHost || P.s.includes(me);
+  const who=P.s.map(nm).join('、');
+  if(P.k<0) return `<div class="pen"><small>懲罰時間・${who}</small><p class="ph">${can?'三選一，挑一張翻開：':`等 ${who} 選一張牌…`}</p><div class="pcards">${PENT.map(([k,l],i)=>`<button class="pcard ${k}" data-act="pk" data-v="${i}" ${can?'':'disabled'}><b>${l}</b><span>?</span></button>`).join('')}</div></div>`;
+  return `<div class="pen"><small>懲罰時間・${who}</small><div class="pcards">${PENT.map(([k,l],i)=>`<div class="pcard ${k} ${i===P.k?'on':'off'}"><b>${l}</b>${i===P.k?'':`<i>${esc(P.o[i])}</i>`}</div>`).join('')}</div><p class="px"><small>${PENT[P.k][1]}</small>${esc(P.o[P.k])}</p><p class="note">差點抽到的另外兩張也翻給你看了</p></div>`;
 }
 function vAsk(G){
   if(G.mode!=='ab' || G.ph==='end') return '';
@@ -2804,12 +2832,14 @@ function myAction(kind, payload){
     else if(kind==='skip'){ if(E.ph==='reveal' && E.step<E.ms){ advance(E,ENG.H); engCommit(); } }
     else if(kind==='force'){ if(canForce(E,ENG.H)){ doReveal(E,ENG.H); engCommit(); } }
     else if(kind==='vote'){ if(vote(E,ENG.H,payload.seat,payload.target)) engCommit(); }
+    else if(kind==='pk'){ if(pickPen(E,-1,payload.i)) engCommit(); }
     else if(kind==='ask'){ if(addAsk(E,ENG.H,payload.t,payload.w,payload.by)){ UI.aqOk=Date.now(); engCommit(); } }
     return;
   }
   if(kind==='submit'){ UI.sentRid=G.rid; NET.r.presence({ s:{ r:G.rid, k:payload.k, b:payload.b, x:payload.ex||'' } }).catch(()=>{}); render(); }
   else if(kind==='reroll'){ UI.rqRid=G.rid; NET.r.presence({ rq:G.rid }).catch(()=>{}); render(); }
   else if(kind==='vote'){ NET.r.presence({ vt:{ r:G.rid, s:payload.target } }).catch(()=>{}); render(); }
+  else if(kind==='pk'){ NET.r.presence({ pk:{ r:G.rid, i:payload.i } }).catch(()=>{}); render(); }
   else if(kind==='ask'){ NET.r.presence({ aq:{ id:rid(), t:payload.t, w:payload.w } }).catch(()=>{}); UI.aqOk=Date.now(); render(); }
 }
 document.addEventListener('click', e=>{
@@ -2881,6 +2911,7 @@ document.addEventListener('click', e=>{
       render(); break;
     }
     case 'adel': CUSTOM_AB.splice(+b.dataset.i,1); LS.set('xyp.customab',CUSTOM_AB); if(NET.r) NET.r.presence({ myab:myABForPresence() }).catch(()=>{}); render(); break;
+    case 'pk': sfx('stamp'); myAction('pk',{i:+b.dataset.v}); break;
     case 'aqopen': UI.aqo=true; UI.qerr=''; render(); focusLater('#qt'); break;
     case 'aqx': UI.aqo=false; render(); break;
     case 'aqby': UI.aqBy=+b.dataset.v; sfx('tap'); render(); break;
