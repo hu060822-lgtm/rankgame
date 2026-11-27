@@ -98,6 +98,7 @@ textarea.in{min-height:130px;resize:vertical;line-height:2;border:1px solid var(
 .opt small{color:var(--ink2);font-size:13px;line-height:1.6;display:block}
 .opt.on{border:2px solid var(--ink);background:var(--paper)}
 .opt:disabled{cursor:default}
+.seg .opt:nth-child(3){grid-column:1/-1;min-height:0}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .tg{border:1px solid var(--line);border-radius:3px;padding:6px 12px;background:transparent;cursor:pointer;font-size:14px;color:var(--ink2);min-height:40px}
 .tg.on{color:var(--ink);background:var(--matcha-l);border-color:var(--matcha)}
@@ -296,6 +297,38 @@ textarea.in{min-height:130px;resize:vertical;line-height:2;border:1px solid var(
 .cl b{display:block;font-family:var(--f-serif);font-weight:700}
 .cl small{color:var(--ink2);overflow-wrap:anywhere}
 .empty{color:var(--ink2);padding:10px 0;margin:0;font-family:var(--f-hand)}
+/* 二選一 */
+.ab{display:flex;flex-direction:column;gap:6px}
+.abopt{position:relative;display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:center;text-align:left;min-height:88px;padding:14px 16px;border:1px solid var(--ink);border-radius:var(--r);background:var(--card);cursor:pointer;box-shadow:1px 2px 0 rgba(70,55,30,.12);transition:transform .15s ease,background .2s ease}
+.abopt:active{transform:scale(.985)}
+.abopt .abw{font-family:var(--f-serif);font-weight:500;font-size:19px;line-height:1.5;overflow-wrap:anywhere}
+.abopt.on{border-width:2px;background:var(--caramel-l)}
+.abopt.o1.on{background:var(--matcha-l)}
+.abopt.on::after{content:"選";position:absolute;right:10px;top:-8px;font-family:var(--f-serif);font-weight:700;font-size:14px;color:var(--seal);border:2px solid var(--seal);border-radius:50%;width:30px;height:30px;display:grid;place-items:center;background:var(--card);transform:rotate(-8deg);animation:stampin .35s ease-out both}
+.abl{display:grid;place-items:center;width:44px;height:44px;background:var(--nS);font-family:var(--f-grade);font-size:30px;font-weight:600;line-height:1;color:var(--ink);box-shadow:1px 2px 3px rgba(70,55,30,.22);transform:rotate(-3deg);flex:0 0 auto}
+.o1 .abl{background:var(--nD);transform:rotate(2deg)}
+.abvs{text-align:center;font-family:var(--f-grade);font-size:24px;color:var(--ink3);line-height:1}
+.abg{display:grid;gap:8px}
+.abg .tg{text-align:left;line-height:1.5;padding:8px 12px}
+.abres{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.abcol{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 12px;display:flex;flex-direction:column;gap:8px;min-width:0;animation:fadeup .6s ease both}
+.abcol.o1{animation-delay:.15s}
+.abcol.maj{border-color:var(--ink);box-shadow:var(--shadow)}
+.abhd{display:flex;gap:10px;align-items:flex-start}
+.abhd .abl{width:34px;height:34px;font-size:24px}
+.abhd b{font-family:var(--f-serif);font-weight:700;font-size:16px;line-height:1.5;min-width:0;overflow-wrap:anywhere}
+.abn{margin:0;font-size:13px;color:var(--ink2)}
+.abn span{font-family:var(--f-grade);font-size:32px;font-weight:600;color:var(--ink);line-height:1;margin-right:2px}
+.abcol .bar{margin-top:0}
+.abcol.o0 .bar i{background:var(--caramel)}
+.abppl{display:flex;flex-direction:column;gap:6px}
+.abp{display:grid;grid-template-columns:24px minmax(0,1fr);gap:2px 6px;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:6px;animation:fadeup .45s ease both;animation-delay:calc(var(--d) + .3s)}
+.abp .e{font-size:18px}
+.abp .nm{font-weight:400;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.abp q{grid-column:1/-1;font-family:var(--f-hand);font-size:15px;color:var(--ink2);line-height:1.5;quotes:"「" "」";overflow-wrap:anywhere}
+.abp.lone .nm{border-bottom:2px solid var(--seal);justify-self:start}
+.abwait{text-align:center;padding:30px 20px}
+.abwait .drum{font-size:22px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 
@@ -314,6 +347,11 @@ CATS.bear = '作者專屬測驗包';
 const BEAR_NAMES = ['張育瑞','張紘瑞','王子齊','李彥霆','劉允城','呂泓羿','胡祐誠','林星辰','王恩'];
 // 詞語寫成 * 的題目，詞語就是作者專屬測驗包的人名
 const PROMPTS = RAW.trim().split('\n').map(l=>{const [c,t,w]=l.split('|');return {c:c.trim(),t:t.trim(),w:w.trim()==='*'?BEAR_NAMES.slice():w.split(/[,，]/).map(s=>s.trim()).filter(Boolean)}}).filter(p=>p.w.length>=3);
+const AB_RAW = `__AB__`;
+const AB_CATS = {afood:'美食',alife:'生活日常',alove:'戀愛',aval:'價值觀',asec:'私密問題',awild:'情境腦洞',awork:'職場・校園',amoney:'金錢',afrd:'友情・社交'};
+const AB = AB_RAW.trim().split('\n').map(l=>{const [c,t,a,b]=l.split('|').map(x=>(x||'').trim());return {c,t,w:[a,b]}}).filter(p=>p.t&&p.w[0]&&p.w[1]&&AB_CATS[p.c]);
+const ABRE = ['先別問','這有故事','我有我的原則','真心話','想都不用想','痛苦的選擇','不接受反駁'];
+const MODEN = { guess:'猜猜主角', sync:'全員神同步', ab:'二選一' };
 const NAME_PROMPTS = ['最可能遲到的人','吃到飽最能吃的人','最可能半夜傳訊息的人','最會撒嬌的人','最可能變網紅的人','最可能忘記帶錢包的人','殭屍末日最能活下來的人','KTV最會霸佔麥克風的人','最可能一秒睡著的人','看電影最容易哭的人','最會殺價的人','最容易迷路的人','最可能說走就走出國的人','最會講冷笑話的人','最可能變有錢人的人','最可能養十隻貓的人','最可能已讀不回的人','最會拍照的人','最容易被推坑的人','最可能當上老闆的人','最愛吃甜食的人','最怕鬼的人','最可能在群組潛水的人','最會安慰人的人','最可能上新聞的人','最常說「我等一下就到」的人','手機最不離手的人','最可能邊哭邊吃東西的人','最可能突然消失的人','最會亂取綽號的人','最愛拍食物的人','最可能變成大明星的人','最愛買東西的人','最可能被貓欺負的人','最常說「隨便」的人','最可能半夜吃泡麵的人','最會記仇的人','最可能在旅行中弄丟東西的人','最會照顧人的人','最適合當隊長的人'];
 const TIERS = 'SABCD';
 const AVATARS = ['🐱','🐶','🐼','🐸','🐧','🦊','🐯','🐰','🐻','🐙','🦄','🐔','🐨','🦖','🐳','🐹'];
@@ -405,13 +443,20 @@ function floatEmoji(e, who){
 function newGame(pl, o){
   const n=pl.length;
   return { v:0, mode:o.mode, pl:pl.map(p=>({p:p.p,n:p.n,a:p.a})), ri:-1,
-    tot: o.mode==='guess' ? n*o.per : o.rounds, ph:'rank', rid:'', star:-1, star2:-1, ev:'', rt:0, topic:null, done:[], vd:[], rr:0,
+    tot: o.mode==='guess' ? n*o.per : o.mode==='ab' ? (o.abr||12) : o.rounds, ph:'rank', rid:'', star:-1, star2:-1, ev:'', rt:0, topic:null, done:[], vd:[], rr:0,
     sc:Array(n).fill(0), st:pl.map(()=>[0,0,0,0,0,0,0,0,0,0]), pr:{}, streak:0, best:0, syncs:0,
-    cats:o.cats, time:o.time||0, res:null, step:0, ms:0, aw:null, off:[], x2:false, hl:null, qt:null };
+    cats:o.mode==='ab' ? (o.abcats||Object.keys(AB_CATS)) : o.cats, time:o.time||0, res:null, step:0, ms:0, aw:null, off:[], x2:false, hl:null, qt:null };
 }
 const newH = (customs, online) => ({ subs:{}, bets:{}, ex:{}, votes:{}, used:new Set(), customs:customs||[], online:!!online, lastEv:'' });
 const activeSeats = G => G.pl.map((_,i)=>i).filter(i=>!G.off.includes(i));
 function pickTopic(G,H){
+  if(G.mode==='ab'){
+    const key=p=>'a:'+p.t+'|'+p.w[0];
+    let pool=AB.filter(p=>G.cats.includes(p.c)); if(!pool.length) pool=AB;
+    let fresh=pool.filter(p=>!H.used.has(key(p))); if(!fresh.length){ pool.forEach(p=>H.used.delete(key(p))); fresh=pool; }
+    const p=pick(fresh); H.used.add(key(p));
+    return { t:p.t, w:Math.random()<.5 ? [p.w[1],p.w[0]] : p.w.slice(), c:p.c };
+  }
   const act=activeSeats(G);
   if(G.mode==='sync' && act.length>=3 && Math.random()<.35){
     let pool=NAME_PROMPTS.filter(t=>!H.used.has('n:'+t)); if(!pool.length) pool=NAME_PROMPTS;
@@ -433,7 +478,7 @@ function freshRound(G,H){ G.rid=rid(); G.done=[]; G.vd=[]; H.subs={}; H.bets={};
 function pickEvent(G,H,act){
   if(G.ri===0) return '';
   if(G.tot>=3 && G.ri===G.tot-1) return 'x2';
-  let pool = G.mode==='guess' ? ['rev','gam','fast'] : ['fast',''];
+  let pool = G.mode==='guess' ? ['rev','gam','fast'] : G.mode==='ab' ? ['','','fast'] : ['fast',''];
   if(G.mode==='guess' && act.length>=4) pool.push('duo','duo');
   pool=pool.filter(e=>e!==H.lastEv); if(!pool.length) pool=[''];
   return pick(pool);
@@ -451,6 +496,13 @@ function startRound(G,H){
 function reroll(G,H){ if(G.ph!=='rank'||G.rr>=2) return; G.topic=pickTopic(G,H); G.rr++; freshRound(G,H); }
 const isStar = (G,s) => G.mode==='guess' && (s===G.star || (G.star2>=0 && s===G.star2));
 function submit(G,H,seat,k,b,ex){
+  if(G.mode==='ab'){
+    if(G.ph!=='rank' || !Array.isArray(k) || k.length!==2 || !k.every(v=>v===0||v===1)) return false;
+    if(G.off.includes(seat) || seat<0 || seat>=G.pl.length) return false;
+    H.subs[seat]=k.slice(); delete H.ex[seat];
+    if(typeof ex==='string'){ const x=ex.replace(/\s+/g,' ').trim().slice(0,30); if(x) H.ex[seat]=x; }
+    G.done=Object.keys(H.subs).map(Number); return true;
+  }
   if(G.ph!=='rank' || !Array.isArray(k)) return false;
   const K=G.topic.w.length;
   if(k.length!==K || [...k].sort((a,b)=>a-b).some((v,i)=>v!==i)) return false;
@@ -462,7 +514,27 @@ function submit(G,H,seat,k,b,ex){
 }
 const allIn = (G,H) => G.ph==='rank' && activeSeats(G).every(s=>H.subs[s]);
 const canForce = (G,H) => G.ph==='rank' && (G.mode==='guess' ? (H.subs[G.star] && Object.keys(H.subs).length>=2) : Object.keys(H.subs).length>=2);
+// 二選一：揭曉誰選哪邊；猜中多數派 +2
+function abReveal(G,H){
+  const seats=Object.keys(H.subs).map(Number), mult=G.ev==='x2'?2:1, ch={}, gu={};
+  seats.forEach(s=>{ ch[s]=H.subs[s][0]; gu[s]=H.subs[s][1]; });
+  const side=[seats.filter(s=>ch[s]===0), seats.filter(s=>ch[s]===1)];
+  const maj = side[0].length>side[1].length ? 0 : side[1].length>side[0].length ? 1 : -1;
+  const res={ ab:true, ch, gu, side, maj, pts:{}, ex:{}, x2:mult===2, ev:G.ev, lone:-1, seats };
+  seats.forEach(s=>{ if(H.ex[s]) res.ex[s]=H.ex[s];
+    const hit=maj>=0 && gu[s]===maj, p=hit?2*mult:0, st=G.st[s];
+    res.pts[s]=p; G.sc[s]+=p; st[1]++; if(hit) st[2]++; if(maj>=0 && ch[s]!==maj) st[0]++; });
+  if(seats.length>=3) [0,1].forEach(i=>{ if(side[i].length===1){ res.lone=side[i][0]; G.st[res.lone][3]++; } });
+  for(let i=0;i<seats.length;i++) for(let j=i+1;j<seats.length;j++){ const a=Math.min(seats[i],seats[j]), b=Math.max(seats[i],seats[j]), pr=G.pr[a+'-'+b]||(G.pr[a+'-'+b]=[0,0]); if(ch[a]===ch[b]) pr[0]++; pr[1]++; }
+  if(res.lone>=0){
+    const L=res.lone;
+    if(!G.hl || seats.length>G.hl.d) G.hl={ ab:1, d:seats.length, t:G.topic.t, w:G.topic.w[ch[L]], s:[L] };
+    if(res.ex[L]) G.qt={ p:0, s:L, x:res.ex[L], t:G.topic.t };
+  } else if(!G.qt){ const e=seats.find(s=>res.ex[s]); if(e!==undefined) G.qt={ p:1, s:e, x:res.ex[e], t:G.topic.t }; }
+  G.res=res; G.ph='reveal'; G.step=0; G.ms=1;
+}
 function doReveal(G,H){
+  if(G.mode==='ab') return abReveal(G,H);
   const K=G.topic.w.length, raw={}; Object.keys(H.subs).forEach(s=>raw[s]=H.subs[s]);
   const seats=Object.keys(raw).map(Number), T={}; seats.forEach(s=>T[s]=tierOf(raw[s]));
   const mult=G.ev==='x2'?2:1;
@@ -542,6 +614,15 @@ function computeAwards(G){
     let bp=null; for(let a=0;a<n;a++) for(let b=a+1;b<n;b++){ const x=G.pr[a+'>'+b], y=G.pr[b+'>'+a]; if(x&&y){ const v=(x[0]/x[1]+y[0]/y[1])/2; if(!bp||v>bp.v) bp={v,s:[a,b]}; } }
     if(bp) A.push({i:'伴',t:'靈魂伴侶',d:`互猜平均 ${r1(bp.v)} 分`,s:bp.s});
     const gam=best(i=>st[i][8]||null,1); if(gam) A.push({i:'賭',t:'賭神',d:`押注押中 ${gam.v} 次`,s:gam.s});
+  } else if(G.mode==='ab'){
+    A.push({i:'風',t:'最會讀空氣',d:`猜中多數派，總分 ${champ?champ.v:0} 分`,s:champ&&champ.v>0?champ.s:[]});
+    const mn=best(i=>st[i][1]?st[i][0]:null,1), mj=best(i=>st[i][1]?st[i][0]:null,-1);
+    if(mn && mn.v>0) A.push({i:'少',t:'少數派代表',d:`有 ${mn.v} 題站在少數那一邊`,s:mn.s});
+    if(mj && mn && mj.v!==mn.v) A.push({i:'眾',t:'人民的聲音',d:mj.v?`只有 ${mj.v} 題跟大家不一樣`:'每一題都跟多數人站同一邊',s:mj.s});
+    const lo=best(i=>st[i][3]||null,1); if(lo) A.push({i:'孤',t:'孤鳥',d:`有 ${lo.v} 題全場只有他選那一邊`,s:lo.s});
+    let bp=null, wp=null; for(const k in G.pr){ const [a,b]=k.split('-').map(Number), v=G.pr[k][0]/G.pr[k][1]; if(!bp||v>bp.v) bp={v,s:[a,b]}; if(!wp||v<wp.v) wp={v,s:[a,b]}; }
+    if(bp) A.push({i:'伴',t:'價值觀雙胞胎',d:`${Math.round(bp.v*100)}% 的題目選得一樣`,s:bp.s});
+    if(wp && n>2 && wp.v<bp.v) A.push({i:'冤',t:'天生冤家',d:`只有 ${Math.round(wp.v*100)}% 的題目選得一樣`,s:wp.s});
   } else {
     A.push({i:'同',t:'全員神同步',d:`${G.syncs} / ${G.tot} 回合完全一致，最高連續 ${G.best} 回合`,s:[]});
     if(champ) A.push({i:'拍',t:'最合拍的人',d:`和大家撞排 ${champ.v} 分`,s:champ.s});
@@ -635,7 +716,8 @@ setInterval(()=>{
     const left=Math.max(0,UI.deadline-Date.now()), sec=Math.ceil(left/1000), el=document.getElementById('timer');
     if(el){ el.querySelector('span').textContent=sec; el.querySelector('i').style.width=(left/(G.rt*10))+'%'; el.classList.toggle('hurry',sec<=10); }
     if(sec<=5 && sec>0 && UI.tickAt!==sec){ UI.tickAt=sec; sfx('tick'); }
-    if(left<=0){ const d=UI.draft; const rest=shuffle(G.topic.w.map((_,i)=>i).filter(i=>!d.arr.includes(i))); d.arr=d.arr.map(x=>x>=0?x:rest.shift()); sfx('boing'); myAction('submit',{seat:d.seat,k:d.arr.slice(),b:d.bet,ex:UI.ex||''}); render(); }
+    if(left<=0 && UI.draft.ab){ const d=UI.draft; if(d.c<0) d.c=Math.random()<.5?0:1; if(d.g<0) d.g=d.c; sfx('boing'); myAction('submit',{seat:d.seat,k:[d.c,d.g],b:-1,ex:UI.ex||''}); render(); }
+    else if(left<=0){ const d=UI.draft; const rest=shuffle(G.topic.w.map((_,i)=>i).filter(i=>!d.arr.includes(i))); d.arr=d.arr.map(x=>x>=0?x:rest.shift()); sfx('boing'); myAction('submit',{seat:d.seat,k:d.arr.slice(),b:d.bet,ex:UI.ex||''}); render(); }
   }
   const E=ENG.G;
   if(E && CUR.online && NET.isHost && E.ph==='rank' && ENG.dl && Date.now()>ENG.dl+6000 && canForce(E,ENG.H) && !allIn(E,ENG.H)){ doReveal(E,ENG.H); engCommit(); }
@@ -736,7 +818,8 @@ function hostBackToLobby(){
 const ME = LS.get('xyp.me', null) || { n:'', a:pick(AVATARS) };
 const OPEN_CATS = Object.keys(CATS).filter(k=>!LOCKED[k]);
 const unlocked = k => !LOCKED[k] || !!LS.get('xyp.unlock.'+k, false);
-const SET = Object.assign({ mode:'guess', per:1, rounds:8, time:60, cats:[...OPEN_CATS,'my'] }, LS.get('xyp.set', {}));
+const SET = Object.assign({ mode:'guess', per:1, rounds:8, abr:12, time:60, cats:[...OPEN_CATS,'my'], abcats:Object.keys(AB_CATS) }, LS.get('xyp.set', {}));
+SET.abcats = (Array.isArray(SET.abcats)?SET.abcats:[]).filter(k=>AB_CATS[k]); if(!SET.abcats.length) SET.abcats=Object.keys(AB_CATS);
 SET.cats = SET.cats.filter(k=>k==='my' || (CATS[k] && unlocked(k)));
 [...OPEN_CATS,'my'].forEach(k=>{ if(!LS.get('xyp.cat.'+k,false)){ if(!SET.cats.includes(k)) SET.cats.push(k); LS.set('xyp.cat.'+k,true); } });
 let CUSTOM = LS.get('xyp.custom', []);
@@ -782,7 +865,8 @@ function showSplash(g, swapped){
   hideSplash();
   const d=document.createElement('div'); d.id='splash'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','新回合');
   let who;
-  if(g.mode!=='guess') who=`<p class="s">全員神同步<br>大家要排得一模一樣</p>`;
+  if(g.mode==='ab') who=`<p class="s">二選一<br>偷偷選一邊，等一下一起揭曉</p>`;
+  else if(g.mode!=='guess') who=`<p class="s">全員神同步<br>大家要排得一模一樣</p>`;
   else if(g.star2>=0) who=`<p class="s"><span class="e">${esc(g.pl[g.star].a)}${esc(g.pl[g.star2].a)}</span>這回合的主角是 <b>${esc(g.pl[g.star].n)}</b> 和 <b>${esc(g.pl[g.star2].n)}</b></p>`;
   else who=`<p class="s"><span class="e">${esc(g.pl[g.star].a)}</span>這回合的主角是 <b>${esc(g.pl[g.star].n)}</b></p>`;
   const ev=EV[g.ev];
@@ -793,6 +877,16 @@ function showSplash(g, swapped){
 function hideSplash(){ clearTimeout(splashT); const s=$('#splash'); if(s) s.remove(); }
 function stepFx(g){
   if(!g.res) return;
+  if(g.res.ab){
+    const R=g.res;
+    if(g.step===0){ sfx('drum'); return; }
+    sfx('stamp');
+    if(!R.side[0].length || !R.side[1].length){ setTimeout(()=>sfx('cheer'),150); confetti(innerWidth/2,innerHeight/3,70,1); }
+    else if(R.lone>=0) setTimeout(()=>sfx('boing'),200);
+    else setTimeout(()=>sfx('ding'),200);
+    setTimeout(()=>document.querySelectorAll('.bar i[data-w]').forEach(b=>b.style.width=b.dataset.w+'%'),60);
+    return;
+  }
   const K=g.topic.w.length, R=g.res;
   if(g.step===0){ sfx('whoosh'); return; }
   if(g.step<=K){
@@ -849,19 +943,25 @@ function vHome(){
 }
 function vSettings(edit){
   const S = edit ? SET : (NET.lob||SET), dis = edit?'':'disabled';
-  const per = S.mode==='guess'
+  const ab = S.mode==='ab';
+  const per = ab
+    ? `<div><span class="lb">題數</span><div class="chips">${[8,12,20].map(n=>`<button class="tg ${(S.abr||12)===n?'on':''}" data-act="abr" data-v="${n}" ${dis}>${n} 題</button>`).join('')}</div></div>`
+    : S.mode==='guess'
     ? `<div><span class="lb">每人當幾次主角</span><div class="chips">${[1,2,3].map(n=>`<button class="tg ${S.per===n?'on':''}" data-act="per" data-v="${n}" ${dis}>${n} 次</button>`).join('')}</div></div>`
     : `<div><span class="lb">回合數</span><div class="chips">${[5,8,12].map(n=>`<button class="tg ${S.rounds===n?'on':''}" data-act="rounds" data-v="${n}" ${dis}>${n} 回合</button>`).join('')}</div></div>`;
   return `<div class="card stack"><div class="seg">
     <button class="opt ${S.mode==='guess'?'on':''}" data-act="mode" data-v="guess" ${dis}><b>猜猜主角</b><small>輪流當主角偷偷排，其他人猜他怎麼排</small></button>
-    <button class="opt ${S.mode==='sync'?'on':''}" data-act="mode" data-v="sync" ${dis}><b>全員神同步</b><small>大家一起排，目標排得一模一樣</small></button></div>
+    <button class="opt ${S.mode==='sync'?'on':''}" data-act="mode" data-v="sync" ${dis}><b>全員神同步</b><small>大家一起排，目標排得一模一樣</small></button>
+    <button class="opt ${ab?'on':''}" data-act="mode" data-v="ab" ${dis}><b>二選一</b><small>每題兩個選項，大家偷偷選一邊，最後揭曉誰站哪邊，吵起來</small></button></div>
     ${per}
-    <div><span class="lb">每回合排名時間</span><div class="chips">${[[0,'不限時'],[90,'90 秒'],[60,'60 秒'],[30,'30 秒']].map(([n,l])=>`<button class="tg ${(S.time||0)===n?'on':''}" data-act="time" data-v="${n}" ${dis}>${l}</button>`).join('')}</div></div>
+    <div><span class="lb">${ab?'每題作答時間':'每回合排名時間'}</span><div class="chips">${[[0,'不限時'],[90,'90 秒'],[60,'60 秒'],[30,'30 秒']].map(([n,l])=>`<button class="tg ${(S.time||0)===n?'on':''}" data-act="time" data-v="${n}" ${dis}>${l}</button>`).join('')}</div></div>
+    ${ab ? `<div><span class="lb">題庫（共 ${AB.filter(p=>(S.abcats||[]).includes(p.c)).length} 題）</span><div class="chips">${Object.entries(AB_CATS).map(([k,v])=>`<button class="tg ${(S.abcats||[]).includes(k)?'on':''}" data-act="abcat" data-v="${k}" ${dis}>${v}</button>`).join('')}</div></div>
+    <p class="note">選完再猜猜多數人選哪邊，猜中 +2。可以留一句理由，揭曉時貼出來。</p></div>` : `
     <div><span class="lb">題庫（共 ${PROMPTS.filter(p=>S.cats.includes(p.c)).length + (S.cats.includes('my')?CUSTOM.length:0)} 題）</span><div class="chips">${Object.entries(CATS).map(([k,v])=>{
       const lk = LOCKED[k] && !unlocked(k) && !S.cats.includes(k);
       return `<button class="tg ${S.cats.includes(k)?'on':''}" data-act="cat" data-v="${k}" ${dis}>${lk?'🔒 ':''}${v}</button>`; }).join('')}<button class="tg ${S.cats.includes('my')?'on':''}" data-act="cat" data-v="my" ${dis}>自訂題</button></div></div>
     ${edit && UI.lock ? `<div class="stack"><label class="lb" for="pw" style="margin:0">「${esc(CATS[UI.lock])}」要密碼才能打開</label><div class="row"><input class="in" id="pw" type="password" inputmode="numeric" maxlength="12" placeholder="輸入密碼" value="${esc(UI.pw)}" style="flex:1 1 120px" autocomplete="off"><button class="btn small blue" data-act="unlock" style="flex:0 0 auto">解鎖</button><button class="btn small ghost" data-act="unlockx" style="flex:0 0 auto">取消</button></div>${UI.pwerr?`<p class="err" role="alert">${esc(UI.pwerr)}</p>`:''}</div>` : ''}
-    <p class="note">${S.cats.includes('my')?'每個人的自訂題目也會混進來':'自訂題目已關閉'}${S.mode==='sync'?'；3 人以上還會出「排排看你的朋友」題':''}。</p></div>`;
+    <p class="note">${S.cats.includes('my')?'每個人的自訂題目也會混進來':'自訂題目已關閉'}${S.mode==='sync'?'；3 人以上還會出「排排看你的朋友」題':''}。</p></div>`}`;
 }
 function vLobby(){
   if(!NET.r) return vHome();
@@ -901,6 +1001,7 @@ function vHelp(){
   <h3>猜猜主角</h3><ul><li>每回合有一位主角，大家看到同一個題目和 5 個詞。</li><li>主角照真心把詞排成 S（本命）到 D（不行），還可以留一句「辯解」。</li><li>其他人同時猜主角會怎麼排，並可以押一列最有把握的：押中 +3，押錯 −1。</li><li>揭曉前，大家先投「誰最懂主角」，投中本回合最高分的人 +2。</li><li>揭曉從 D 一頁一頁翻到 S。位置猜中 2 分，差一格 1 分，全部猜中再加 5 分。</li><li>主角拿到大家的平均分，越好懂分越高。</li></ul>
   <h3>每回合的小事件</h3><ul><li><b>反轉回合</b>：猜的人要排出最不像主角的排法。</li><li><b>雙主角</b>（4 人以上）：兩位主角各排各的，大家猜兩人合起來的排名。</li><li><b>豪賭回合</b>：押中 +6，押錯 −2。</li><li><b>閃電回合</b>：只有 25 秒。</li><li><b>決勝回合</b>：最後一回合分數 ×2。</li></ul>
   <h3>全員神同步</h3><ul><li>沒有主角，大家一起排同一題，目標是排得一模一樣。</li><li>3 人以上會出現「排排看你的朋友」題，詞語就是大家的名字。</li></ul>
+  <h3>二選一</h3><ul><li>每題有兩個選項：情境、美食、價值觀、私密問題……大家偷偷選一邊。</li><li>選完再猜「多數人會選哪邊」，猜中 +2 分；平手這題不計分。</li><li>可以留一句理由，揭曉時跟名字一起貼出來，方便開吵。</li><li>最後頒獎：最會讀空氣、少數派代表、孤鳥、價值觀雙胞胎、天生冤家。</li></ul>
   <h3>兩種開局</h3><ul><li><b>開房間</b>：每人用自己的手機開這個頁面，輸入房號加入。</li><li><b>一支手機輪流玩</b>：輪到誰就把手機交給誰，揭曉時大家圍過來看。</li></ul>
   <h3>結束之後</h3><p>頒完獎會有一張成果卡，截圖就能分享。</p></div>
   <button class="btn ghost" data-act="home">回首頁</button>`;
@@ -909,12 +1010,12 @@ function statusChips(G){
   return `<div class="status">${G.pl.map((p,i)=>{ if(G.off.includes(i)) return `<span class="st" style="opacity:.4">${esc(p.a)} ${esc(p.n)} 離線</span>`; const ok=G.done.includes(i); return `<span class="st ${ok?'ok':'think'}">${esc(p.a)} ${esc(p.n)} ${ok?'✓':'…'}</span>`; }).join('')}</div>`;
 }
 function topicCard(G){
-  const lab = G.topic.c==='my' ? '自訂題' : G.topic.c==='name' ? '排排看你的朋友' : (CATS[G.topic.c]||'題目');
+  const lab = G.topic.c==='my' ? '自訂題' : G.topic.c==='name' ? '排排看你的朋友' : (CATS[G.topic.c]||AB_CATS[G.topic.c]||'題目');
   return `<div class="card topic tape"><small>${esc(lab)}</small><h2>${esc(G.topic.t)}</h2>${G.topic.by?`<span class="by">出題：${esc(G.topic.by)}</span>`:''}</div>`;
 }
 function roundBar(G){
   const ev=EV[G.ev];
-  return `<div class="roundbar"><span class="pill">第 ${G.ri+1} / ${G.tot} 回合</span><span class="pill">${G.mode==='guess'?'猜猜主角':'全員神同步'}</span>${G.mode==='sync'&&G.streak?`<span class="pill">連續同步 ${G.streak}</span>`:''}${ev?`<span class="pill ev">${ev[0]}</span>`:''}</div>`;
+  return `<div class="roundbar"><span class="pill">第 ${G.ri+1} / ${G.tot} 回合</span><span class="pill">${MODEN[G.mode]}</span>${G.mode==='sync'&&G.streak?`<span class="pill">連續同步 ${G.streak}</span>`:''}${ev?`<span class="pill ev">${ev[0]}</span>`:''}</div>`;
 }
 function vGame(){
   const G=CUR.G; if(!G) return CUR.online?vLobby():vHome();
@@ -936,7 +1037,7 @@ function vRankPhase(G){
       const q=ppQueue(G);
       if(!q.length) return `${roundBar(G)}<div class="card handoff"><h2>全員送出</h2><p style="margin:0">大家圍過來，準備揭曉。</p></div>`;
       const s=q[0], star=isStar(G,s);
-      return `${roundBar(G)}<div class="card handoff tape c"><div class="photo"><div class="face">${esc(G.pl[s].a)}</div><small>${star?'本回合主角':'換你了'}</small></div><p style="margin:0" class="muted">請把手機交給</p><h2>${esc(G.pl[s].n)}</h2><p class="note c" style="margin-bottom:16px">${star?'你是這回合的主角。':G.mode==='sync'?'輪到你排了。':'輪到你猜了。'}其他人不要偷看。</p><button class="btn big pink" data-act="ppgo" data-s="${s}">我是 ${esc(G.pl[s].n)}，開始</button></div>${statusChips(G)}`;
+      return `${roundBar(G)}<div class="card handoff tape c"><div class="photo"><div class="face">${esc(G.pl[s].a)}</div><small>${star?'本回合主角':'換你了'}</small></div><p style="margin:0" class="muted">請把手機交給</p><h2>${esc(G.pl[s].n)}</h2><p class="note c" style="margin-bottom:16px">${star?'你是這回合的主角。':G.mode==='ab'?'輪到你選了。':G.mode==='sync'?'輪到你排了。':'輪到你猜了。'}其他人不要偷看。</p><button class="btn big pink" data-act="ppgo" data-s="${s}">我是 ${esc(G.pl[s].n)}，開始</button></div>${statusChips(G)}`;
     }
     return vRank(G,seat);
   }
@@ -949,7 +1050,23 @@ function ensureDraft(G,seat){
   if(!UI.draft || UI.draft.rid!==G.rid || UI.draft.seat!==seat) { UI.draft={rid:G.rid,seat,arr:Array(K).fill(-1),bet:-1}; UI.sel=-1; UI.ex=''; UI.deadline = G.rt ? Date.now()+G.rt*1000 : 0; UI.tickAt=0; }
   return UI.draft;
 }
+function abDraft(G,seat){
+  if(!UI.draft || UI.draft.rid!==G.rid || UI.draft.seat!==seat){ UI.draft={rid:G.rid,seat,c:-1,g:-1,ab:1}; UI.ex=''; UI.deadline = G.rt ? Date.now()+G.rt*1000 : 0; UI.tickAt=0; }
+  return UI.draft;
+}
+function vPick(G,seat){
+  const d=abDraft(G,seat), W=G.topic.w;
+  const timer = G.rt ? `<div class="timer" id="timer" aria-live="off"><i style="width:100%"></i><span>${G.rt}</span></div>` : '';
+  let h=`${roundBar(G)}${timer}${topicCard(G)}<p class="role">偷偷選一邊，<b>沒有標準答案</b></p>
+  <div class="ab" role="group" aria-label="選一邊">${W.map((w,i)=>`<button class="abopt o${i} ${d.c===i?'on':''}" data-act="abc" data-v="${i}" aria-pressed="${d.c===i}"><span class="abl">${'AB'[i]}</span><span class="abw">${esc(w)}</span></button>`).join('<span class="abvs" aria-hidden="true">or</span>')}</div>
+  <div><span class="lb">再猜猜：多數人會選哪邊？猜中 +${G.ev==='x2'?4:2}</span><div class="abg">${W.map((w,i)=>`<button class="tg ${d.g===i?'on':''}" data-act="abg" data-v="${i}" aria-pressed="${d.g===i}">${'AB'[i]}．${esc(w)}</button>`).join('')}</div></div>
+  <div class="exbox"><label class="lb" for="ex" style="margin:0">留一句理由，揭曉時會貼出來（可以不寫）</label><input class="in" id="ex" maxlength="30" placeholder="例：這有故事" value="${esc(UI.ex||'')}" autocomplete="off"><div class="chips">${ABRE.map(x=>`<button class="tg" data-act="expre" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
+  <button class="btn big pink" data-act="submit" ${d.c>=0&&d.g>=0?'':'disabled'}>${d.c<0?'先選一邊':d.g<0?'再猜一下多數派':'鎖定我的選擇'}</button>`;
+  if(CUR.online) h+=statusChips(G);
+  return h;
+}
 function vRank(G,seat){
+  if(G.mode==='ab') return vPick(G,seat);
   const d=ensureDraft(G,seat), K=G.topic.w.length, W=G.topic.w;
   const star=isStar(G,seat), guess=G.mode==='guess', rev=G.ev==='rev', duo=G.star2>=0;
   const timer = G.rt ? `<div class="timer" id="timer" aria-live="off"><i style="width:100%"></i><span>${G.rt}</span></div>` : '';
@@ -976,8 +1093,13 @@ function vRank(G,seat){
   return h;
 }
 function vWait(G,seat){
-  const d=UI.draft && UI.draft.rid===G.rid ? UI.draft.arr : null;
   const force = NET.isHost && canForce(G,ENG.H) && !allIn(G,ENG.H);
+  if(G.mode==='ab'){
+    const d=UI.draft && UI.draft.rid===G.rid && UI.draft.ab ? UI.draft : null;
+    return `${roundBar(G)}${topicCard(G)}<div class="card"><h3>選好了</h3><p class="muted" style="margin:4px 0 0">${d&&d.c>=0?`你選了 ${'AB'[d.c]}．${esc(G.topic.w[d.c])}。`:''}等其他人想好…</p></div>
+    ${statusChips(G)}${force?`<button class="btn small ghost" data-act="force">有人沒回來？不等了，直接揭曉</button>`:''}`;
+  }
+  const d=UI.draft && UI.draft.rid===G.rid ? UI.draft.arr : null;
   return `${roundBar(G)}${topicCard(G)}<div class="card"><h3>送出了</h3><p class="muted" style="margin:4px 0 0">等其他人想好…</p></div>
   ${d&&d.every(x=>x>=0)?`<div class="tiers" style="opacity:.7">${d.map((w,t)=>`<div class="tier t${t}">${tl(t)}<div class="slot"><span class="chip big">${esc(G.topic.w[w])}</span></div></div>`).join('')}</div>`:''}
   ${statusChips(G)}${force?`<button class="btn small ghost" data-act="force">有人沒回來？不等了，直接揭曉</button>`:''}`;
@@ -996,7 +1118,25 @@ function vVote(G){
   h+=`<p class="note">已投票 ${G.vd.length} / ${R.vs.length}</p></div>`;
   return h;
 }
+function vABReveal(G){
+  const R=G.res, W=G.topic.w, n=R.seats.length;
+  let h=`${roundBar(G)}${topicCard(G)}`;
+  if(G.step<G.ms){
+    h+=`<div class="card abwait tape c"><p class="drum">三、二、一……</p><p class="note c">${n} 個人都選好了，準備揭曉</p></div>`;
+    if(canControl()) h+=`<button class="btn ghost small" data-act="skip">快轉</button>`;
+    return h+vRx();
+  }
+  const pct=[0,1].map(i=>n?Math.round(R.side[i].length/n*100):0);
+  h+=`<div class="abres">${[0,1].map(i=>`<div class="abcol o${i} ${R.maj===i?'maj':''}"><div class="abhd"><span class="abl">${'AB'[i]}</span><b>${esc(W[i])}</b></div><p class="abn"><span>${R.side[i].length}</span>人・${pct[i]}%</p><div class="bar"><i data-w="${pct[i]}"></i></div><div class="abppl">${R.side[i].map((s,j)=>`<div class="abp ${R.lone===s?'lone':''}" style="--d:${j*120}ms"><span class="e">${esc(G.pl[s].a)}</span><span class="nm">${esc(G.pl[s].n)}</span>${R.ex[s]?`<q>${esc(R.ex[s])}</q>`:''}</div>`).join('')||'<p class="empty">沒有人</p>'}</div></div>`).join('')}</div>`;
+  h+=vRoundResult(G);
+  return h+vRx();
+}
+const ABQ = {
+  same:['這題沒什麼好吵的，下一題。','全員一條心，感動。','原來你們都一樣。'],
+  tie:['剛好對半，開戰吧。','完美平手，誰都說服不了誰。','這題可以吵到天亮。']
+};
 function vReveal(G){
+  if(G.res && G.res.ab) return vABReveal(G);
   const K=G.topic.w.length, W=G.topic.w, R=G.res, seats=Object.keys(R.k).map(Number);
   const guess=G.mode==='guess', sk=guess?R.tk:null, sT=guess?tierOf(sk):null, gs=guess?R.gs:seats, duo=guess&&R.stars.length===2;
   let head;
@@ -1047,7 +1187,15 @@ function boardHTML(G, medals){
 function vRoundResult(G){
   const R=G.res;
   let h='<div class="card res">';
-  if(G.mode==='guess'){
+  if(R.ab){
+    const W=G.topic.w, one=!R.side[0].length || !R.side[1].length, ev=EV[R.ev];
+    const nm=s=>esc(G.pl[s].n);
+    const banner = one ? '全員一致' : R.maj<0 ? '五五波' : R.lone>=0 ? '孤鳥出現' : '多數決';
+    const quip = one ? esc(seededPick(ABQ.same,G.rid)) : R.maj<0 ? esc(seededPick(ABQ.tie,G.rid)) : R.lone>=0 ? `全場只有 ${nm(R.lone)} 選了「${esc(W[R.ch[R.lone]])}」，請發表感言。` : `少數派 ${R.side[1-R.maj].map(nm).join('、')}，說服一下大家？`;
+    const ss=R.seats.slice().sort((a,b)=>R.pts[b]-R.pts[a] || a-b);
+    h+=`${ev?`<p class="x2tag">${ev[0]}</p>`:''}<p class="banner">${banner}</p><p class="quip">${quip}</p>
+    ${R.maj<0?'<p class="note">平手沒有多數派，這題不計分。</p>':ss.map(s=>`<div class="line"><span class="e">${esc(G.pl[s].a)}</span><div><div class="nm">${nm(s)}${R.pts[s]?`<span class="badge g">猜中多數 +${R.pts[s]}</span>`:''}</div><small class="muted">選 ${'AB'[R.ch[s]]}，猜多數選 ${'AB'[R.gu[s]]}</small></div><span class="pts">+${R.pts[s]}</span></div>`).join('')}`;
+  } else if(G.mode==='guess'){
     const gs=R.gs.slice().sort((a,b)=>R.pts[b]-R.pts[a]);
     const pct=R.max?Math.round(R.avg/R.max*100):0;
     const q=R.perf.length?QUIPS.perfect:pct>=60?QUIPS.easy:pct>=35?QUIPS.mid:QUIPS.hard;
@@ -1081,24 +1229,26 @@ function shareCard(G){
   const aws=(G.aw||[]).slice(1).filter(a=>a.s.length).slice(0,4);
   const host=/onrender\.com$/.test(location.hostname)?location.hostname:'心有靈排';
   let hl='';
-  if(G.hl){ hl = G.hl.gt!==undefined
+  if(G.hl){ hl = G.hl.ab
+    ? `<p class="hl"><small>本日名場面</small>「${esc(G.hl.t)}」全場只有${esc(G.pl[G.hl.s[0]].n)}選了「${esc(G.hl.w)}」。</p>`
+    : G.hl.gt!==undefined
     ? `<p class="hl"><small>本日名場面</small>「${esc(G.hl.t)}」大家以為「${esc(G.hl.w)}」是 ${TIERS[G.hl.gt]}，結果${esc(G.hl.s.map(s=>G.pl[s].n).join('和'))}放在 ${TIERS[G.hl.st]}。</p>`
     : `<p class="hl"><small>本日名場面</small>「${esc(G.hl.t)}」的「${esc(G.hl.w)}」，有人放 ${TIERS[G.hl.lo]}，有人放 ${TIERS[G.hl.hi]}。</p>`; }
   return `<div class="share tape" id="share">
-    <div class="hd"><div><p class="dt">${dt}</p><h2>心有靈排</h2><p class="sub">${G.mode==='guess'?'今天誰最懂誰的紀錄':'今天我們有多同步'}</p></div><span class="hanko">排</span></div>
-    <div class="win"><div class="photo"><div class="face">${esc(G.pl[top[0].i].a)}</div></div><div><p>${G.mode==='guess'?'最會讀心':'最合拍'}</p><h3>${top.map(b=>esc(G.pl[b.i].n)).join('、')}</h3><p><span class="sc-big">${top[0].s}</span> 分</p></div><span class="seal">優勝</span></div>
+    <div class="hd"><div><p class="dt">${dt}</p><h2>心有靈排</h2><p class="sub">${G.mode==='guess'?'今天誰最懂誰的紀錄':G.mode==='ab'?'今天我們的價值觀有多合':'今天我們有多同步'}</p></div><span class="hanko">排</span></div>
+    <div class="win"><div class="photo"><div class="face">${esc(G.pl[top[0].i].a)}</div></div><div><p>${G.mode==='guess'?'最會讀心':G.mode==='ab'?'最會讀空氣':'最合拍'}</p><h3>${top.map(b=>esc(G.pl[b.i].n)).join('、')}</h3><p><span class="sc-big">${top[0].s}</span> 分</p></div><span class="seal">優勝</span></div>
     ${rest.length?`<ol>${rest.map((b,r)=>`<li><i>${r+1+top.length}</i><span>${esc(G.pl[b.i].a)} ${esc(G.pl[b.i].n)}</span><b>${b.s}</b></li>`).join('')}</ol>`:''}
     ${aws.length?`<ul class="aws">${aws.map(a=>`<li><b>${esc(a.t)}</b><span>${a.s.map(s=>esc(G.pl[s].n)).join('、')}</span></li>`).join('')}</ul>`:''}
     ${G.mode==='sync'?`<p class="hl"><small>同步紀錄</small>${G.syncs} / ${G.tot} 回合完全一致，最高連續 ${G.best} 回合。</p>`:''}
     ${hl}
     ${G.qt?`<p class="qt">「${esc(G.qt.x)}」<cite>${esc(G.pl[G.qt.s].n)}，關於「${esc(G.qt.t)}」</cite></p>`:''}
-    <p class="ft"><span>${G.mode==='guess'?'猜猜主角':'全員神同步'}　${G.tot} 回合　${G.pl.length} 人</span><span>${esc(host)}</span></p>
+    <p class="ft"><span>${MODEN[G.mode]}　${G.tot} ${G.mode==='ab'?'題':'回合'}　${G.pl.length} 人</span><span>${esc(host)}</span></p>
   </div>`;
 }
 function vEnd(G){
   if(UI.cardOnly) return `${shareCard(G)}<button class="btn ghost small" data-act="cardonly">返回</button>`;
   const aw=G.aw||[], n=Math.min(UI.awStep, aw.length);
-  let h=`<div class="pagehead"><h1>頒獎</h1><p>${G.mode==='guess'?'誰最懂誰':'你們有多同步'}</p></div><div class="stack">`;
+  let h=`<div class="pagehead"><h1>頒獎</h1><p>${G.mode==='guess'?'誰最懂誰':G.mode==='ab'?'誰跟誰最合':'你們有多同步'}</p></div><div class="stack">`;
   for(let i=0;i<n;i++){ const a=aw[i]; h+=`<div class="card aw"><span class="ic">${esc(a.i)}</span><div><h3>${esc(a.t)}</h3>${a.s.length?`<div class="who">${a.s.map(s=>esc(pname(G,s))).join('、')}</div>`:''}<p>${esc(a.d)}</p></div></div>`; }
   if(UI.awStep<aw.length) h+=`<p class="drum">下一個獎項是…</p>`;
   h+='</div>';
@@ -1167,6 +1317,10 @@ document.addEventListener('click', e=>{
     case 'mode': SET.mode=b.dataset.v; saveSet(); sfx('tap'); render(); break;
     case 'per': SET.per=+b.dataset.v; saveSet(); sfx('tap'); render(); break;
     case 'rounds': SET.rounds=+b.dataset.v; saveSet(); sfx('tap'); render(); break;
+    case 'abr': SET.abr=+b.dataset.v; saveSet(); sfx('tap'); render(); break;
+    case 'abcat': { const v=b.dataset.v, i=SET.abcats.indexOf(v); if(i>=0){ if(SET.abcats.length>1) SET.abcats.splice(i,1); } else SET.abcats.push(v); saveSet(); sfx('tap'); render(); break; }
+    case 'abc': { const d=UI.draft; if(!d||!d.ab) return; d.c=+b.dataset.v; sfx('place'); render(); break; }
+    case 'abg': { const d=UI.draft; if(!d||!d.ab) return; d.g=+b.dataset.v; sfx('stamp'); render(); break; }
     case 'time': SET.time=+b.dataset.v; saveSet(); sfx('tap'); render(); break;
     case 'cat': { const v=b.dataset.v, i=SET.cats.indexOf(v);
       if(i<0 && !unlocked(v)){ UI.lock=v; UI.pw=''; UI.pwerr=''; sfx('tap'); render(); focusLater('#pw'); break; } if(i>=0){ if(SET.cats.length>1) SET.cats.splice(i,1); } else SET.cats.push(v); saveSet(); sfx('tap'); render(); break; }
@@ -1188,7 +1342,7 @@ document.addEventListener('click', e=>{
     case 'clear': if(UI.draft){ UI.draft.arr.fill(-1); UI.draft.bet=-1; UI.sel=-1; sfx('back'); render(); } break;
     case 'bet': { const d=UI.draft, t=+b.dataset.t; if(!d) return; d.bet = d.bet===t ? -1 : t; sfx(d.bet>=0?'stamp':'back'); render(); break; }
     case 'expre': { UI.ex=b.dataset.v; sfx('tap'); render(); break; }
-    case 'submit': { const d=UI.draft; if(!d || d.arr.some(x=>x<0)) return; sfx('send'); myAction('submit',{seat:d.seat,k:d.arr.slice(),b:d.bet,ex:UI.ex||''}); break; }
+    case 'submit': { const d=UI.draft; if(d && d.ab){ if(d.c<0||d.g<0) return; sfx('send'); myAction('submit',{seat:d.seat,k:[d.c,d.g],b:-1,ex:UI.ex||''}); break; } if(!d || d.arr.some(x=>x<0)) return; sfx('send'); myAction('submit',{seat:d.seat,k:d.arr.slice(),b:d.bet,ex:UI.ex||''}); break; }
     case 'vote': { const seat=+b.dataset.v, target=+b.dataset.s; if(!G) return; UI.votedRid=G.rid; UI.votePick=target; sfx('stamp'); myAction('vote',{seat,target}); render(); break; }
     case 'reroll': myAction('reroll'); break;
     case 'next': myAction('next'); scrollTo(0,0); break;
