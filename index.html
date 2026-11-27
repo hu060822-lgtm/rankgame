@@ -333,6 +333,14 @@ textarea.in{min-height:130px;resize:vertical;line-height:2;border:1px solid var(
 .abp q{grid-column:1/-1;font-family:var(--f-hand);font-size:15px;color:var(--ink2);line-height:1.5;quotes:"「" "」";overflow-wrap:anywhere}
 .abp.lone .nm{border-bottom:2px solid var(--seal);justify-self:start}
 .abwait{text-align:center;padding:30px 20px}
+.ask{border-color:var(--caramel)}
+.pen{position:relative;padding:14px 16px 12px;background:#fffdf6;border:1px dashed var(--seal);border-radius:var(--r);transform:rotate(-.8deg);animation:fadeup .6s ease .3s both}
+.pen small{display:block;font-size:12px;color:var(--seal);letter-spacing:.2em;font-weight:500}
+.pen p{margin:4px 0 0;font-family:var(--f-hand);font-size:20px;line-height:1.5}
+.amap{display:flex;flex-direction:column;gap:4px}
+.amap small{font-size:11px;letter-spacing:.3em;color:var(--ink3)}
+.amap svg{width:100%;height:auto;background:var(--paper);border-radius:3px}
+.amap text{font-family:var(--f-sans)}
 .recap{display:flex;flex-direction:column;padding:8px 16px}
 .rc{padding:12px 0;border-bottom:1px dashed var(--line);display:flex;flex-direction:column;gap:6px}
 .rc:last-child{border-bottom:0}
@@ -1746,7 +1754,7 @@ afrd|朋友跟你說他的秘密，你會|守口如瓶|跟另一個朋友討論
 afrd|你寧願|朋友圈裡大家都很像|朋友圈裡大家都很不一樣
 afrd|好朋友搬到很遠的地方|會一直聯絡|慢慢就淡了
 apol|你比較相信|政府|市場
-apol|選舉時的政見|有在看|沒在看
+apol|你比較傾向|國民黨|民進黨
 apol|街頭抗議|支持表達意見|太影響交通了
 apol|政治人物|應該有任期限制|做得好就可以一直做
 apol|你寧願|一個有效率的政府|一個什麼都要討論的政府
@@ -1763,6 +1771,7 @@ apol|政府應該補貼|大眾運輸|電動車`;
 const AB_CATS = {afood:'美食',alife:'生活日常',alove:'戀愛',aval:'價值觀',asec:'私密問題',awild:'情境腦洞',awork:'職場・校園',amoney:'金錢',afrd:'友情・社交',apol:'政治・意識形態'};
 const AB = AB_RAW.trim().split('\n').map(l=>{const [c,t,a,b]=l.split('|').map(x=>(x||'').trim());return {c,t,w:[a,b]}}).filter(p=>p.t&&p.w[0]&&p.w[1]&&AB_CATS[p.c]);
 const ABRE = ['先別問','這有故事','我有我的原則','真心話','想都不用想','痛苦的選擇','不接受反駁'];
+const PEN = ['喝一口飲料','講一件最近的糗事','用撒嬌的語氣說「我錯了」','模仿在場一個人，讓大家猜是誰','公開手機相簿裡最近的一張照片','清唱一句最近常聽的歌','說出在場一個人的一個優點和一個缺點','用台語再說一次你為什麼選這邊','讓大家看你的手機桌布','念出你最近的一筆搜尋紀錄','真心話：在場你最想跟誰交換人生一天？','對右手邊的人說一句肉麻的稱讚','十秒內說服一個人倒戈，失敗就喝一口','原地做十下深蹲','真心話：你上一次哭是因為什麼？','用三個詞形容你的理想型','學一種動物叫三聲，讓大家猜','說一個在場的人都不知道的小秘密','打開 IG 給大家看你最後按讚的貼文','用新聞主播的語氣播報你為什麼選這邊','跟左手邊的人自拍一張醜照','真心話：你最近一次說謊是什麼時候？','用三秒鐘擺出你最帥或最美的姿勢','真心話：在場誰最像你的前任或曖昧對象？','接下來一題只能用疊字說話','用一句話誇獎多數派，要很真心'];
 const MODEN = { guess:'猜猜主角', sync:'全員神同步', ab:'二選一' };
 const NAME_PROMPTS = ['最可能遲到的人','吃到飽最能吃的人','最可能半夜傳訊息的人','最會撒嬌的人','最可能變網紅的人','最可能忘記帶錢包的人','殭屍末日最能活下來的人','KTV最會霸佔麥克風的人','最可能一秒睡著的人','看電影最容易哭的人','最會殺價的人','最容易迷路的人','最可能說走就走出國的人','最會講冷笑話的人','最可能變有錢人的人','最可能養十隻貓的人','最可能已讀不回的人','最會拍照的人','最容易被推坑的人','最可能當上老闆的人','最愛吃甜食的人','最怕鬼的人','最可能在群組潛水的人','最會安慰人的人','最可能上新聞的人','最常說「我等一下就到」的人','手機最不離手的人','最可能邊哭邊吃東西的人','最可能突然消失的人','最會亂取綽號的人','最愛拍食物的人','最可能變成大明星的人','最愛買東西的人','最可能被貓欺負的人','最常說「隨便」的人','最可能半夜吃泡麵的人','最會記仇的人','最可能在旅行中弄丟東西的人','最會照顧人的人','最適合當隊長的人'];
 const TIERS = 'SABCD';
@@ -1857,14 +1866,25 @@ function newGame(pl, o){
   return { v:0, mode:o.mode, pl:pl.map(p=>({p:p.p,n:p.n,a:p.a})), ri:-1,
     tot: o.mode==='guess' ? n*o.per : o.mode==='ab' ? (o.abr||12) : o.rounds, ph:'rank', rid:'', star:-1, star2:-1, ev:'', rt:0, topic:null, done:[], vd:[], rr:0,
     sc:Array(n).fill(0), st:pl.map(()=>[0,0,0,0,0,0,0,0,0,0]), pr:{}, streak:0, best:0, syncs:0,
-    cats:o.mode==='ab' ? (o.abcats||Object.keys(AB_CATS)) : o.cats, time:o.time||0, res:null, step:0, ms:0, aw:null, off:[], x2:false, hl:null, qt:null };
+    cats:o.mode==='ab' ? (o.abcats||Object.keys(AB_CATS)) : o.cats, time:o.time||0, pen:o.mode==='ab' && o.pen!==false, res:null, step:0, ms:0, aw:null, off:[], x2:false, hl:null, qt:null };
 }
-const newH = (customs, online) => ({ subs:{}, bets:{}, ex:{}, votes:{}, used:new Set(), customs:customs||[], online:!!online, lastEv:'' });
+const newH = (customs, online, abc) => ({ subs:{}, bets:{}, ex:{}, votes:{}, used:new Set(), customs:customs||[], abc:abc||[], online:!!online, lastEv:'', pen:[], q:[], aqSeen:{} });
 const activeSeats = G => G.pl.map((_,i)=>i).filter(i=>!G.off.includes(i));
+// 遊戲中現場出題：排進佇列，下一題優先用
+function addAsk(G,H,t,w,by){
+  if(G.mode!=='ab' || G.ph==='end' || typeof t!=='string' || !Array.isArray(w) || w.length!==2 || H.q.length>=20) return false;
+  t=t.replace(/\s+/g,' ').trim().slice(0,30); w=w.map(x=>String(x).replace(/\s+/g,' ').trim().slice(0,24));
+  if(!t || !w[0] || !w[1] || w[0]===w[1]) return false;
+  H.q.push({ t, w, by:String(by||'').slice(0,8) }); G.qn=H.q.length; return true;
+}
 function pickTopic(G,H){
+  if(G.mode==='ab' && H.q.length){ const p=H.q.shift(); G.qn=H.q.length; return { t:p.t, w:p.w.slice(), c:'ask', by:p.by }; }
   if(G.mode==='ab'){
     const key=p=>'a:'+p.t+'|'+p.w[0];
-    let pool=AB.filter(p=>G.cats.includes(p.c)); if(!pool.length) pool=AB;
+    const freshC=G.cats.includes('my') ? H.abc.filter(p=>!H.used.has(key(p))) : [];
+    let pool=AB.filter(p=>G.cats.includes(p.c));
+    if(freshC.length && (!pool.length || Math.random()<.4)){ const p=pick(freshC); H.used.add(key(p)); return { t:p.t, w:Math.random()<.5 ? [p.w[1],p.w[0]] : p.w.slice(), c:'my', by:p.by||'' }; }
+    if(!pool.length) pool=AB;
     let fresh=pool.filter(p=>!H.used.has(key(p))); if(!fresh.length){ pool.forEach(p=>H.used.delete(key(p))); fresh=pool; }
     const p=pick(fresh); H.used.add(key(p));
     return { t:p.t, w:Math.random()<.5 ? [p.w[1],p.w[0]] : p.w.slice(), c:p.c };
@@ -1944,6 +1964,8 @@ function abReveal(G,H){
     if(res.ex[L]) G.qt={ p:0, s:L, x:res.ex[L], t:G.topic.t };
   } else if(!G.qt){ const e=seats.find(s=>res.ex[s]); if(e!==undefined) G.qt={ p:1, s:e, x:res.ex[e], t:G.topic.t }; }
   if(maj<0 && seats.length>=2 && !G.hl) G.hl={ ab:2, d:0, t:G.topic.t, w:G.topic.w.slice() };
+  if(G.pen){ const tg = res.lone>=0 ? [res.lone] : maj>=0 ? side[1-maj].slice() : [];
+    if(tg.length){ let pool=PEN.filter(x=>!H.pen.includes(x)); if(!pool.length){ H.pen=[]; pool=PEN; } const x=pick(pool); H.pen.push(x); res.pen={ s:tg, x }; } }
   (G.log||(G.log=[])).push({ t:G.topic.t, w:G.topic.w.slice(), c:G.topic.c, side:side.map(a=>a.slice()), lone:res.lone });
   G.res=res; G.ph='reveal'; G.step=0; G.ms=1;
 }
@@ -2012,7 +2034,27 @@ function closeVotes(G,H){
   Object.keys(R.votes).forEach(v=>{ const t=R.votes[v]; G.st[t][9]++; if(R.top.includes(t)){ G.sc[+v]+=2; R.vp.push(+v); } });
 }
 function advance(G,H){ if(G.ph!=='reveal' || G.step>=G.ms) return; if(G.step===0) closeVotes(G,H); G.step++; }
-function endGame(G){ G.ph='end'; G.aw=computeAwards(G); }
+function endGame(G){ G.ph='end'; G.aw=computeAwards(G); if(G.mode==='ab') abMap(G); }
+// 價值觀地圖：兩人越常選一樣距離越近（古典 MDS 投影到平面）
+function abMap(G){
+  const n=G.pl.length, D=[...Array(n)].map(()=>Array(n).fill(.5));
+  for(let i=0;i<n;i++) D[i][i]=0;
+  let tw=null;
+  for(const k in G.pr){ const [a,b]=k.split('-').map(Number), pr=G.pr[k]; if(!pr[1]) continue; const v=pr[0]/pr[1]; D[a][b]=D[b][a]=1-v; if(!tw||v>tw.v) tw={v,s:[a,b]}; }
+  if(n<2) return;
+  const D2=D.map(r=>r.map(x=>x*x)), rm=D2.map(r=>r.reduce((a,b)=>a+b,0)/n), gm=rm.reduce((a,b)=>a+b,0)/n;
+  let B=D2.map((r,i)=>r.map((x,j)=>-.5*(x-rm[i]-rm[j]+gm)));
+  const eig=seed=>{ let v=B.map((_,i)=>Math.sin(i*1.37+seed)+.1), l=0; for(let it=0;it<300;it++){ const w=B.map(r=>r.reduce((t,x,j)=>t+x*v[j],0)), m=Math.hypot(...w); if(m<1e-9) return [v.map(()=>0),0]; l=m; v=w.map(x=>x/m); } return [v,l]; };
+  const [v1,l1]=eig(1); B=B.map((r,i)=>r.map((x,j)=>x-l1*v1[i]*v1[j]));
+  const [v2,l2]=eig(2);
+  let P=v1.map((x,i)=>[x*Math.sqrt(l1), v2[i]*Math.sqrt(l2)]);
+  const ext=Math.max(...P.map(p=>Math.max(Math.abs(p[0]),Math.abs(p[1]))));
+  P = ext<1e-4 ? P.map((_,i)=>[Math.cos(i/n*6.283)*.15, Math.sin(i/n*6.283)*.15]) : P.map(p=>[p[0]/ext*.5, p[1]/ext*.5]);
+  for(let it=0;it<80;it++) for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){ const dx=P[j][0]-P[i][0], dy=P[j][1]-P[i][1], d=Math.hypot(dx,dy)||1e-3, m=.3; if(d<m){ const f=(m-d)/2, ux=d>1e-3?dx/d:Math.cos(i+j), uy=d>1e-3?dy/d:Math.sin(i+j); P[i][0]-=ux*f; P[i][1]-=uy*f; P[j][0]+=ux*f; P[j][1]+=uy*f; } }
+  const xs=P.map(p=>p[0]), ys=P.map(p=>p[1]), cx=(Math.max(...xs)+Math.min(...xs))/2, cy=(Math.max(...ys)+Math.min(...ys))/2;
+  const sc=Math.max(Math.max(...xs)-Math.min(...xs), Math.max(...ys)-Math.min(...ys), .4);
+  G.map={ p:P.map(p=>[r1((p[0]-cx)/sc*100)/100+.5, r1((p[1]-cy)/sc*100)/100+.5]), tw:tw&&tw.v>0?tw.s:null };
+}
 function computeAwards(G){
   const n=G.pl.length, A=[], st=G.st;
   const best=(f,dir)=>{ let b=null, s=[]; for(let i=0;i<n;i++){ const v=f(i); if(v==null) continue; if(b==null || (v-b)*dir>0){ b=v; s=[i]; } else if(v===b) s.push(i); } return b==null?null:{v:b,s}; };
@@ -2139,6 +2181,11 @@ setInterval(()=>{
 },250);
 const myPeer = () => { const me=NET.peers.find(p=>p.sameTab); return me?me.peer:null; };
 const roomName = c => 'xinyoulingpai-' + c.toLowerCase();
+function myABForPresence(){
+  const out=[]; let bytes=0;
+  for(const c of CUSTOM_AB){ bytes+=new TextEncoder().encode(JSON.stringify(c)).length; if(bytes>700) break; out.push({t:c.t,w:c.w.slice(0,2)}); }
+  return out;
+}
 function myCustomsForPresence(){
   const out=[]; let bytes=0;
   for(const c of CUSTOM){ const s=JSON.stringify(c); bytes+=new TextEncoder().encode(s).length; if(bytes>1400) break; out.push({t:c.t,w:c.w.slice(0,8)}); }
@@ -2151,7 +2198,7 @@ async function goOnline(host, code){
   try{
     const r = await NET.room.join(roomName(code));
     Object.assign(NET,{ r, code, isHost:host, hostPeer:null, seenHost:false, hostGone:false, lob:null, peers:r.peers(), rxSeen:{}, slow:false });
-    const base={ n:ME.n.trim().slice(0,8), a:ME.a, my:myCustomsForPresence() };
+    const base={ n:ME.n.trim().slice(0,8), a:ME.a, my:myCustomsForPresence(), myab:myABForPresence() };
     if(host){ base.h=1; base.lob={...SET}; base.g=null; }
     await r.presence(base);
     r.onPeers(onPeers, e=>{ UI.err='連線中斷了（'+e.code+'）'; render(); });
@@ -2195,6 +2242,8 @@ function hostProcess(){
   let ch=false;
   G.pl.forEach((pl,i)=>{
     const p=by[pl.p], off=!p;
+    const aq=p && !p.sameTab && p.presence.aq;
+    if(aq && aq.id && ENG.H.aqSeen[pl.p]!==aq.id){ ENG.H.aqSeen[pl.p]=aq.id; if(addAsk(G,ENG.H,aq.t,aq.w,pl.n)) ch=true; }
     if(off!==G.off.includes(i)){ if(off) G.off.push(i); else G.off=G.off.filter(x=>x!==i); ch=true; }
     if(p && !p.sameTab && G.ph==='rank'){
       const s=p.presence.s;
@@ -2219,8 +2268,11 @@ function hostStart(){
   const ps=lobbyPlayers(); if(ps.length<2) return;
   const customs=[];
   ps.forEach(p=>{ const my=Array.isArray(p.presence.my)?p.presence.my:[]; my.forEach(c=>{ if(c && typeof c.t==='string' && Array.isArray(c.w)){ const w=c.w.map(x=>String(x).slice(0,16)).filter(Boolean).slice(0,8); if(w.length>=3) customs.push({t:String(c.t).slice(0,30),w,by:String(p.presence.n).slice(0,8)}); } }); });
+  const abc=[];
+  ps.forEach(p=>{ const my=Array.isArray(p.presence.myab)?p.presence.myab:[]; my.forEach(c=>{ if(c && typeof c.t==='string' && Array.isArray(c.w) && c.w.length===2){ const w=c.w.map(x=>String(x).slice(0,24)); if(w[0]&&w[1]) abc.push({t:String(c.t).slice(0,30),w,by:String(p.presence.n).slice(0,8)}); } }); });
   ENG.G=newGame(ps.map(p=>({p:p.peer,n:String(p.presence.n).slice(0,8),a:String(p.presence.a||'🙂').slice(0,4)})), SET);
-  ENG.H=newH(customs, true); startRound(ENG.G,ENG.H);
+  ENG.H=newH(customs, true, abc);
+  ps.forEach(p=>{ const aq=p.presence.aq; if(aq && aq.id) ENG.H.aqSeen[p.peer]=aq.id; }); startRound(ENG.G,ENG.H);
   CUR.online=true; UI.scr='game'; engCommit();
 }
 function hostBackToLobby(){
@@ -2234,11 +2286,13 @@ const ME = LS.get('xyp.me', null) || { n:'', a:pick(AVATARS) };
 const OPEN_CATS = Object.keys(CATS).filter(k=>!LOCKED[k]);
 const unlocked = k => !LOCKED[k] || !!LS.get('xyp.unlock.'+k, false);
 const SET = Object.assign({ mode:'guess', per:1, rounds:8, abr:12, time:60, cats:[...OPEN_CATS,'my'], abcats:Object.keys(AB_CATS) }, LS.get('xyp.set', {}));
-SET.abcats = (Array.isArray(SET.abcats)?SET.abcats:[]).filter(k=>AB_CATS[k]); if(!SET.abcats.length) SET.abcats=Object.keys(AB_CATS);
+SET.abcats = (Array.isArray(SET.abcats)?SET.abcats:[]).filter(k=>AB_CATS[k]||k==='my'); if(!SET.abcats.length) SET.abcats=Object.keys(AB_CATS);
+if(!LS.get('xyp.abmy',false)){ if(!SET.abcats.includes('my')) SET.abcats.push('my'); LS.set('xyp.abmy',true); }
 SET.cats = SET.cats.filter(k=>k==='my' || (CATS[k] && unlocked(k)));
 [...OPEN_CATS,'my'].forEach(k=>{ if(!LS.get('xyp.cat.'+k,false)){ if(!SET.cats.includes(k)) SET.cats.push(k); LS.set('xyp.cat.'+k,true); } });
 let CUSTOM = LS.get('xyp.custom', []);
-const UI = { scr:'home', err:'', code:'', busy:false, draft:null, sel:-1, ppTurn:null, ppl:null, awStep:0, awT:0, ct:'', cw:'', cerr:'', sentRid:'', rqRid:'', lastRx:0, help:false, lock:'', pw:'', pwerr:'', ex:'', votedRid:'', votePick:-1, cardOnly:false };
+let CUSTOM_AB = LS.get('xyp.customab', []);
+const UI = { at:'', aa:'', abb:'', aerr:'', scr:'home', err:'', code:'', busy:false, draft:null, sel:-1, ppTurn:null, ppl:null, awStep:0, awT:0, ct:'', cw:'', cerr:'', sentRid:'', rqRid:'', lastRx:0, help:false, lock:'', pw:'', pwerr:'', ex:'', votedRid:'', votePick:-1, cardOnly:false };
 const CUR = { G:null, online:false };
 const saveMe = () => LS.set('xyp.me', ME);
 const saveSet = () => { LS.set('xyp.set', SET); if(NET.isHost && NET.r && !ENG.G) NET.r.presence({ lob:{...SET} }).catch(()=>{}); };
@@ -2280,7 +2334,8 @@ function showSplash(g, swapped){
   hideSplash();
   const d=document.createElement('div'); d.id='splash'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','新回合');
   let who;
-  if(g.mode==='ab') who=`<p class="s">二選一<br>偷偷選一邊，等一下一起揭曉</p>`;
+  if(g.mode==='ab' && g.topic.c==='ask') who=`<p class="s"><span class="e">📣</span><b>${esc(g.topic.by||'有人')}</b> 提出了問題！</p>`;
+  else if(g.mode==='ab') who=`<p class="s">二選一<br>偷偷選一邊，等一下一起揭曉</p>`;
   else if(g.mode!=='guess') who=`<p class="s">全員神同步<br>大家要排得一模一樣</p>`;
   else if(g.star2>=0) who=`<p class="s"><span class="e">${esc(g.pl[g.star].a)}${esc(g.pl[g.star2].a)}</span>這回合的主角是 <b>${esc(g.pl[g.star].n)}</b> 和 <b>${esc(g.pl[g.star2].n)}</b></p>`;
   else who=`<p class="s"><span class="e">${esc(g.pl[g.star].a)}</span>這回合的主角是 <b>${esc(g.pl[g.star].n)}</b></p>`;
@@ -2353,7 +2408,7 @@ function vHome(){
     <div class="row"><input class="in code" id="code" maxlength="4" placeholder="房號" value="${esc(UI.code)}" aria-label="房號" style="flex:1 1 120px" autocomplete="off"><button class="btn blue" data-act="join" style="flex:0 0 auto" ${off||chk||UI.busy?'disabled':''}>加入房間</button></div>
     <p class="note">${chk?'正在檢查線上連線…':off?'這個頁面現在無法線上連線。一支手機也能玩。':'朋友打開同一個網址，輸入房號就能加入。'}</p>
     <button class="btn big yellow" data-act="pp">一支手機輪流玩</button>
-    <div class="row"><button class="btn small ghost" data-act="custom">我的自訂題目（${CUSTOM.length}）</button><button class="btn small ghost" data-act="help">怎麼玩</button></div>
+    <div class="row"><button class="btn small ghost" data-act="custom">我的自訂題目（${CUSTOM.length+CUSTOM_AB.length}）</button><button class="btn small ghost" data-act="help">怎麼玩</button></div>
   </div>`;
 }
 function vSettings(edit){
@@ -2370,7 +2425,8 @@ function vSettings(edit){
     <button class="opt ${ab?'on':''}" data-act="mode" data-v="ab" ${dis}><b>二選一</b><small>每題兩個選項，大家偷偷選一邊，最後揭曉誰站哪邊，吵起來</small></button></div>
     ${per}
     <div><span class="lb">${ab?'每題作答時間':'每回合排名時間'}</span><div class="chips">${[[0,'不限時'],[90,'90 秒'],[60,'60 秒'],[30,'30 秒']].map(([n,l])=>`<button class="tg ${(S.time||0)===n?'on':''}" data-act="time" data-v="${n}" ${dis}>${l}</button>`).join('')}</div></div>
-    ${ab ? `<div><span class="lb">題庫（共 ${AB.filter(p=>(S.abcats||[]).includes(p.c)).length} 題）</span><div class="chips">${Object.entries(AB_CATS).map(([k,v])=>`<button class="tg ${(S.abcats||[]).includes(k)?'on':''}" data-act="abcat" data-v="${k}" ${dis}>${v}</button>`).join('')}</div></div>
+    ${ab ? `<div><span class="lb">題庫（共 ${AB.filter(p=>(S.abcats||[]).includes(p.c)).length + ((S.abcats||[]).includes('my')?CUSTOM_AB.length:0)} 題）</span><div class="chips">${Object.entries(AB_CATS).map(([k,v])=>`<button class="tg ${(S.abcats||[]).includes(k)?'on':''}" data-act="abcat" data-v="${k}" ${dis}>${v}</button>`).join('')}<button class="tg ${(S.abcats||[]).includes('my')?'on':''}" data-act="abcat" data-v="my" ${dis}>自訂題</button></div></div>
+    <div><span class="lb">懲罰卡（少數派或孤鳥抽一張）</span><div class="chips"><button class="tg ${S.pen!==false?'on':''}" data-act="pen" data-v="1" ${dis}>開</button><button class="tg ${S.pen===false?'on':''}" data-act="pen" data-v="0" ${dis}>關</button></div></div>
     <p class="note">沒有特殊回合，每題就是單純選一邊。排名看「站在多數派的次數」，平手的題目不算。可以留一句理由，揭曉時貼出來；題目不夠勁爆可以換一題。</p></div>` : `
     <div><span class="lb">題庫（共 ${PROMPTS.filter(p=>S.cats.includes(p.c)).length + (S.cats.includes('my')?CUSTOM.length:0)} 題）</span><div class="chips">${Object.entries(CATS).map(([k,v])=>{
       const lk = LOCKED[k] && !unlocked(k) && !S.cats.includes(k);
@@ -2403,12 +2459,18 @@ function vPP(){
   <p class="note c">輪到誰就把手機交給誰，其他人不要偷看。</p>`;
 }
 function vCustom(){
-  return `<div class="card stack"><h2>我的自訂題目</h2><p class="muted" style="margin:0">放進只有你們懂的梗。線上玩時，房裡每個人的自訂題目都會混進題庫，還會標出是誰出的題。</p>
+  return `<div class="card stack"><h2>排名自訂題</h2><p class="muted" style="margin:0">放進只有你們懂的梗。線上玩時，房裡每個人的自訂題目都會混進題庫，還會標出是誰出的題。</p>
   <div><label class="lb" for="ct">題目</label><input class="in" id="ct" maxlength="30" placeholder="例：同事最常說的話" value="${esc(UI.ct)}" autocomplete="off"></div>
   <div><label class="lb" for="cw">詞語（3–8 個，一行一個或用逗號分開）</label><textarea class="in" id="cw" placeholder="明天再說&#10;我看一下&#10;好喔&#10;收到&#10;等等開會">${esc(UI.cw)}</textarea></div>
   ${UI.cerr?`<p class="err">${esc(UI.cerr)}</p>`:''}
   <button class="btn mint" data-act="cadd">加入題庫</button></div>
   <div class="card">${CUSTOM.length?CUSTOM.map((c,i)=>`<div class="cl"><div><b>${esc(c.t)}</b><small>${c.w.map(esc).join('、')}</small></div><button class="x" data-act="cdel" data-i="${i}" aria-label="刪除 ${esc(c.t)}">×</button></div>`).join(''):'<p class="empty">還沒有自訂題目。上面寫一題試試看。</p>'}</div>
+  <div class="card stack"><h2>二選一自訂題</h2><p class="muted" style="margin:0">出只有你們才懂的二選一，例如「誰比較適合當室友」。線上玩時每個人出的題都會混進來。</p>
+  <div><label class="lb" for="at">題目</label><input class="in" id="at" maxlength="30" placeholder="例：一起去無人島，你帶" value="${esc(UI.at)}" autocomplete="off"></div>
+  <div class="row"><div style="flex:1 1 140px"><label class="lb" for="aa">選項 A</label><input class="in" id="aa" maxlength="24" placeholder="例：阿華" value="${esc(UI.aa)}" autocomplete="off"></div><div style="flex:1 1 140px"><label class="lb" for="abb">選項 B</label><input class="in" id="abb" maxlength="24" placeholder="例：小美" value="${esc(UI.abb)}" autocomplete="off"></div></div>
+  ${UI.aerr?`<p class="err">${esc(UI.aerr)}</p>`:''}
+  <button class="btn mint" data-act="aadd">加入二選一題庫</button></div>
+  <div class="card">${CUSTOM_AB.length?CUSTOM_AB.map((c,i)=>`<div class="cl"><div><b>${esc(c.t)}</b><small>A．${esc(c.w[0])}　B．${esc(c.w[1])}</small></div><button class="x" data-act="adel" data-i="${i}" aria-label="刪除 ${esc(c.t)}">×</button></div>`).join(''):'<p class="empty">還沒有二選一自訂題。</p>'}</div>
   <button class="btn ghost" data-act="home">回首頁</button>`;
 }
 function vHelp(){
@@ -2416,7 +2478,7 @@ function vHelp(){
   <h3>猜猜主角</h3><ul><li>每回合有一位主角，大家看到同一個題目和 5 個詞。</li><li>主角照真心把詞排成 S（本命）到 D（不行），還可以留一句「辯解」。</li><li>其他人同時猜主角會怎麼排，並可以押一列最有把握的：押中 +3，押錯 −1。</li><li>揭曉前，大家先投「誰最懂主角」，投中本回合最高分的人 +2。</li><li>揭曉從 D 一頁一頁翻到 S。位置猜中 2 分，差一格 1 分，全部猜中再加 5 分。</li><li>主角拿到大家的平均分，越好懂分越高。</li></ul>
   <h3>每回合的小事件</h3><ul><li><b>反轉回合</b>：猜的人要排出最不像主角的排法。</li><li><b>雙主角</b>（4 人以上）：兩位主角各排各的，大家猜兩人合起來的排名。</li><li><b>豪賭回合</b>：押中 +6，押錯 −2。</li><li><b>閃電回合</b>：只有 25 秒。</li><li><b>決勝回合</b>：最後一回合分數 ×2。</li></ul>
   <h3>全員神同步</h3><ul><li>沒有主角，大家一起排同一題，目標是排得一模一樣。</li><li>3 人以上會出現「排排看你的朋友」題，詞語就是大家的名字。</li></ul>
-  <h3>二選一</h3><ul><li>每題有兩個選項：情境、美食、價值觀、私密問題……大家偷偷選一邊。</li><li>沒有特殊回合。排名看「站在多數派的次數」：揭曉後跟多數人選同一邊就 +1，平手的題目不算。</li><li>揭曉後會點名人出來辯護或回嘴，題目太無聊可以換一題（每題最多 3 次）。</li><li>可以留一句理由，揭曉時跟名字一起貼出來，方便開吵。</li><li>最後頒獎：人民的聲音、少數派代表、孤鳥、價值觀雙胞胎、天生冤家，還能回顧每一題誰站哪邊。</li></ul>
+  <h3>二選一</h3><ul><li>每題有兩個選項：情境、美食、價值觀、私密問題……大家偷偷選一邊。</li><li>沒有特殊回合。排名看「站在多數派的次數」：揭曉後跟多數人選同一邊就 +1，平手的題目不算。</li><li>揭曉後會點名人出來辯護或回嘴，題目太無聊可以換一題（每題最多 3 次）。</li><li>可以留一句理由，揭曉時跟名字一起貼出來，方便開吵。</li><li>懲罰卡（可在設定關掉）：少數派或孤鳥抽一張小懲罰或真心話。</li><li>可以在「我的自訂題目」出自己的二選一題，線上玩時每個人的題都會混進來。</li><li>遊戲中也能按「📣 我也要出一題」現場出題，下一題就會用，還會跳出「誰提出了問題！」。</li><li>最後頒獎：人民的聲音、少數派代表、孤鳥、價值觀雙胞胎、天生冤家，還能回顧每一題誰站哪邊，成果卡上會畫出大家的價值觀地圖。</li></ul>
   <h3>兩種開局</h3><ul><li><b>開房間</b>：每人用自己的手機開這個頁面，輸入房號加入。</li><li><b>一支手機輪流玩</b>：輪到誰就把手機交給誰，揭曉時大家圍過來看。</li></ul>
   <h3>結束之後</h3><p>頒完獎會有一張成果卡，截圖就能分享。</p></div>
   <button class="btn ghost" data-act="home">回首頁</button>`;
@@ -2425,8 +2487,8 @@ function statusChips(G){
   return `<div class="status">${G.pl.map((p,i)=>{ if(G.off.includes(i)) return `<span class="st" style="opacity:.4">${esc(p.a)} ${esc(p.n)} 離線</span>`; const ok=G.done.includes(i); return `<span class="st ${ok?'ok':'think'}">${esc(p.a)} ${esc(p.n)} ${ok?'✓':'…'}</span>`; }).join('')}</div>`;
 }
 function topicCard(G){
-  const lab = G.topic.c==='my' ? '自訂題' : G.topic.c==='name' ? '排排看你的朋友' : (CATS[G.topic.c]||AB_CATS[G.topic.c]||'題目');
-  return `<div class="card topic tape"><small>${esc(lab)}</small><h2>${esc(G.topic.t)}</h2>${G.topic.by?`<span class="by">出題：${esc(G.topic.by)}</span>`:''}</div>`;
+  const lab = G.topic.c==='ask' ? `📣 ${G.topic.by||'有人'} 提出了問題！` : G.topic.c==='my' ? '自訂題' : G.topic.c==='name' ? '排排看你的朋友' : (CATS[G.topic.c]||AB_CATS[G.topic.c]||'題目');
+  return `<div class="card topic tape"><small>${esc(lab)}</small><h2>${esc(G.topic.t)}</h2>${G.topic.by&&G.topic.c!=='ask'?`<span class="by">出題：${esc(G.topic.by)}</span>`:''}</div>`;
 }
 function roundBar(G){
   const ev=EV[G.ev];
@@ -2452,7 +2514,7 @@ function vRankPhase(G){
       const q=ppQueue(G);
       if(!q.length) return `${roundBar(G)}<div class="card handoff"><h2>全員送出</h2><p style="margin:0">大家圍過來，準備揭曉。</p></div>`;
       const s=q[0], star=isStar(G,s);
-      return `${roundBar(G)}<div class="card handoff tape c"><div class="photo"><div class="face">${esc(G.pl[s].a)}</div><small>${star?'本回合主角':'換你了'}</small></div><p style="margin:0" class="muted">請把手機交給</p><h2>${esc(G.pl[s].n)}</h2><p class="note c" style="margin-bottom:16px">${star?'你是這回合的主角。':G.mode==='ab'?'輪到你選了。':G.mode==='sync'?'輪到你排了。':'輪到你猜了。'}其他人不要偷看。</p><button class="btn big pink" data-act="ppgo" data-s="${s}">我是 ${esc(G.pl[s].n)}，開始</button></div>${statusChips(G)}`;
+      return `${roundBar(G)}<div class="card handoff tape c"><div class="photo"><div class="face">${esc(G.pl[s].a)}</div><small>${star?'本回合主角':'換你了'}</small></div><p style="margin:0" class="muted">請把手機交給</p><h2>${esc(G.pl[s].n)}</h2><p class="note c" style="margin-bottom:16px">${star?'你是這回合的主角。':G.mode==='ab'?'輪到你選了。':G.mode==='sync'?'輪到你排了。':'輪到你猜了。'}其他人不要偷看。</p><button class="btn big pink" data-act="ppgo" data-s="${s}">我是 ${esc(G.pl[s].n)}，開始</button></div>${statusChips(G)}${vAsk(G)}`;
     }
     return vRank(G,seat);
   }
@@ -2512,7 +2574,7 @@ function vWait(G,seat){
   if(G.mode==='ab'){
     const d=UI.draft && UI.draft.rid===G.rid && UI.draft.ab ? UI.draft : null;
     return `${roundBar(G)}${topicCard(G)}<div class="card"><h3>選好了</h3><p class="muted" style="margin:4px 0 0">${d&&d.c>=0?`你選了 ${'AB'[d.c]}．${esc(G.topic.w[d.c])}。`:''}等其他人想好…</p></div>
-    ${statusChips(G)}${force?`<button class="btn small ghost" data-act="force">有人沒回來？不等了，直接揭曉</button>`:''}`;
+    ${statusChips(G)}${force?`<button class="btn small ghost" data-act="force">有人沒回來？不等了，直接揭曉</button>`:''}${vAsk(G)}`;
   }
   const d=UI.draft && UI.draft.rid===G.rid ? UI.draft.arr : null;
   return `${roundBar(G)}${topicCard(G)}<div class="card"><h3>送出了</h3><p class="muted" style="margin:4px 0 0">等其他人想好…</p></div>
@@ -2543,7 +2605,7 @@ function vABReveal(G){
   }
   const pct=[0,1].map(i=>n?Math.round(R.side[i].length/n*100):0);
   h+=`<div class="abres">${[0,1].map(i=>`<div class="abcol o${i} ${R.maj===i?'maj':''}"><div class="abhd"><span class="abl">${'AB'[i]}</span><b>${esc(W[i])}</b></div><p class="abn"><span>${R.side[i].length}</span>人・${pct[i]}%</p><div class="bar"><i data-w="${pct[i]}"></i></div><div class="abppl">${R.side[i].map((s,j)=>`<div class="abp ${R.lone===s?'lone':''}" style="--d:${j*120}ms"><span class="e">${esc(G.pl[s].a)}</span><span class="nm">${esc(G.pl[s].n)}</span>${R.ex[s]?`<q>${esc(R.ex[s])}</q>`:''}</div>`).join('')||'<p class="empty">沒有人</p>'}</div></div>`).join('')}</div>`;
-  h+=vRoundResult(G);
+  h+=vRoundResult(G)+vAsk(G);
   return h+vRx();
 }
 const ABQ = {
@@ -2614,7 +2676,7 @@ function vRoundResult(G){
     else if(R.maj<0 && R.seats.length>=2) talk=`${nm(sp(R.side[0]))} 代表 A、${nm(sp(R.side[1]))} 代表 B，各講一句，說服對方倒戈。`;
     else if(R.lone>=0){ const mj=R.side[R.ch[R.lone]===0?1:0]; talk=`${nm(R.lone)} 先說理由，再由 ${nm(sp(mj))} 代表多數派回嘴。`; }
     else if(R.maj>=0) talk=`少數派推一個代表說理由，多數派有人被說服就舉手。`;
-    h+=`${ev?`<p class="x2tag">${ev[0]}</p>`:''}<p class="banner">${banner}</p><p class="quip">${quip}</p>${talk?`<p class="sur"><b class="talk">討論時間</b>${talk}</p>`:''}
+    h+=`${ev?`<p class="x2tag">${ev[0]}</p>`:''}<p class="banner">${banner}</p><p class="quip">${quip}</p>${talk?`<p class="sur"><b class="talk">討論時間</b>${talk}</p>`:''}${R.pen?`<div class="pen"><small>懲罰卡・${R.pen.s.map(nm).join('、')}</small><p>${esc(R.pen.x)}</p></div>`:''}
     ${R.maj<0?'<p class="note">平手沒有多數派，這題大家都不加。</p>':`<p class="note">站在多數派（${'AB'[R.maj]}．${esc(W[R.maj])}）的人 +1：${R.side[R.maj].map(nm).join('、')}</p>`}`;
   } else if(G.mode==='guess'){
     const gs=R.gs.slice().sort((a,b)=>R.pts[b]-R.pts[a]);
@@ -2663,10 +2725,29 @@ function shareCard(G){
     ${rest.length?`<ol>${rest.map((b,r)=>`<li><i>${r+1+top.length}</i><span>${esc(G.pl[b.i].a)} ${esc(G.pl[b.i].n)}</span><b>${b.s}</b></li>`).join('')}</ol>`:''}
     ${aws.length?`<ul class="aws">${aws.map(a=>`<li><b>${esc(a.t)}</b><span>${a.s.map(s=>esc(G.pl[s].n)).join('、')}</span></li>`).join('')}</ul>`:''}
     ${G.mode==='sync'?`<p class="hl"><small>同步紀錄</small>${G.syncs} / ${G.tot} 回合完全一致，最高連續 ${G.best} 回合。</p>`:''}
+    ${G.mode==='ab'&&G.map?abMapSVG(G):''}
     ${hl}
     ${G.qt?`<p class="qt">「${esc(G.qt.x)}」<cite>${esc(G.pl[G.qt.s].n)}，關於「${esc(G.qt.t)}」</cite></p>`:''}
     <p class="ft"><span>${MODEN[G.mode]}　${G.tot} ${G.mode==='ab'?'題':'回合'}　${G.pl.length} 人</span><span>${esc(host)}</span></p>
   </div>`;
+}
+function vAsk(G){
+  if(G.mode!=='ab' || G.ph==='end') return '';
+  const q=G.qn?`<p class="note c">已經有 ${G.qn} 題排隊中，會優先出</p>`:'';
+  const ok=UI.aqOk && Date.now()-UI.aqOk<4000 ? `<p class="note c" role="status">送出了！下一題就用你的</p>` : '';
+  if(!UI.aqo) return `${ok}${q}<button class="btn small ghost" data-act="aqopen">📣 我也要出一題，下一題就用</button>`;
+  const who = CUR.online ? '' : `<div><span class="lb">誰出的題？</span><div class="chips">${G.pl.map((p,i)=>`<button class="tg ${UI.aqBy===i?'on':''}" data-act="aqby" data-v="${i}">${esc(p.a)} ${esc(p.n)}</button>`).join('')}</div></div>`;
+  return `<div class="card stack ask"><h3>📣 現場出題</h3>
+  <div><label class="lb" for="qt">題目</label><input class="in" id="qt" maxlength="30" placeholder="例：在場誰最可能先結婚" value="${esc(UI.qt||'')}" autocomplete="off"></div>
+  <div class="row"><div style="flex:1 1 130px"><label class="lb" for="qa">選項 A</label><input class="in" id="qa" maxlength="24" value="${esc(UI.qa||'')}" autocomplete="off"></div><div style="flex:1 1 130px"><label class="lb" for="qb">選項 B</label><input class="in" id="qb" maxlength="24" value="${esc(UI.qb||'')}" autocomplete="off"></div></div>
+  ${who}${UI.qerr?`<p class="err">${esc(UI.qerr)}</p>`:''}
+  <div class="row"><button class="btn small ghost" data-act="aqx" style="flex:0 0 auto">取消</button><button class="btn mint" data-act="aqsend" style="flex:1">送出，下一題就用</button></div></div>${q}`;
+}
+function abMapSVG(G){
+  const W=320, H=230, P=G.map.p, xy=i=>[24+P[i][0]*(W-48), 22+P[i][1]*(H-50)];
+  let ln='';
+  if(G.map.tw){ const [a,b]=G.map.tw.map(xy); ln=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" style="stroke:var(--matcha);stroke-width:2;stroke-dasharray:4 4"/>`; }
+  return `<div class="amap"><small>價值觀地圖・越近代表越常選一樣</small><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="價值觀地圖">${ln}${G.pl.map((p,i)=>{ const [x,y]=xy(i); return `<g><circle cx="${x}" cy="${y}" r="17" style="fill:var(--card);stroke:var(--ink3)"/><text x="${x}" y="${y+6}" text-anchor="middle" font-size="18">${esc(p.a)}</text><text x="${x}" y="${y+33}" text-anchor="middle" font-size="12" style="fill:var(--ink2)">${esc(p.n)}</text></g>`; }).join('')}</svg></div>`;
 }
 function abRecap(G){
   const nm=s=>esc(G.pl[s].a+G.pl[s].n);
@@ -2723,11 +2804,13 @@ function myAction(kind, payload){
     else if(kind==='skip'){ if(E.ph==='reveal' && E.step<E.ms){ advance(E,ENG.H); engCommit(); } }
     else if(kind==='force'){ if(canForce(E,ENG.H)){ doReveal(E,ENG.H); engCommit(); } }
     else if(kind==='vote'){ if(vote(E,ENG.H,payload.seat,payload.target)) engCommit(); }
+    else if(kind==='ask'){ if(addAsk(E,ENG.H,payload.t,payload.w,payload.by)){ UI.aqOk=Date.now(); engCommit(); } }
     return;
   }
   if(kind==='submit'){ UI.sentRid=G.rid; NET.r.presence({ s:{ r:G.rid, k:payload.k, b:payload.b, x:payload.ex||'' } }).catch(()=>{}); render(); }
   else if(kind==='reroll'){ UI.rqRid=G.rid; NET.r.presence({ rq:G.rid }).catch(()=>{}); render(); }
   else if(kind==='vote'){ NET.r.presence({ vt:{ r:G.rid, s:payload.target } }).catch(()=>{}); render(); }
+  else if(kind==='ask'){ NET.r.presence({ aq:{ id:rid(), t:payload.t, w:payload.w } }).catch(()=>{}); UI.aqOk=Date.now(); render(); }
 }
 document.addEventListener('click', e=>{
   const b=e.target.closest('[data-act]'); if(!b || b.disabled) return;
@@ -2760,7 +2843,7 @@ document.addEventListener('click', e=>{
     case 'ppdel': if(UI.ppl.length>2){ UI.ppl.splice(+b.dataset.i,1); render(); } break;
     case 'ppstart': {
       const pl=UI.ppl.map((p,i)=>({p:'L'+i,n:p.n.trim().slice(0,8),a:p.a}));
-      ENG.G=newGame(pl,SET); ENG.H=newH(CUSTOM.map(c=>({...c,by:''})), false); startRound(ENG.G,ENG.H);
+      ENG.G=newGame(pl,SET); ENG.H=newH(CUSTOM.map(c=>({...c,by:''})), false, CUSTOM_AB.map(c=>({...c,by:''}))); startRound(ENG.G,ENG.H);
       CUR.online=false; UI.scr='game'; engCommit(); break;
     }
     case 'ppgo': UI.ppTurn=+b.dataset.s; UI.draft=null; sfx('tap'); scrollTo(0,0); render(); break;
@@ -2788,6 +2871,30 @@ document.addEventListener('click', e=>{
       if(NET.r) NET.r.presence({ my:myCustomsForPresence() }).catch(()=>{});
       render(); break;
     }
+    case 'aadd': {
+      const t=UI.at.trim().slice(0,30), a=UI.aa.trim().slice(0,24), bb=UI.abb.trim().slice(0,24);
+      if(!t){ UI.aerr='題目還沒填'; render(); return; }
+      if(!a||!bb){ UI.aerr='兩個選項都要填'; render(); return; }
+      if(a===bb){ UI.aerr='兩個選項不能一樣'; render(); return; }
+      CUSTOM_AB.unshift({t,w:[a,bb]}); LS.set('xyp.customab',CUSTOM_AB); UI.at=''; UI.aa=''; UI.abb=''; UI.aerr=''; sfx('stamp');
+      if(NET.r) NET.r.presence({ myab:myABForPresence() }).catch(()=>{});
+      render(); break;
+    }
+    case 'adel': CUSTOM_AB.splice(+b.dataset.i,1); LS.set('xyp.customab',CUSTOM_AB); if(NET.r) NET.r.presence({ myab:myABForPresence() }).catch(()=>{}); render(); break;
+    case 'aqopen': UI.aqo=true; UI.qerr=''; render(); focusLater('#qt'); break;
+    case 'aqx': UI.aqo=false; render(); break;
+    case 'aqby': UI.aqBy=+b.dataset.v; sfx('tap'); render(); break;
+    case 'aqsend': {
+      const t=(UI.qt||'').trim(), a=(UI.qa||'').trim(), bb=(UI.qb||'').trim();
+      if(!t){ UI.qerr='題目還沒填'; render(); return; }
+      if(!a||!bb){ UI.qerr='兩個選項都要填'; render(); return; }
+      if(a===bb){ UI.qerr='兩個選項不能一樣'; render(); return; }
+      if(!CUR.online && !(UI.aqBy>=0)){ UI.qerr='選一下是誰出的題'; render(); return; }
+      const by = CUR.online ? ME.n.trim().slice(0,8) : G.pl[UI.aqBy].n;
+      UI.aqo=false; UI.qt=''; UI.qa=''; UI.qb=''; UI.qerr=''; sfx('stamp');
+      myAction('ask',{t,w:[a,bb],by}); setTimeout(render,4100); break;
+    }
+    case 'pen': SET.pen=b.dataset.v==='1'; saveSet(); sfx('tap'); render(); break;
     case 'cdel': CUSTOM.splice(+b.dataset.i,1); LS.set('xyp.custom',CUSTOM); render(); break;
   }
 });
@@ -2797,6 +2904,12 @@ document.addEventListener('input', e=>{
   else if(id==='code'){ UI.code=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4); if(el.value!==UI.code) el.value=UI.code; }
   else if(id==='ct') UI.ct=el.value;
   else if(id==='cw') UI.cw=el.value;
+  else if(id==='at') UI.at=el.value;
+  else if(id==='qt') UI.qt=el.value;
+  else if(id==='qa') UI.qa=el.value;
+  else if(id==='qb') UI.qb=el.value;
+  else if(id==='aa') UI.aa=el.value;
+  else if(id==='abb') UI.abb=el.value;
   else if(id==='ex') UI.ex=el.value.slice(0,30);
   else if(id==='pw') UI.pw=el.value;
   else if(id.startsWith('ppn-')){ const i=+id.slice(4); if(UI.ppl[i]) UI.ppl[i].n=el.value.slice(0,8); }
