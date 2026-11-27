@@ -308,8 +308,6 @@ textarea.in{min-height:130px;resize:vertical;line-height:2;border:1px solid var(
 .abl{display:grid;place-items:center;width:44px;height:44px;background:var(--nS);font-family:var(--f-grade);font-size:30px;font-weight:600;line-height:1;color:var(--ink);box-shadow:1px 2px 3px rgba(70,55,30,.22);transform:rotate(-3deg);flex:0 0 auto}
 .o1 .abl{background:var(--nD);transform:rotate(2deg)}
 .abvs{text-align:center;font-family:var(--f-grade);font-size:24px;color:var(--ink3);line-height:1}
-.abg{display:grid;gap:8px}
-.abg .tg{text-align:left;line-height:1.5;padding:8px 12px}
 .abres{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .abcol{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 12px;display:flex;flex-direction:column;gap:8px;min-width:0;animation:fadeup .6s ease both}
 .abcol.o1{animation-delay:.15s}
@@ -328,6 +326,18 @@ textarea.in{min-height:130px;resize:vertical;line-height:2;border:1px solid var(
 .abp q{grid-column:1/-1;font-family:var(--f-hand);font-size:15px;color:var(--ink2);line-height:1.5;quotes:"「" "」";overflow-wrap:anywhere}
 .abp.lone .nm{border-bottom:2px solid var(--seal);justify-self:start}
 .abwait{text-align:center;padding:30px 20px}
+.recap{display:flex;flex-direction:column;padding:8px 16px}
+.rc{padding:12px 0;border-bottom:1px dashed var(--line);display:flex;flex-direction:column;gap:6px}
+.rc:last-child{border-bottom:0}
+.rq{margin:0;font-family:var(--f-serif);font-weight:700;font-size:15.5px;line-height:1.5}
+.rq i{font-style:normal;font-family:var(--f-grade);font-size:20px;color:var(--ink3);margin-right:8px}
+.rs{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;font-size:13.5px;padding:4px 8px;border-left:3px solid var(--line)}
+.rs.maj{border-left-color:var(--matcha);background:rgba(124,143,104,.08)}
+.rs b{font-weight:500;overflow-wrap:anywhere}
+.rs .rn{font-family:var(--f-grade);font-size:18px;color:var(--ink2);line-height:1}
+.rs .rp{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 10px;color:var(--ink2);font-size:13px}
+.rs .rp .lone{color:var(--seal);font-weight:500}
+.rs em{font-style:normal;color:var(--ink3)}
 .sur .talk{display:block;font-family:var(--f-serif);font-size:12px;letter-spacing:.3em;color:var(--seal);padding:0;font-weight:700}
 .abwait .drum{font-size:22px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
@@ -523,8 +533,8 @@ function abReveal(G,H){
   const maj = side[0].length>side[1].length ? 0 : side[1].length>side[0].length ? 1 : -1;
   const res={ ab:true, ch, gu, side, maj, pts:{}, ex:{}, x2:mult===2, ev:G.ev, lone:-1, seats };
   seats.forEach(s=>{ if(H.ex[s]) res.ex[s]=H.ex[s];
-    const hit=maj>=0 && gu[s]===maj, p=hit?2*mult:0, st=G.st[s];
-    res.pts[s]=p; G.sc[s]+=p; st[1]++; if(hit) st[2]++; if(maj>=0 && ch[s]!==maj) st[0]++; });
+    const inMaj=maj>=0 && ch[s]===maj, p=inMaj?1:0, st=G.st[s];
+    res.pts[s]=p; G.sc[s]+=p; st[1]++; if(maj>=0 && ch[s]!==maj) st[0]++; });
   if(seats.length>=3) [0,1].forEach(i=>{ if(side[i].length===1){ res.lone=side[i][0]; G.st[res.lone][3]++; } });
   for(let i=0;i<seats.length;i++) for(let j=i+1;j<seats.length;j++){ const a=Math.min(seats[i],seats[j]), b=Math.max(seats[i],seats[j]), pr=G.pr[a+'-'+b]||(G.pr[a+'-'+b]=[0,0]); if(ch[a]===ch[b]) pr[0]++; pr[1]++; }
   if(res.lone>=0){
@@ -533,6 +543,7 @@ function abReveal(G,H){
     if(res.ex[L]) G.qt={ p:0, s:L, x:res.ex[L], t:G.topic.t };
   } else if(!G.qt){ const e=seats.find(s=>res.ex[s]); if(e!==undefined) G.qt={ p:1, s:e, x:res.ex[e], t:G.topic.t }; }
   if(maj<0 && seats.length>=2 && !G.hl) G.hl={ ab:2, d:0, t:G.topic.t, w:G.topic.w.slice() };
+  (G.log||(G.log=[])).push({ t:G.topic.t, w:G.topic.w.slice(), c:G.topic.c, side:side.map(a=>a.slice()), lone:res.lone });
   G.res=res; G.ph='reveal'; G.step=0; G.ms=1;
 }
 function doReveal(G,H){
@@ -617,10 +628,11 @@ function computeAwards(G){
     if(bp) A.push({i:'伴',t:'靈魂伴侶',d:`互猜平均 ${r1(bp.v)} 分`,s:bp.s});
     const gam=best(i=>st[i][8]||null,1); if(gam) A.push({i:'賭',t:'賭神',d:`押注押中 ${gam.v} 次`,s:gam.s});
   } else if(G.mode==='ab'){
-    A.push({i:'風',t:'最會讀空氣',d:`猜中多數派，總分 ${champ?champ.v:0} 分`,s:champ&&champ.v>0?champ.s:[]});
-    const mn=best(i=>st[i][1]?st[i][0]:null,1), mj=best(i=>st[i][1]?st[i][0]:null,-1);
+    A.push({i:'眾',t:'人民的聲音',d:`站在多數派 ${champ?champ.v:0} 次，最懂大家在想什麼`,s:champ&&champ.v>0?champ.s:[]});
+    const mn=best(i=>st[i][1]?st[i][0]:null,1);
     if(mn && mn.v>0) A.push({i:'少',t:'少數派代表',d:`有 ${mn.v} 題站在少數那一邊`,s:mn.s});
-    if(mj && mn && mj.v!==mn.v) A.push({i:'眾',t:'人民的聲音',d:mj.v?`只有 ${mj.v} 題跟大家不一樣`:'每一題都跟多數人站同一邊',s:mj.s});
+    const ties=(G.log||[]).filter(l=>l.side[0].length && l.side[0].length===l.side[1].length).length;
+    if(ties) A.push({i:'戰',t:'吵最兇的題目',d:`${ties} 題剛好五五波`,s:[]});
     const lo=best(i=>st[i][3]||null,1); if(lo) A.push({i:'孤',t:'孤鳥',d:`有 ${lo.v} 題全場只有他選那一邊`,s:lo.s});
     let bp=null, wp=null; for(const k in G.pr){ const [a,b]=k.split('-').map(Number), v=G.pr[k][0]/G.pr[k][1]; if(!bp||v>bp.v) bp={v,s:[a,b]}; if(!wp||v<wp.v) wp={v,s:[a,b]}; }
     if(bp) A.push({i:'伴',t:'價值觀雙胞胎',d:`${Math.round(bp.v*100)}% 的題目選得一樣`,s:bp.s});
@@ -958,7 +970,7 @@ function vSettings(edit){
     ${per}
     <div><span class="lb">${ab?'每題作答時間':'每回合排名時間'}</span><div class="chips">${[[0,'不限時'],[90,'90 秒'],[60,'60 秒'],[30,'30 秒']].map(([n,l])=>`<button class="tg ${(S.time||0)===n?'on':''}" data-act="time" data-v="${n}" ${dis}>${l}</button>`).join('')}</div></div>
     ${ab ? `<div><span class="lb">題庫（共 ${AB.filter(p=>(S.abcats||[]).includes(p.c)).length} 題）</span><div class="chips">${Object.entries(AB_CATS).map(([k,v])=>`<button class="tg ${(S.abcats||[]).includes(k)?'on':''}" data-act="abcat" data-v="${k}" ${dis}>${v}</button>`).join('')}</div></div>
-    <p class="note">沒有特殊回合，每題就是單純選一邊。可以加碼猜多數派（猜中 +2），也可以留一句理由，揭曉時貼出來。題目不夠勁爆可以換一題。</p></div>` : `
+    <p class="note">沒有特殊回合，每題就是單純選一邊。排名看「站在多數派的次數」，平手的題目不算。可以留一句理由，揭曉時貼出來；題目不夠勁爆可以換一題。</p></div>` : `
     <div><span class="lb">題庫（共 ${PROMPTS.filter(p=>S.cats.includes(p.c)).length + (S.cats.includes('my')?CUSTOM.length:0)} 題）</span><div class="chips">${Object.entries(CATS).map(([k,v])=>{
       const lk = LOCKED[k] && !unlocked(k) && !S.cats.includes(k);
       return `<button class="tg ${S.cats.includes(k)?'on':''}" data-act="cat" data-v="${k}" ${dis}>${lk?'🔒 ':''}${v}</button>`; }).join('')}<button class="tg ${S.cats.includes('my')?'on':''}" data-act="cat" data-v="my" ${dis}>自訂題</button></div></div>
@@ -1003,7 +1015,7 @@ function vHelp(){
   <h3>猜猜主角</h3><ul><li>每回合有一位主角，大家看到同一個題目和 5 個詞。</li><li>主角照真心把詞排成 S（本命）到 D（不行），還可以留一句「辯解」。</li><li>其他人同時猜主角會怎麼排，並可以押一列最有把握的：押中 +3，押錯 −1。</li><li>揭曉前，大家先投「誰最懂主角」，投中本回合最高分的人 +2。</li><li>揭曉從 D 一頁一頁翻到 S。位置猜中 2 分，差一格 1 分，全部猜中再加 5 分。</li><li>主角拿到大家的平均分，越好懂分越高。</li></ul>
   <h3>每回合的小事件</h3><ul><li><b>反轉回合</b>：猜的人要排出最不像主角的排法。</li><li><b>雙主角</b>（4 人以上）：兩位主角各排各的，大家猜兩人合起來的排名。</li><li><b>豪賭回合</b>：押中 +6，押錯 −2。</li><li><b>閃電回合</b>：只有 25 秒。</li><li><b>決勝回合</b>：最後一回合分數 ×2。</li></ul>
   <h3>全員神同步</h3><ul><li>沒有主角，大家一起排同一題，目標是排得一模一樣。</li><li>3 人以上會出現「排排看你的朋友」題，詞語就是大家的名字。</li></ul>
-  <h3>二選一</h3><ul><li>每題有兩個選項：情境、美食、價值觀、私密問題……大家偷偷選一邊。</li><li>沒有特殊回合。選完可以加碼猜「多數人會選哪邊」，猜中 +2 分，不想猜也能略過；平手這題不計分。</li><li>揭曉後會點名人出來辯護或回嘴，題目太無聊可以換一題（每題最多 3 次）。</li><li>可以留一句理由，揭曉時跟名字一起貼出來，方便開吵。</li><li>最後頒獎：最會讀空氣、少數派代表、孤鳥、價值觀雙胞胎、天生冤家。</li></ul>
+  <h3>二選一</h3><ul><li>每題有兩個選項：情境、美食、價值觀、私密問題……大家偷偷選一邊。</li><li>沒有特殊回合。排名看「站在多數派的次數」：揭曉後跟多數人選同一邊就 +1，平手的題目不算。</li><li>揭曉後會點名人出來辯護或回嘴，題目太無聊可以換一題（每題最多 3 次）。</li><li>可以留一句理由，揭曉時跟名字一起貼出來，方便開吵。</li><li>最後頒獎：人民的聲音、少數派代表、孤鳥、價值觀雙胞胎、天生冤家，還能回顧每一題誰站哪邊。</li></ul>
   <h3>兩種開局</h3><ul><li><b>開房間</b>：每人用自己的手機開這個頁面，輸入房號加入。</li><li><b>一支手機輪流玩</b>：輪到誰就把手機交給誰，揭曉時大家圍過來看。</li></ul>
   <h3>結束之後</h3><p>頒完獎會有一張成果卡，截圖就能分享。</p></div>
   <button class="btn ghost" data-act="home">回首頁</button>`;
@@ -1059,9 +1071,8 @@ function abDraft(G,seat){
 function vPick(G,seat){
   const d=abDraft(G,seat), W=G.topic.w;
   const timer = G.rt ? `<div class="timer" id="timer" aria-live="off"><i style="width:100%"></i><span>${G.rt}</span></div>` : '';
-  let h=`${roundBar(G)}${timer}${topicCard(G)}<p class="role">偷偷選一邊，<b>沒有標準答案</b></p>
+  let h=`${roundBar(G)}${timer}${topicCard(G)}<p class="role">偷偷選一邊，跟<b>多數人</b>站同一邊就 +1</p>
   <div class="ab" role="group" aria-label="選一邊">${W.map((w,i)=>`<button class="abopt o${i} ${d.c===i?'on':''}" data-act="abc" data-v="${i}" aria-pressed="${d.c===i}"><span class="abl">${'AB'[i]}</span><span class="abw">${esc(w)}</span></button>`).join('<span class="abvs" aria-hidden="true">or</span>')}</div>
-  <div><span class="lb">加碼猜：多數人會選哪邊？猜中 +2（可略過）</span><div class="abg">${W.map((w,i)=>`<button class="tg ${d.g===i?'on':''}" data-act="abg" data-v="${i}" aria-pressed="${d.g===i}">${'AB'[i]}．${esc(w)}</button>`).join('')}</div></div>
   <div class="exbox"><label class="lb" for="ex" style="margin:0">留一句理由，揭曉時會貼出來（可以不寫）</label><input class="in" id="ex" maxlength="30" placeholder="例：這有故事" value="${esc(UI.ex||'')}" autocomplete="off"><div class="chips">${ABRE.map(x=>`<button class="tg" data-act="expre" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
   <button class="btn big pink" data-act="submit" ${d.c>=0?'':'disabled'}>${d.c<0?'先選一邊':'鎖定我的選擇'}</button>`;
   if(canControl() && !G.done.length && G.rr<3) h+=`<button class="btn ghost small" data-act="reroll">這題不夠勁爆，換一題（剩 ${3-G.rr} 次）</button>`;
@@ -1203,7 +1214,7 @@ function vRoundResult(G){
     else if(R.lone>=0){ const mj=R.side[R.ch[R.lone]===0?1:0]; talk=`${nm(R.lone)} 先說理由，再由 ${nm(sp(mj))} 代表多數派回嘴。`; }
     else if(R.maj>=0) talk=`少數派推一個代表說理由，多數派有人被說服就舉手。`;
     h+=`${ev?`<p class="x2tag">${ev[0]}</p>`:''}<p class="banner">${banner}</p><p class="quip">${quip}</p>${talk?`<p class="sur"><b class="talk">討論時間</b>${talk}</p>`:''}
-    ${R.maj<0?'<p class="note">平手沒有多數派，這題不計分。</p>':ss.map(s=>`<div class="line"><span class="e">${esc(G.pl[s].a)}</span><div><div class="nm">${nm(s)}${R.pts[s]?`<span class="badge g">猜中多數 +${R.pts[s]}</span>`:''}</div><small class="muted">選 ${'AB'[R.ch[s]]}，${R.gu[s]>=0?`猜多數選 ${'AB'[R.gu[s]]}`:'沒有猜'}</small></div><span class="pts">+${R.pts[s]}</span></div>`).join('')}`;
+    ${R.maj<0?'<p class="note">平手沒有多數派，這題大家都不加。</p>':`<p class="note">站在多數派（${'AB'[R.maj]}．${esc(W[R.maj])}）的人 +1：${R.side[R.maj].map(nm).join('、')}</p>`}`;
   } else if(G.mode==='guess'){
     const gs=R.gs.slice().sort((a,b)=>R.pts[b]-R.pts[a]);
     const pct=R.max?Math.round(R.avg/R.max*100):0;
@@ -1222,9 +1233,9 @@ function vRoundResult(G){
     let sameT=0; for(let t=0;t<K;t++) if(seats.every(s=>R.k[s][t]===R.k[seats[0]][t])) sameT++;
     h+=`<p class="banner">${R.same?'全員神同步':sameT>=K-1?'只差一點點':'破功'}</p><p class="quip">${R.same?`連續同步 ${G.streak} 回合（最高 ${G.best}）`:`${sameT} / ${K} 列完全一致${G.best?`，最高連續 ${G.best} 回合`:''}`}</p>${R.sur?`<p class="sur">最大分歧：「${esc(G.topic.w[R.sur.w])}」有人放 <b>${TIERS[R.sur.lo]}</b>，有人放 <b>${TIERS[R.sur.hi]}</b>。</p>`:''}`;
   }
-  h+=`<h3>目前排名</h3>${boardHTML(G)}</div>`;
+  h+=`<h3>${R.ab?'目前排名（站在多數派的次數）':'目前排名'}</h3>${boardHTML(G)}</div>`;
   const last=G.ri+1>=G.tot;
-  if(canControl()) h+=`<button class="btn big pink" data-act="next">${last?'看頒獎':'下一回合'}</button>`;
+  if(canControl()) h+=`<button class="btn big pink" data-act="next">${last?'看頒獎':R.ab?'下一題':'下一回合'}</button>`;
   else h+=`<p class="note c">等房主按下一回合…</p>`;
   return h;
 }
@@ -1247,7 +1258,7 @@ function shareCard(G){
     : `<p class="hl"><small>本日名場面</small>「${esc(G.hl.t)}」的「${esc(G.hl.w)}」，有人放 ${TIERS[G.hl.lo]}，有人放 ${TIERS[G.hl.hi]}。</p>`; }
   return `<div class="share tape" id="share">
     <div class="hd"><div><p class="dt">${dt}</p><h2>心有靈排</h2><p class="sub">${G.mode==='guess'?'今天誰最懂誰的紀錄':G.mode==='ab'?'今天我們的價值觀有多合':'今天我們有多同步'}</p></div><span class="hanko">排</span></div>
-    <div class="win"><div class="photo"><div class="face">${esc(G.pl[top[0].i].a)}</div></div><div><p>${G.mode==='guess'?'最會讀心':G.mode==='ab'?'最會讀空氣':'最合拍'}</p><h3>${top.map(b=>esc(G.pl[b.i].n)).join('、')}</h3><p><span class="sc-big">${top[0].s}</span> 分</p></div><span class="seal">優勝</span></div>
+    <div class="win"><div class="photo"><div class="face">${esc(G.pl[top[0].i].a)}</div></div><div><p>${G.mode==='guess'?'最會讀心':G.mode==='ab'?'人民的聲音':'最合拍'}</p><h3>${top.map(b=>esc(G.pl[b.i].n)).join('、')}</h3><p>${G.mode==='ab'?'站在多數派 ':''}<span class="sc-big">${top[0].s}</span> ${G.mode==='ab'?'次':'分'}</p></div><span class="seal">優勝</span></div>
     ${rest.length?`<ol>${rest.map((b,r)=>`<li><i>${r+1+top.length}</i><span>${esc(G.pl[b.i].a)} ${esc(G.pl[b.i].n)}</span><b>${b.s}</b></li>`).join('')}</ol>`:''}
     ${aws.length?`<ul class="aws">${aws.map(a=>`<li><b>${esc(a.t)}</b><span>${a.s.map(s=>esc(G.pl[s].n)).join('、')}</span></li>`).join('')}</ul>`:''}
     ${G.mode==='sync'?`<p class="hl"><small>同步紀錄</small>${G.syncs} / ${G.tot} 回合完全一致，最高連續 ${G.best} 回合。</p>`:''}
@@ -1255,6 +1266,11 @@ function shareCard(G){
     ${G.qt?`<p class="qt">「${esc(G.qt.x)}」<cite>${esc(G.pl[G.qt.s].n)}，關於「${esc(G.qt.t)}」</cite></p>`:''}
     <p class="ft"><span>${MODEN[G.mode]}　${G.tot} ${G.mode==='ab'?'題':'回合'}　${G.pl.length} 人</span><span>${esc(host)}</span></p>
   </div>`;
+}
+function abRecap(G){
+  const nm=s=>esc(G.pl[s].a+G.pl[s].n);
+  return `<div class="pagehead"><h1>每一題</h1><p>誰站哪邊，一次看完</p></div><div class="card recap">${G.log.map((l,i)=>{ const n=l.side[0].length+l.side[1].length;
+    return `<div class="rc"><p class="rq"><i>${i+1}</i>${esc(l.t)}</p>${[0,1].map(j=>`<div class="rs ${l.side[j].length>l.side[1-j].length?'maj':''}"><b>${'AB'[j]}．${esc(l.w[j])}</b><span class="rn">${l.side[j].length}/${n}</span><div class="rp">${l.side[j].map(s=>`<span class="${l.lone===s?'lone':''}">${nm(s)}</span>`).join('')||'<em>沒有人</em>'}</div></div>`).join('')}</div>`; }).join('')}</div>`;
 }
 function vEnd(G){
   if(UI.cardOnly) return `${shareCard(G)}<button class="btn ghost small" data-act="cardonly">返回</button>`;
@@ -1264,6 +1280,7 @@ function vEnd(G){
   if(UI.awStep<aw.length) h+=`<p class="drum">下一個獎項是…</p>`;
   h+='</div>';
   if(UI.awStep>=aw.length){
+    if(G.mode==='ab' && G.log && G.log.length) h+=abRecap(G);
     h+=`<div class="pagehead"><h1>成果卡</h1><p>截圖這張卡片就能分享</p></div>${shareCard(G)}
     <button class="btn small ghost" data-act="cardonly">只顯示成果卡，方便截圖</button>`;
     if(canControl()) h+=`<button class="btn big pink" data-act="again">再玩一場</button>`; else h+=`<p class="note c">等房主開下一場…</p>`;
@@ -1331,7 +1348,6 @@ document.addEventListener('click', e=>{
     case 'abr': SET.abr=+b.dataset.v; saveSet(); sfx('tap'); render(); break;
     case 'abcat': { const v=b.dataset.v, i=SET.abcats.indexOf(v); if(i>=0){ if(SET.abcats.length>1) SET.abcats.splice(i,1); } else SET.abcats.push(v); saveSet(); sfx('tap'); render(); break; }
     case 'abc': { const d=UI.draft; if(!d||!d.ab) return; d.c=+b.dataset.v; sfx('place'); render(); break; }
-    case 'abg': { const d=UI.draft; if(!d||!d.ab) return; const v=+b.dataset.v; d.g = d.g===v ? -1 : v; sfx(d.g>=0?'stamp':'back'); render(); break; }
     case 'time': SET.time=+b.dataset.v; saveSet(); sfx('tap'); render(); break;
     case 'cat': { const v=b.dataset.v, i=SET.cats.indexOf(v);
       if(i<0 && !unlocked(v)){ UI.lock=v; UI.pw=''; UI.pwerr=''; sfx('tap'); render(); focusLater('#pw'); break; } if(i>=0){ if(SET.cats.length>1) SET.cats.splice(i,1); } else SET.cats.push(v); saveSet(); sfx('tap'); render(); break; }
